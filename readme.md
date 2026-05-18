@@ -8,7 +8,25 @@
 ssh-keygen -t ed25519
 ```
 
-Generates a secure SSH public/private key pair.
+Generates a secure SSH public/private key pair using the modern Ed25519 algorithm.
+
+### About `-t ed25519`
+
+```txt
+-t
+→ Means "type"
+
+ed25519
+→ Modern SSH key algorithm/type
+```
+
+Why use Ed25519?
+
+- More secure
+- Faster
+- Smaller keys
+- Modern OpenSSH standard
+- Recommended over older RSA keys
 
 ---
 
