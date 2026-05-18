@@ -57,6 +57,28 @@ Installs MongoDB server.
 
 ---
 
+# MongoDB Version
+
+## Check MongoDB Version
+
+```bash
+mongod --version
+```
+
+Displays installed MongoDB server version.
+
+---
+
+## Check Mongo Shell Version
+
+```bash
+mongosh --version
+```
+
+Displays installed MongoDB shell version.
+
+---
+
 # Start MongoDB
 
 ## Enable MongoDB
@@ -79,6 +101,26 @@ Starts MongoDB service.
 
 ---
 
+## Stop MongoDB Service
+
+```bash
+sudo systemctl stop mongod
+```
+
+Stops MongoDB service.
+
+---
+
+## Restart MongoDB Service
+
+```bash
+sudo systemctl restart mongod
+```
+
+Restarts MongoDB service.
+
+---
+
 ## Check MongoDB Status
 
 ```bash
@@ -98,6 +140,38 @@ mongosh
 ```
 
 Opens MongoDB shell.
+
+---
+
+# MongoDB Databases
+
+## Show Databases
+
+```javascript
+show dbs
+```
+
+Displays all databases.
+
+---
+
+## Create / Switch Database
+
+```javascript
+use mydatabase
+```
+
+Creates or switches database.
+
+---
+
+## Show Collections
+
+```javascript
+show collections
+```
+
+Displays collections inside current database.
 
 ---
 
@@ -160,6 +234,24 @@ net:
 Restricts MongoDB access to local server only.
 
 Recommended for security.
+
+---
+
+# Enable Remote Access (Only If Needed)
+
+```yaml
+net:
+  bindIp: 0.0.0.0
+```
+
+Allows external connections.
+
+Only use with:
+
+- firewall protection
+- IP restrictions
+- authentication enabled
+- trusted servers only
 
 ---
 
@@ -251,6 +343,76 @@ Imports MongoDB data.
 
 ---
 
+# Delete Database
+
+## Remove Current Database
+
+```javascript
+db.dropDatabase()
+```
+
+Deletes current database.
+
+Use carefully.
+
+---
+
+# MongoDB File Locations
+
+## MongoDB Config File
+
+```txt
+/etc/mongod.conf
+```
+
+Main MongoDB configuration file.
+
+---
+
+## MongoDB Storage Location
+
+```txt
+/var/lib/mongodb
+```
+
+Default MongoDB database storage location.
+
+---
+
+## MongoDB Logs Location
+
+```txt
+/var/log/mongodb
+```
+
+Default MongoDB logs location.
+
+---
+
+# MongoDB Disk Usage
+
+## Check Database Storage Usage
+
+```bash
+du -sh /var/lib/mongodb
+```
+
+Displays MongoDB disk usage.
+
+---
+
+# MongoDB Indexes
+
+## Create Index
+
+```javascript
+db.users.createIndex({ email: 1 })
+```
+
+Improves query performance.
+
+---
+
 # Docker MongoDB Example
 
 ## Run MongoDB Container
@@ -291,13 +453,13 @@ Displays MongoDB logs.
 
 ---
 
-## Check MongoDB Resource Usage
+## Check Live Resource Usage
 
 ```bash
 docker stats
 ```
 
-Displays live container resource usage.
+Displays live CPU/RAM usage.
 
 ---
 
@@ -315,6 +477,17 @@ Used for:
 
 ---
 
+# MongoDB Docker Security
+
+- Never expose port `27017` publicly unless necessary
+- Use strong passwords
+- Use persistent Docker volumes
+- Restrict firewall access
+- Keep MongoDB updated
+- Enable authentication
+
+---
+
 # MongoDB Security Best Practices
 
 - Use strong passwords
@@ -329,13 +502,15 @@ Used for:
 
 ---
 
-# Useful MongoDB Workflow
+# Recommended MongoDB Production Workflow
 
 1. Install MongoDB
 2. Start MongoDB service
 3. Create admin user
 4. Enable authentication
 5. Restrict public access
-6. Restart MongoDB
-7. Configure backups
-8. Monitor logs and usage
+6. Configure firewall
+7. Setup backups
+8. Monitor logs/resources
+9. Create indexes
+10. Keep MongoDB updated
