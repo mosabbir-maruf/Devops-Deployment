@@ -232,6 +232,114 @@ JWT_SECRET=your_secret
 
 ---
 
+# npm Security & Maintenance
+
+## Check Security Vulnerabilities
+
+```bash
+npm audit
+```
+
+Scans dependencies for known security vulnerabilities.
+
+---
+
+## Automatically Fix Vulnerabilities
+
+```bash
+npm audit fix
+```
+
+Attempts to automatically fix vulnerable packages.
+
+---
+
+## Force Fix Vulnerabilities
+
+```bash
+npm audit fix --force
+```
+
+Forces major dependency updates to fix vulnerabilities.
+
+Use carefully in production projects.
+
+---
+
+## Check Outdated Packages
+
+```bash
+npm outdated
+```
+
+Displays outdated dependencies.
+
+---
+
+## Update Packages
+
+```bash
+npm update
+```
+
+Updates installed dependencies.
+
+---
+
+## Install Only Production Dependencies
+
+```bash
+npm install --production
+```
+
+Installs only production packages.
+
+Useful for VPS deployments.
+
+---
+
+# package-lock.json
+
+`package-lock.json` locks exact dependency versions.
+
+Benefits:
+
+- consistent installs
+- reproducible builds
+- safer deployments
+
+Recommended:
+- Always keep `package-lock.json`
+
+---
+
+# node_modules
+
+`node_modules` contains installed dependencies.
+
+Recommended:
+- Do not push `node_modules` to GitHub
+
+Add to `.gitignore`:
+
+```txt
+node_modules
+```
+
+---
+
+# .env Security
+
+Never push `.env` files to GitHub.
+
+Add to `.gitignore`:
+
+```txt
+.env
+```
+
+---
+
 # Node.js Security Basics
 
 - Never expose `.env` files
@@ -284,4 +392,5 @@ Updates installed packages.
 4. Configure environment variables
 5. Run application
 6. Use PM2 for production
-7. Monitor logs/processes
+7. Run npm audit
+8. Monitor logs/processes
