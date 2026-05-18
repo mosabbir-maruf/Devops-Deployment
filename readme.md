@@ -222,20 +222,39 @@ Checks if Fail2Ban is running.
 sudo nano /etc/ssh/sshd_config
 ```
 
+Opens SSH security configuration file.
+
 ---
 
 ### Use These Settings
 
 ```txt
 PermitRootLogin no
+→ Disables direct root SSH login for better security.
+
 PasswordAuthentication no
+→ Disables password-based SSH login.
+
 PermitEmptyPasswords no
+→ Blocks login with empty passwords.
+
 KbdInteractiveAuthentication no
+→ Disables interactive keyboard authentication.
+
 UsePAM yes
+→ Keeps PAM authentication and session support enabled.
+
 X11Forwarding no
+→ Disables GUI/X11 forwarding access.
+
 AuthenticationMethods publickey
+→ Allows only SSH key authentication.
+
 AllowUsers mosabbir
+→ Allows SSH login only for the specified user.
+
 Port 1182
+→ Changes default SSH port 22 to a custom port.
 ```
 
 ---
@@ -258,17 +277,27 @@ Allows the new SSH port through firewall.
 Ctrl + O
 ```
 
+Saves the file.
+
+---
+
 ### Confirm Save
 
 ```txt
 Enter
 ```
 
+Confirms filename.
+
+---
+
 ### Exit Nano
 
 ```txt
 Ctrl + X
 ```
+
+Exits Nano editor.
 
 ---
 
