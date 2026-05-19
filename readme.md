@@ -17,7 +17,7 @@ Designed for:
 
 ## VPS & Security
 
-### [initial-vps-security-setup.md](./initial-vps-security-setup.md)
+### [01-initial-vps-security-setup.md](./01-initial-vps-security-setup.md)
 
 Production-ready initial VPS setup guide.
 
@@ -36,7 +36,7 @@ Includes:
 
 ---
 
-### [ssh-guide.md](./ssh-guide.md)
+### [02-ssh-guide.md](./02-ssh-guide.md)
 
 Complete SSH workflow and security guide.
 
@@ -54,7 +54,7 @@ Includes:
 
 ---
 
-### [linux-basics.md](./linux-basics.md)
+### [03-linux-basics.md](./03-linux-basics.md)
 
 Essential Linux commands and server basics.
 
@@ -74,7 +74,7 @@ Includes:
 
 ## Docker & Containers
 
-### [docker.md](./docker.md)
+### [04-docker.md](./04-docker.md)
 
 Complete Docker production workflow.
 
@@ -93,7 +93,7 @@ Includes:
 
 ---
 
-### [coolify.md](./coolify.md)
+### [05-coolify.md](./05-coolify.md)
 
 Self-hosted Coolify deployment platform guide.
 
@@ -113,7 +113,7 @@ Includes:
 
 ## Backend & Runtime
 
-### [nodejs-npm.md](./nodejs-npm.md)
+### [06-nodejs-npm.md](./06-nodejs-npm.md)
 
 Production Node.js and npm setup guide.
 
@@ -133,7 +133,7 @@ Includes:
 
 ## Databases
 
-### [mongodb.md](./mongodb.md)
+### [07-mongodb.md](./07-mongodb.md)
 
 Production MongoDB setup and security guide.
 
@@ -150,7 +150,7 @@ Includes:
 
 ---
 
-### [postgresql.md](./postgresql.md)
+### [08-postgresql.md](./08-postgresql.md)
 
 Production PostgreSQL setup guide.
 
@@ -169,7 +169,7 @@ Includes:
 
 ---
 
-### [redis.md](./redis.md)
+### [09-redis.md](./09-redis.md)
 
 Redis caching and queue system guide.
 
@@ -188,7 +188,7 @@ Includes:
 
 ## Deployment & Infrastructure
 
-### [project-deployment.md](./project-deployment.md)
+### [10-project-deployment.md](./10-project-deployment.md)
 
 Production deployment workflows.
 
@@ -206,7 +206,7 @@ Includes:
 
 ---
 
-### [nginx-reverse-proxy.md](./nginx-reverse-proxy.md)
+### [11-nginx-reverse-proxy.md](./11-nginx-reverse-proxy.md)
 
 Nginx reverse proxy and SSL guide.
 
@@ -224,7 +224,7 @@ Includes:
 
 ---
 
-### [domain-dns-cloudflare.md](./domain-dns-cloudflare.md)
+### [12-domain-dns-cloudflare.md](./12-domain-dns-cloudflare.md)
 
 Domain, DNS and Cloudflare setup guide.
 
@@ -243,7 +243,7 @@ Includes:
 
 ## Git & CI/CD
 
-### [git-github-ci-cd.md](./git-github-ci-cd.md)
+### [13-git-github-ci-cd.md](./13-git-github-ci-cd.md)
 
 Git, GitHub and CI/CD workflow guide.
 
@@ -256,13 +256,15 @@ Includes:
 - automated deployments
 - CI/CD pipelines
 - GitHub secrets
+- verified commits
+- SSH signing
 - production deployment automation
 
 ---
 
 ## Monitoring & Maintenance
 
-### [server-monitoring.md](./server-monitoring.md)
+### [14-server-monitoring.md](./14-server-monitoring.md)
 
 Server monitoring and resource tracking guide.
 
@@ -280,7 +282,7 @@ Includes:
 
 ---
 
-### [backup-snapshots.md](./backup-snapshots.md)
+### [15-backup-snapshots.md](./15-backup-snapshots.md)
 
 Production backup and recovery guide.
 
@@ -297,7 +299,7 @@ Includes:
 
 ---
 
-### [troubleshooting.md](./troubleshooting.md)
+### [16-troubleshooting.md](./16-troubleshooting.md)
 
 Common VPS and deployment troubleshooting guide.
 
@@ -314,7 +316,7 @@ Includes:
 
 ---
 
-### [useful-commands.md](./useful-commands.md)
+### [17-useful-commands.md](./17-useful-commands.md)
 
 Quick reusable DevOps command reference.
 
@@ -353,23 +355,23 @@ This repository focuses on:
 
 Suggested order:
 
-1. [initial-vps-security-setup.md](./initial-vps-security-setup.md)
-2. [ssh-guide.md](./ssh-guide.md)
-3. [linux-basics.md](./linux-basics.md)
-4. [docker.md](./docker.md)
-5. [coolify.md](./coolify.md)
-6. [nodejs-npm.md](./nodejs-npm.md)
-7. [mongodb.md](./mongodb.md)
-8. [postgresql.md](./postgresql.md)
-9. [redis.md](./redis.md)
-10. [project-deployment.md](./project-deployment.md)
-11. [nginx-reverse-proxy.md](./nginx-reverse-proxy.md)
-12. [domain-dns-cloudflare.md](./domain-dns-cloudflare.md)
-13. [git-github-ci-cd.md](./git-github-ci-cd.md)
-14. [server-monitoring.md](./server-monitoring.md)
-15. [backup-snapshots.md](./backup-snapshots.md)
-16. [troubleshooting.md](./troubleshooting.md)
-17. [useful-commands.md](./useful-commands.md)
+1. [01-initial-vps-security-setup.md](./01-initial-vps-security-setup.md)
+2. [02-ssh-guide.md](./02-ssh-guide.md)
+3. [03-linux-basics.md](./03-linux-basics.md)
+4. [04-docker.md](./04-docker.md)
+5. [05-coolify.md](./05-coolify.md)
+6. [06-nodejs-npm.md](./06-nodejs-npm.md)
+7. [07-mongodb.md](./07-mongodb.md)
+8. [08-postgresql.md](./08-postgresql.md)
+9. [09-redis.md](./09-redis.md)
+10. [10-project-deployment.md](./10-project-deployment.md)
+11. [11-nginx-reverse-proxy.md](./11-nginx-reverse-proxy.md)
+12. [12-domain-dns-cloudflare.md](./12-domain-dns-cloudflare.md)
+13. [13-git-github-ci-cd.md](./13-git-github-ci-cd.md)
+14. [14-server-monitoring.md](./14-server-monitoring.md)
+15. [15-backup-snapshots.md](./15-backup-snapshots.md)
+16. [16-troubleshooting.md](./16-troubleshooting.md)
+17. [17-useful-commands.md](./17-useful-commands.md)
 
 ---
 
