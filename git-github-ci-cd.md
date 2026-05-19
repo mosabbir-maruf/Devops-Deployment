@@ -68,10 +68,18 @@ Sets global Git username.
 ## Set Git Email
 
 ```bash
-git config --global user.email "you@example.com"
+git config --global user.email "YOUR_GITHUB_NOREPLY_EMAIL"
 ```
 
 Sets global Git email.
+
+Recommended for public repositories.
+
+Example:
+
+```txt
+123456+username@users.noreply.github.com
+```
 
 ---
 
@@ -90,14 +98,42 @@ Displays Git configuration.
 ## Generate SSH Key
 
 ```bash
-ssh-keygen -t ed25519 -C "your_email@example.com"
+ssh-keygen -t ed25519 -C "YOUR_GITHUB_EMAIL"
 ```
 
 Creates secure SSH key.
 
+Recommended:
+- use GitHub email
+- use passphrase protection
+
 ---
 
-## Show Public Key
+# SSH Agent
+
+## Start SSH Agent
+
+```bash
+eval "$(ssh-agent -s)"
+```
+
+Starts SSH authentication agent.
+
+---
+
+## Add SSH Key To Agent
+
+```bash
+ssh-add ~/.ssh/id_ed25519
+```
+
+Loads SSH key into SSH agent.
+
+---
+
+# Show Public SSH Key
+
+## Display Public SSH Key
 
 ```bash
 cat ~/.ssh/id_ed25519.pub
@@ -107,23 +143,172 @@ Displays public SSH key.
 
 ---
 
-# Add SSH Key To GitHub
+## Copy Public SSH Key (macOS)
 
-GitHub → Settings → SSH and GPG Keys → New SSH Key
+```bash
+pbcopy < ~/.ssh/id_ed25519.pub
+```
 
-Paste your public SSH key.
+Copies SSH public key directly to clipboard.
 
 ---
 
-# Test GitHub SSH Connection
+# GitHub SSH Authentication Key
 
-## Test SSH Authentication
+Go to:
+
+```txt
+GitHub → Settings → SSH and GPG Keys
+```
+
+Click:
+
+```txt
+New SSH Key
+```
+
+---
+
+## Configure Authentication Key
+
+### Title Example
+
+```txt
+MacBook Authentication
+```
+
+---
+
+### Key Type
+
+```txt
+Authentication Key
+```
+
+---
+
+### Key
+
+Paste:
+
+```txt
+id_ed25519.pub
+```
+
+content.
+
+---
+
+# GitHub Signing Key
+
+Again click:
+
+```txt
+New SSH Key
+```
+
+---
+
+## Configure Signing Key
+
+### Title Example
+
+```txt
+MacBook Signing
+```
+
+---
+
+### Key Type
+
+```txt
+Signing Key
+```
+
+---
+
+### Key
+
+Paste SAME public SSH key again.
+
+---
+
+# GitHub Verified Commits
+
+Verified commits ensure commits are cryptographically signed and trusted.
+
+Benefits:
+
+- trusted commits
+- identity verification
+- safer collaboration
+- production-grade workflow
+
+---
+
+# Configure Verified Commits
+
+## Enable SSH Signing
+
+```bash
+git config --global gpg.format ssh
+```
+
+---
+
+## Set SSH Signing Key
+
+```bash
+git config --global user.signingkey ~/.ssh/id_ed25519.pub
+```
+
+---
+
+## Auto Sign All Commits
+
+```bash
+git config --global commit.gpgsign true
+```
+
+---
+
+# Verify GitHub SSH Authentication
+
+## Test SSH Connection
 
 ```bash
 ssh -T git@github.com
 ```
 
-Tests GitHub SSH authentication.
+Expected:
+
+```txt
+Hi USERNAME! You've successfully authenticated
+```
+
+---
+
+# Verify Signed Commits
+
+## Create Test Commit
+
+```bash
+git commit -m "test verified commit"
+```
+
+Push commit:
+
+```bash
+git push
+```
+
+GitHub should display:
+
+```txt
+Verified
+```
+
+beside commits.
 
 ---
 
@@ -438,7 +623,10 @@ Pushes tags to GitHub.
 
 - Never push `.env`
 - Never push secrets/API keys
+- Never expose private SSH keys
 - Use SSH authentication
+- Use verified commits
+- Use GitHub noreply email publicly
 - Use private repos if needed
 - Use branch protection for production
 - Review commits before pushing
@@ -556,7 +744,10 @@ Examples:
 - API_KEYS
 
 GitHub:
+
+```txt
 Settings → Secrets and variables → Actions
+```
 
 ---
 
@@ -654,13 +845,16 @@ Check:
 
 # Recommended Git Workflow
 
-1. Initialize Git repository
-2. Configure GitHub SSH authentication
-3. Create GitHub repository
-4. Connect remote repository
-5. Push project
-6. Configure .gitignore
-7. Setup GitHub Actions
-8. Configure deployment secrets
-9. Automate deployments
-10. Monitor deployment logs
+1. Configure Git
+2. Generate SSH key
+3. Configure GitHub authentication key
+4. Configure GitHub signing key
+5. Enable verified commits
+6. Create GitHub repository
+7. Connect remote repository
+8. Push project
+9. Configure `.gitignore`
+10. Setup GitHub Actions
+11. Configure deployment secrets
+12. Automate deployments
+13. Monitor deployment logs
