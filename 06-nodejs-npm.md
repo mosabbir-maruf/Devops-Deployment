@@ -30,20 +30,79 @@ Used for:
 
 ---
 
-# Install Node.js
+# 1. Node.js Installation Approaches
 
-## Install Node.js LTS
-
-```bash
-curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-sudo apt install -y nodejs
-```
-
-Installs latest LTS version of Node.js and npm.
+There are two common ways to use Node.js on a VPS:
 
 ---
 
-# Verify Installation
+## Global Node.js Installation
+
+Node.js is installed directly on the VPS operating system.
+
+Best for:
+
+- learning Node.js
+- local scripts
+- simple VPS apps
+- PM2 deployments
+- development environments
+
+---
+
+## Docker-Based Node.js
+
+Node.js runs inside Docker containers.
+
+Best for:
+
+- production deployments
+- isolated environments
+- scalable applications
+- version management
+- microservices
+- modern DevOps workflows
+
+Recommended for modern production deployments.
+
+---
+
+# 2. Install Node.js Globally
+
+## Update Packages
+
+```bash
+sudo apt update
+```
+
+Refreshes Ubuntu package lists.
+
+---
+
+## Install Node.js LTS Repository
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+```
+
+Adds NodeSource Node.js LTS repository.
+
+---
+
+## Install Node.js
+
+```bash
+sudo apt install -y nodejs
+```
+
+Installs latest LTS version of:
+
+- Node.js
+- npm
+
+---
+
+# 3. Verify Node.js Installation
 
 ## Check Node.js Version
 
@@ -65,41 +124,67 @@ Displays installed npm version.
 
 ---
 
-# Package Managers
+# 4. Package Managers
 
 ## npm
 
 Default Node.js package manager.
 
+Installed automatically with Node.js.
+
 ---
 
-## pnpm
-
-Fast and disk-efficient package manager.
-
-Install pnpm:
+## Install pnpm
 
 ```bash
 npm install -g pnpm
 ```
 
+Installs pnpm package manager.
+
+Benefits:
+
+- faster installs
+- lower disk usage
+- efficient dependency storage
+
 ---
 
-## Yarn
-
-Alternative package manager.
-
-Install Yarn:
+## Install Yarn
 
 ```bash
 npm install -g yarn
 ```
 
+Installs Yarn package manager.
+
+Alternative to npm.
+
 ---
 
-# Create Node.js Project
+# 5. Create Node.js Project
 
-## Initialize Project
+## Create Project Folder
+
+```bash
+mkdir my-node-app
+```
+
+Creates Node.js project folder.
+
+---
+
+## Enter Project Folder
+
+```bash
+cd my-node-app
+```
+
+Moves into the project directory.
+
+---
+
+## Initialize package.json
 
 ```bash
 npm init -y
@@ -109,7 +194,7 @@ Creates `package.json` automatically.
 
 ---
 
-# package.json
+# 6. package.json
 
 `package.json` contains:
 
@@ -119,9 +204,105 @@ Creates `package.json` automatically.
 - versions
 - package information
 
+Example:
+
+```json
+{
+  "name": "my-node-app",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node index.js"
+  }
+}
+```
+
 ---
 
-# Install Packages
+# 7. Create Basic Node.js App
+
+## Create index.js
+
+```bash
+nano index.js
+```
+
+Creates application entry file.
+
+---
+
+## Basic Node.js Server
+
+```javascript
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, {
+    "Content-Type": "text/plain",
+  });
+
+  res.end("Node.js server running!");
+});
+
+server.listen(3000, () => {
+  console.log("Server running on port 3000");
+});
+```
+
+Basic Node.js HTTP server example.
+
+---
+
+## Save File
+
+```txt
+Ctrl + O
+Enter
+Ctrl + X
+```
+
+Saves file.
+
+---
+
+# 8. Run Node.js App
+
+## Run Application
+
+```bash
+node index.js
+```
+
+Runs Node.js application.
+
+---
+
+## Verify In Browser
+
+Open:
+
+```txt
+http://YOUR_PUBLIC_IP:3000
+```
+
+Should display:
+
+```txt
+Node.js server running!
+```
+
+---
+
+## Stop Application
+
+```txt
+Ctrl + C
+```
+
+Stops the Node.js application.
+
+---
+
+# 9. Install Packages
 
 ## Install Dependency
 
@@ -153,7 +334,7 @@ Installs package globally.
 
 ---
 
-# Remove Packages
+# 10. Remove Packages
 
 ## Remove Package
 
@@ -165,19 +346,7 @@ Removes package.
 
 ---
 
-# Run Node.js App
-
-## Run JavaScript File
-
-```bash
-node index.js
-```
-
-Runs Node.js application.
-
----
-
-# npm Scripts
+# 11. npm Scripts
 
 ## Run npm Script
 
@@ -189,7 +358,7 @@ Runs scripts from `package.json`.
 
 ---
 
-# Example package.json Scripts
+## Example package.json Scripts
 
 ```json
 "scripts": {
@@ -200,11 +369,13 @@ Runs scripts from `package.json`.
 
 ---
 
-# Environment Variables
+# 12. Environment Variables
 
 Environment variables store sensitive or configurable values.
 
-Example `.env` file:
+---
+
+## Example .env File
 
 ```txt
 PORT=3000
@@ -215,7 +386,7 @@ JWT_SECRET=your_secret
 
 ---
 
-# .env Security
+## .env Security
 
 Never push `.env` files to GitHub.
 
@@ -227,12 +398,13 @@ Add to `.gitignore`:
 
 ---
 
-# node_modules
+# 13. node_modules
 
 `node_modules` contains installed dependencies.
 
 Recommended:
-- Do not push `node_modules` to GitHub
+
+- never push `node_modules` to GitHub
 
 Add to `.gitignore`:
 
@@ -242,7 +414,7 @@ node_modules
 
 ---
 
-# package-lock.json
+# 14. package-lock.json
 
 `package-lock.json` locks exact dependency versions.
 
@@ -253,11 +425,12 @@ Benefits:
 - safer deployments
 
 Recommended:
-- Always keep `package-lock.json`
+
+- always keep `package-lock.json`
 
 ---
 
-# Install Dependencies
+# 15. Install Dependencies
 
 ## Install Project Dependencies
 
@@ -281,7 +454,7 @@ Useful for VPS deployments.
 
 ---
 
-# npm Security & Maintenance
+# 16. npm Security & Maintenance
 
 ## Check Security Vulnerabilities
 
@@ -335,7 +508,7 @@ Updates installed dependencies.
 
 ---
 
-# Useful npm Commands
+# 17. Useful npm Commands
 
 ## List Installed Packages
 
@@ -367,7 +540,7 @@ Verifies npm cache integrity.
 
 ---
 
-# Build Applications
+# 18. Build Applications
 
 ## Build Production App
 
@@ -386,7 +559,7 @@ Common in frameworks like:
 
 ---
 
-# Production Process Manager (PM2)
+# 19. Production Process Manager (PM2)
 
 ## Install PM2
 
@@ -478,7 +651,7 @@ Displays application logs.
 
 ---
 
-# PM2 Auto Start On Server Reboot
+# 20. PM2 Auto Start On Server Reboot
 
 ## Save PM2 Processes
 
@@ -500,7 +673,7 @@ Enables automatic startup after reboot.
 
 ---
 
-# Node.js Monitoring
+# 21. Node.js Monitoring
 
 ## Check Running Node Processes
 
@@ -532,7 +705,7 @@ Displays live CPU/RAM usage.
 
 ---
 
-# Node.js Security Basics
+# 22. Node.js Security Basics
 
 - Never expose `.env` files
 - Use strong secrets/passwords
@@ -546,29 +719,205 @@ Displays live CPU/RAM usage.
 
 ---
 
-# Docker + Node.js
+# 23. Docker + Node.js
 
-## Example Dockerfile
+## Why Docker For Node.js?
+
+Docker provides:
+
+- isolated environments
+- easier deployments
+- version consistency
+- cleaner production workflows
+- easier scaling
+
+Recommended for production deployments.
+
+---
+
+## Create Docker Project Folder
+
+```bash
+mkdir docker-node-app
+```
+
+Creates Docker Node.js project folder.
+
+---
+
+## Enter Project Folder
+
+```bash
+cd docker-node-app
+```
+
+Moves into project directory.
+
+---
+
+## Create package.json
+
+```bash
+npm init -y
+```
+
+Creates Node.js project configuration.
+
+---
+
+## Install Express
+
+```bash
+npm install express
+```
+
+Installs Express framework.
+
+---
+
+## Create index.js
+
+```bash
+nano index.js
+```
+
+Creates Node.js application file.
+
+---
+
+## Basic Express App
+
+```javascript
+const express = require("express");
+
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Docker Node.js App Running!");
+});
+
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});
+```
+
+Basic Express application example.
+
+---
+
+## Save File
+
+```txt
+Ctrl + O
+Enter
+Ctrl + X
+```
+
+Saves file.
+
+---
+
+## Create Dockerfile
+
+```bash
+nano Dockerfile
+```
+
+Creates Dockerfile.
+
+---
+
+## Example Node.js Dockerfile
 
 ```dockerfile
 FROM node:20
 
 WORKDIR /app
 
-COPY . .
+COPY package*.json ./
 
 RUN npm install
+
+COPY . .
 
 EXPOSE 3000
 
 CMD ["npm", "start"]
 ```
 
-Basic Node.js Docker setup.
+Production-ready basic Node.js Dockerfile.
 
 ---
 
-# Common Node.js Issues
+## Add Start Script
+
+Open:
+
+```bash
+nano package.json
+```
+
+Add:
+
+```json
+"scripts": {
+  "start": "node index.js"
+}
+```
+
+---
+
+## Build Docker Image
+
+```bash
+docker build -t node-app .
+```
+
+Builds Docker image.
+
+---
+
+## Run Docker Container
+
+```bash
+docker run -d \
+  --name node-app \
+  -p 3000:3000 \
+  --restart unless-stopped \
+  node-app
+```
+
+Runs Node.js Docker container.
+
+---
+
+## Verify Running Container
+
+```bash
+docker ps
+```
+
+Checks running containers.
+
+---
+
+## Verify In Browser
+
+Open:
+
+```txt
+http://YOUR_PUBLIC_IP:3000
+```
+
+Should display:
+
+```txt
+Docker Node.js App Running!
+```
+
+---
+
+# 24. Common Node.js Issues
 
 ## Port Already In Use
 
@@ -616,28 +965,42 @@ pm2 logs
 
 ---
 
-# Performance Tips
+## Docker Container Logs
+
+```bash
+docker logs CONTAINER_ID
+```
+
+Displays Docker container logs.
+
+---
+
+# 25. Performance Tips
 
 - Use PM2 in production
+- Use Docker for isolated deployments
 - Remove unused dependencies
 - Keep Node.js updated
 - Use caching when needed
 - Monitor RAM/CPU usage
 - Use production builds
 - Avoid blocking operations
+- Use restart policies
+- Monitor logs regularly
 
 ---
 
-# Recommended Production Workflow
+# 26. Recommended Production Workflow
 
-1. Install Node.js
-2. Create project
-3. Initialize package.json
-4. Install dependencies
-5. Configure environment variables
-6. Build production app
-7. Run application with PM2
-8. Monitor logs/processes
-9. Run npm audit regularly
-10. Keep dependencies updated
-11. Configure backups
+1. Install Docker
+2. Install Node.js (optional for local development)
+3. Create Node.js project
+4. Configure environment variables
+5. Build Docker image
+6. Run Docker container
+7. Configure reverse proxy
+8. Configure SSL
+9. Monitor logs/processes
+10. Configure backups
+11. Keep dependencies updated
+12. Use Docker Compose for multi-service apps
