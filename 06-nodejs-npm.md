@@ -1217,4 +1217,4 @@ Displays Docker container logs.
 7. Configure SSL
 8. Monitor container logs
 9. Configure backups
-10. Use Docker Compose for multi-service apps
+10. Use Docker Compose for multi-service apps.
