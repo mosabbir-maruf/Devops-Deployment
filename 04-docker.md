@@ -295,24 +295,6 @@ Downloads Docker image from Docker Hub.
 
 ---
 
-## Build Docker Image
-
-```bash
-docker build -t myapp .
-```
-
-Builds Docker image from a Dockerfile inside the current directory.
-
-Requires a valid:
-
-```txt
-Dockerfile
-```
-
-inside the current folder.
-
----
-
 ## Remove Docker Image
 
 ```bash
@@ -323,7 +305,7 @@ Deletes Docker image.
 
 ---
 
-# 5. Dockerfile Example
+# 5. Dockerfile & Image Building
 
 ## Create Project Folder
 
@@ -383,11 +365,21 @@ Saves Dockerfile.
 docker build -t myapp .
 ```
 
-Builds custom Docker image named:
+Builds Docker image from the Dockerfile inside the current directory.
+
+Creates a custom Docker image named:
 
 ```txt
 myapp
 ```
+
+Requires a valid:
+
+```txt
+Dockerfile
+```
+
+inside the current folder.
 
 ---
 
