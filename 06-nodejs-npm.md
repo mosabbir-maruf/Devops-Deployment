@@ -52,8 +52,8 @@ Best for:
 
 Go to:
 
-```txt
-# Global Node.js Workflow
+```md
+[Global Node.js Workflow](#global-nodejs-workflow)
 ```
 
 ---
@@ -75,8 +75,8 @@ Recommended for production deployments.
 
 Go to:
 
-```txt
-# Docker-Based Node.js Workflow
+```md
+[Docker-Based Node.js Workflow](#docker-based-nodejs-workflow)
 ```
 
 ---
