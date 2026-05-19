@@ -555,15 +555,6 @@ ssh vps
 
 You can replace `vps` with any custom name you prefer.
 
-Examples:
-
-```txt
-Host production
-Host server
-Host cloud
-Host my-server
-```
-
 ---
 
 ```txt
