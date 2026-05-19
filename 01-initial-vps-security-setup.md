@@ -609,4 +609,4 @@ Recommended:
 - SSH Hardening Applied
 - SSH Config Syntax Verified
 - Dedicated VPS SSH Key Configured
-- SSH Alias Workflow Configured.
+- SSH Alias Workflow Configured
