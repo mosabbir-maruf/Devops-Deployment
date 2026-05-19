@@ -521,7 +521,7 @@ Connects securely using:
 nano ~/.ssh/config
 ```
 
-Creates SSH client shortcuts/aliases.
+Opens the SSH client configuration file used for SSH shortcuts/aliases.
 
 ---
 
@@ -535,13 +535,30 @@ Host vps
     IdentityFile ~/.ssh/vps_ed25519
 ```
 
-Allows simplified SSH login commands.
+Creates a simplified SSH shortcut for easier future VPS logins.
 
-Here `vps` is just a shortcut/alias name for easier future SSH logins.
+Here `vps` is just a shortcut/alias name.
 
-You can replace `vps` with any name you prefer.
+You can replace `vps` with any custom name you prefer.
+
+Examples:
+
+```txt
+Host production
+Host server
+Host cloud
+Host my-server
+```
 
 ---
+
+## Connect Using Alias
+
+```bash
+ssh vps
+```
+
+Allows connecting to the VPS without typing the full SSH command every time.
 
 ## Save SSH Config
 
