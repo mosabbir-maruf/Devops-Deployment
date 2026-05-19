@@ -2,6 +2,35 @@
 
 # 1. Generate SSH Key (Mac)
 
+## Optional GitHub SSH Key Setup
+
+If you already have a working GitHub SSH setup on your Mac, you can skip the GitHub SSH key section and only create the dedicated VPS SSH key.
+
+Recommended:
+
+- Keep existing GitHub SSH key if already configured
+- Create a separate SSH key only for VPS access
+- Use dedicated SSH keys for different services/environments
+
+Example:
+
+```txt
+Existing GitHub SSH Key
+→ ~/.ssh/id_ed25519
+
+Dedicated VPS SSH Key
+→ ~/.ssh/vps_ed25519
+```
+
+This provides:
+
+- cleaner SSH management
+- better security separation
+- safer production workflows
+- easier key rotation/revocation
+
+---
+
 ## Generate GitHub SSH Key
 
 ```bash
