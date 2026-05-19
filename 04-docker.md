@@ -11,6 +11,8 @@ Benefits:
 - Lightweight virtualization
 - Fast setup
 - Portable applications
+- Production-ready workflows
+- Simplified application management
 
 ---
 
@@ -42,13 +44,130 @@ Allows communication between containers/services.
 
 # Install Docker
 
-## Install Docker
+## Remove Old Docker Packages
 
 ```bash
-curl -fsSL https://get.docker.com | sudo bash
+sudo apt remove docker docker-engine docker.io containerd runc
 ```
 
-Installs Docker Engine using the official Docker installation script.
+Removes old/outdated Docker packages if they exist.
+
+---
+
+## Update Packages
+
+```bash
+sudo apt update
+```
+
+Refreshes Ubuntu package lists.
+
+---
+
+## Install Required Packages
+
+```bash
+sudo apt install -y ca-certificates curl gnupg lsb-release
+```
+
+Installs required dependencies for Docker repository setup.
+
+---
+
+## Create Docker GPG Directory
+
+```bash
+sudo mkdir -p /etc/apt/keyrings
+```
+
+Creates Docker key storage directory.
+
+---
+
+## Add Docker GPG Key
+
+```bash
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+```
+
+Adds official Docker security key.
+
+---
+
+## Add Docker Repository
+
+```bash
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+
+Adds official Docker repository.
+
+---
+
+## Update Packages Again
+
+```bash
+sudo apt update
+```
+
+Refreshes package lists including Docker repository.
+
+---
+
+## Install Docker Engine
+
+```bash
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Installs:
+
+- Docker Engine
+- Docker CLI
+- containerd
+- Docker Buildx
+- Docker Compose plugin
+
+---
+
+## Enable Docker On Boot
+
+```bash
+sudo systemctl enable docker
+```
+
+Starts Docker automatically on server boot.
+
+---
+
+## Start Docker Service
+
+```bash
+sudo systemctl start docker
+```
+
+Starts Docker service.
+
+---
+
+## Check Docker Service
+
+```bash
+sudo systemctl status docker
+```
+
+Checks whether Docker is running correctly.
+
+Should show:
+
+```txt
+active (running)
+```
 
 ---
 
@@ -58,7 +177,7 @@ Installs Docker Engine using the official Docker installation script.
 sudo usermod -aG docker $USER
 ```
 
-Allows running Docker without sudo.
+Allows running Docker commands without sudo.
 
 ---
 
@@ -96,23 +215,19 @@ Displays Docker Compose version.
 
 ---
 
-## Check Docker Service
+## Test Docker Installation
 
 ```bash
-sudo systemctl status docker
+docker run hello-world
 ```
 
-Checks if Docker service is running.
+Tests whether Docker is working correctly.
 
----
+Should display:
 
-## Enable Docker On Boot
-
-```bash
-sudo systemctl enable docker
+```txt
+Hello from Docker!
 ```
-
-Starts Docker automatically on server boot.
 
 ---
 
@@ -215,10 +330,10 @@ Runs a container.
 ## Run Container In Background
 
 ```bash
-docker run -d nginx
+docker run -d --name nginx-server --restart unless-stopped nginx
 ```
 
-Runs container in detached mode.
+Runs container in detached mode with automatic restart policy.
 
 ---
 
@@ -235,7 +350,7 @@ Runs container with custom name.
 ## Run Container With Port Mapping
 
 ```bash
-docker run -d -p 3000:3000 nginx
+docker run -d --name myapp -p 3000:3000 --restart unless-stopped nginx
 ```
 
 Maps VPS port to container port.
@@ -305,6 +420,42 @@ docker rm -f CONTAINER_ID
 ```
 
 Force removes container.
+
+---
+
+# Docker Restart Policies
+
+## Restart Container Automatically
+
+```bash
+docker run -d --restart unless-stopped nginx
+```
+
+Automatically restarts containers:
+
+- after VPS reboot
+- after Docker restart
+- after unexpected crashes
+
+Recommended for production containers.
+
+---
+
+## Restart Policy Types
+
+```txt
+no
+→ No automatic restart
+
+always
+→ Always restart container
+
+unless-stopped
+→ Restart unless manually stopped
+
+on-failure
+→ Restart only if container exits with errors
+```
 
 ---
 
@@ -522,6 +673,38 @@ Requires Docker Scout support.
 
 ---
 
+# Useful Docker Service Commands
+
+## Restart Docker Service
+
+```bash
+sudo systemctl restart docker
+```
+
+Restarts Docker service.
+
+---
+
+## Stop Docker Service
+
+```bash
+sudo systemctl stop docker
+```
+
+Stops Docker service.
+
+---
+
+## View Docker Service Logs
+
+```bash
+journalctl -u docker -f
+```
+
+Streams live Docker service logs.
+
+---
+
 # Docker Cleanup
 
 ## Remove Stopped Containers
@@ -647,6 +830,7 @@ Basic Docker Compose example.
 - Monitor container resource usage
 - Use persistent volumes for important data
 - Backup Docker volumes regularly
+- Use restart policies for production containers
 
 ---
 
@@ -700,3 +884,5 @@ Then logout/login again.
 8. Monitor resources
 9. Configure backups
 10. Clean unused resources
+11. Use restart policies
+12. Monitor Docker service
