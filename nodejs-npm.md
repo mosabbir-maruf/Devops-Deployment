@@ -1,6 +1,6 @@
 # Node.js & npm
 
-# What Is Node.js?
+## What Is Node.js?
 
 Node.js is a JavaScript runtime used to run JavaScript outside the browser.
 
@@ -11,12 +11,22 @@ Common uses:
 - Full-stack applications
 - Real-time apps
 - Automation tools
+- CLI tools
+- Microservices
 
 ---
 
 # What Is npm?
 
 npm (Node Package Manager) is used to install and manage JavaScript packages.
+
+Used for:
+
+- installing packages
+- dependency management
+- scripts
+- project setup
+- publishing packages
 
 ---
 
@@ -99,6 +109,18 @@ Creates `package.json` automatically.
 
 ---
 
+# package.json
+
+`package.json` contains:
+
+- dependencies
+- scripts
+- project metadata
+- versions
+- package information
+
+---
+
 # Install Packages
 
 ## Install Dependency
@@ -111,6 +133,16 @@ Installs package locally.
 
 ---
 
+## Install Dev Dependency
+
+```bash
+npm install -D package-name
+```
+
+Installs development dependency.
+
+---
+
 ## Install Global Package
 
 ```bash
@@ -118,6 +150,18 @@ npm install -g package-name
 ```
 
 Installs package globally.
+
+---
+
+# Remove Packages
+
+## Remove Package
+
+```bash
+npm uninstall package-name
+```
+
+Removes package.
 
 ---
 
@@ -133,87 +177,26 @@ Runs Node.js application.
 
 ---
 
-# Production Process Manager (PM2)
+# npm Scripts
 
-## Install PM2
+## Run npm Script
 
 ```bash
-npm install -g pm2
+npm run script-name
 ```
 
-Installs PM2 process manager.
+Runs scripts from `package.json`.
 
 ---
 
-## Start Application
+# Example package.json Scripts
 
-```bash
-pm2 start index.js
+```json
+"scripts": {
+  "dev": "node index.js",
+  "start": "node index.js"
+}
 ```
-
-Runs application in background.
-
----
-
-## Show Running Apps
-
-```bash
-pm2 list
-```
-
-Displays running PM2 applications.
-
----
-
-## Restart App
-
-```bash
-pm2 restart APP_NAME
-```
-
-Restarts application.
-
----
-
-## Stop App
-
-```bash
-pm2 stop APP_NAME
-```
-
-Stops application.
-
----
-
-## Delete App
-
-```bash
-pm2 delete APP_NAME
-```
-
-Removes application from PM2.
-
----
-
-# PM2 Auto Start On Server Reboot
-
-## Save PM2 Processes
-
-```bash
-pm2 save
-```
-
-Saves current PM2 processes.
-
----
-
-## Enable PM2 Startup
-
-```bash
-pm2 startup
-```
-
-Enables automatic startup after reboot.
 
 ---
 
@@ -229,6 +212,72 @@ NODE_ENV=production
 DATABASE_URL=your_database_url
 JWT_SECRET=your_secret
 ```
+
+---
+
+# .env Security
+
+Never push `.env` files to GitHub.
+
+Add to `.gitignore`:
+
+```txt
+.env
+```
+
+---
+
+# node_modules
+
+`node_modules` contains installed dependencies.
+
+Recommended:
+- Do not push `node_modules` to GitHub
+
+Add to `.gitignore`:
+
+```txt
+node_modules
+```
+
+---
+
+# package-lock.json
+
+`package-lock.json` locks exact dependency versions.
+
+Benefits:
+
+- consistent installs
+- reproducible builds
+- safer deployments
+
+Recommended:
+- Always keep `package-lock.json`
+
+---
+
+# Install Dependencies
+
+## Install Project Dependencies
+
+```bash
+npm install
+```
+
+Installs dependencies from `package.json`.
+
+---
+
+## Install Only Production Dependencies
+
+```bash
+npm install --production
+```
+
+Installs only production packages.
+
+Useful for VPS deployments.
 
 ---
 
@@ -286,57 +335,200 @@ Updates installed dependencies.
 
 ---
 
-## Install Only Production Dependencies
+# Useful npm Commands
+
+## List Installed Packages
 
 ```bash
-npm install --production
+npm list
 ```
 
-Installs only production packages.
-
-Useful for VPS deployments.
+Displays installed packages.
 
 ---
 
-# package-lock.json
+## Clear npm Cache
 
-`package-lock.json` locks exact dependency versions.
+```bash
+npm cache clean --force
+```
 
-Benefits:
-
-- consistent installs
-- reproducible builds
-- safer deployments
-
-Recommended:
-- Always keep `package-lock.json`
+Clears npm cache.
 
 ---
 
-# node_modules
+## Check npm Cache
 
-`node_modules` contains installed dependencies.
-
-Recommended:
-- Do not push `node_modules` to GitHub
-
-Add to `.gitignore`:
-
-```txt
-node_modules
+```bash
+npm cache verify
 ```
+
+Verifies npm cache integrity.
 
 ---
 
-# .env Security
+# Build Applications
 
-Never push `.env` files to GitHub.
+## Build Production App
 
-Add to `.gitignore`:
-
-```txt
-.env
+```bash
+npm run build
 ```
+
+Builds production application.
+
+Common in frameworks like:
+
+- Next.js
+- React
+- Vue
+- Nuxt
+
+---
+
+# Production Process Manager (PM2)
+
+## Install PM2
+
+```bash
+npm install -g pm2
+```
+
+Installs PM2 process manager.
+
+---
+
+## Start Application
+
+```bash
+pm2 start index.js
+```
+
+Runs application in background.
+
+---
+
+## Start App With Name
+
+```bash
+pm2 start index.js --name myapp
+```
+
+Starts application with custom name.
+
+---
+
+## Show Running Apps
+
+```bash
+pm2 list
+```
+
+Displays running PM2 applications.
+
+---
+
+## Restart App
+
+```bash
+pm2 restart APP_NAME
+```
+
+Restarts application.
+
+---
+
+## Stop App
+
+```bash
+pm2 stop APP_NAME
+```
+
+Stops application.
+
+---
+
+## Delete App
+
+```bash
+pm2 delete APP_NAME
+```
+
+Removes application from PM2.
+
+---
+
+## Monitor PM2 Processes
+
+```bash
+pm2 monit
+```
+
+Displays real-time monitoring dashboard.
+
+---
+
+## View PM2 Logs
+
+```bash
+pm2 logs
+```
+
+Displays application logs.
+
+---
+
+# PM2 Auto Start On Server Reboot
+
+## Save PM2 Processes
+
+```bash
+pm2 save
+```
+
+Saves current PM2 processes.
+
+---
+
+## Enable PM2 Startup
+
+```bash
+pm2 startup
+```
+
+Enables automatic startup after reboot.
+
+---
+
+# Node.js Monitoring
+
+## Check Running Node Processes
+
+```bash
+ps aux | grep node
+```
+
+Displays running Node.js processes.
+
+---
+
+## Check Open Ports
+
+```bash
+sudo ss -tulpn
+```
+
+Displays open ports/services.
+
+---
+
+## Monitor Server Resources
+
+```bash
+htop
+```
+
+Displays live CPU/RAM usage.
 
 ---
 
@@ -349,48 +541,103 @@ Add to `.gitignore`:
 - Validate user input
 - Use HTTPS in production
 - Do not run apps as root
+- Store secrets securely
+- Avoid exposing internal APIs publicly
 
 ---
 
-# Useful npm Commands
+# Docker + Node.js
 
-## Install Dependencies
+## Example Dockerfile
+
+```dockerfile
+FROM node:20
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
+```
+
+Basic Node.js Docker setup.
+
+---
+
+# Common Node.js Issues
+
+## Port Already In Use
+
+Check ports:
+
+```bash
+sudo ss -tulpn
+```
+
+---
+
+## Dependency Issues
+
+Delete old dependencies:
+
+```bash
+rm -rf node_modules package-lock.json
+```
+
+Reinstall:
 
 ```bash
 npm install
 ```
 
-Installs project dependencies.
-
 ---
 
-## Remove Package
+## Permission Errors
+
+Fix npm permissions:
 
 ```bash
-npm uninstall package-name
+sudo chown -R $USER:$USER ~/.npm
 ```
-
-Removes package.
 
 ---
 
-## Update Packages
+## Application Crashing
+
+Check logs:
 
 ```bash
-npm update
+pm2 logs
 ```
-
-Updates installed packages.
 
 ---
 
-# Useful Workflow
+# Performance Tips
+
+- Use PM2 in production
+- Remove unused dependencies
+- Keep Node.js updated
+- Use caching when needed
+- Monitor RAM/CPU usage
+- Use production builds
+- Avoid blocking operations
+
+---
+
+# Recommended Production Workflow
 
 1. Install Node.js
 2. Create project
-3. Install dependencies
-4. Configure environment variables
-5. Run application
-6. Use PM2 for production
-7. Run npm audit
+3. Initialize package.json
+4. Install dependencies
+5. Configure environment variables
+6. Build production app
+7. Run application with PM2
 8. Monitor logs/processes
+9. Run npm audit regularly
+10. Keep dependencies updated
+11. Configure backups
