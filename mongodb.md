@@ -1,6 +1,6 @@
 # MongoDB
 
-# What Is MongoDB?
+## What Is MongoDB?
 
 MongoDB is a NoSQL document database used to store application data in JSON-like documents.
 
@@ -10,6 +10,36 @@ Common uses:
 - APIs
 - Real-time apps
 - Full-stack applications
+- Microservices
+- Scalable backend systems
+
+---
+
+# MongoDB Concepts
+
+## Database
+
+A container for collections.
+
+---
+
+## Collection
+
+A group of MongoDB documents.
+
+Similar to SQL tables.
+
+---
+
+## Document
+
+A JSON-like data record stored inside collections.
+
+---
+
+## Index
+
+Improves query/search performance.
 
 ---
 
@@ -79,7 +109,7 @@ Displays installed MongoDB shell version.
 
 ---
 
-# Start MongoDB
+# MongoDB Service Management
 
 ## Enable MongoDB
 
@@ -175,6 +205,39 @@ Displays collections inside current database.
 
 ---
 
+## Insert Document
+
+```javascript
+db.users.insertOne({
+  name: "Mosabbir",
+  email: "test@example.com"
+})
+```
+
+Inserts a document into collection.
+
+---
+
+## Find Documents
+
+```javascript
+db.users.find()
+```
+
+Displays documents from collection.
+
+---
+
+## Find One Document
+
+```javascript
+db.users.findOne()
+```
+
+Displays single document.
+
+---
+
 # Create Database User
 
 ## Switch To Admin Database
@@ -252,6 +315,7 @@ Only use with:
 - IP restrictions
 - authentication enabled
 - trusted servers only
+- VPN/tunnel preferred
 
 ---
 
@@ -268,6 +332,8 @@ Applies MongoDB configuration changes.
 ---
 
 # Login With Authentication
+
+## Secure MongoDB Login
 
 ```bash
 mongosh -u admin -p --authenticationDatabase admin
@@ -286,6 +352,16 @@ sudo ufw deny 27017
 ```
 
 Blocks public MongoDB access.
+
+---
+
+## Allow Specific IP Access
+
+```bash
+sudo ufw allow from YOUR_IP to any port 27017
+```
+
+Allows MongoDB access only from trusted IP.
 
 ---
 
@@ -413,6 +489,16 @@ Improves query performance.
 
 ---
 
+## Show Indexes
+
+```javascript
+db.users.getIndexes()
+```
+
+Displays collection indexes.
+
+---
+
 # Docker MongoDB Example
 
 ## Run MongoDB Container
@@ -453,6 +539,16 @@ Displays MongoDB logs.
 
 ---
 
+## Live MongoDB Logs
+
+```bash
+sudo journalctl -u mongod -f
+```
+
+Streams MongoDB logs live.
+
+---
+
 ## Check Live Resource Usage
 
 ```bash
@@ -460,6 +556,16 @@ docker stats
 ```
 
 Displays live CPU/RAM usage.
+
+---
+
+## Check Disk Space
+
+```bash
+df -h
+```
+
+Displays server disk usage.
 
 ---
 
@@ -485,6 +591,7 @@ Used for:
 - Restrict firewall access
 - Keep MongoDB updated
 - Enable authentication
+- Avoid running unnecessary containers
 
 ---
 
@@ -499,6 +606,63 @@ Used for:
 - Monitor logs regularly
 - Use firewall protection
 - Store secrets securely
+- Limit remote access
+- Monitor storage usage
+- Remove unused databases/users
+
+---
+
+# MongoDB Performance Tips
+
+- Create indexes for frequently queried fields
+- Monitor RAM/storage usage
+- Avoid unnecessary large documents
+- Use backups regularly
+- Remove unused collections
+- Monitor slow queries
+- Use SSD storage if possible
+
+---
+
+# Common MongoDB Issues
+
+## MongoDB Not Starting
+
+Check logs:
+
+```bash
+sudo journalctl -u mongod
+```
+
+---
+
+## Port Already In Use
+
+Check:
+
+```bash
+sudo ss -tulpn | grep 27017
+```
+
+---
+
+## Authentication Failed
+
+Possible reasons:
+
+- wrong username/password
+- authentication disabled
+- wrong authentication database
+
+---
+
+## MongoDB High Storage Usage
+
+Check:
+
+```bash
+du -sh /var/lib/mongodb
+```
 
 ---
 
@@ -510,7 +674,9 @@ Used for:
 4. Enable authentication
 5. Restrict public access
 6. Configure firewall
-7. Setup backups
+7. Configure backups
 8. Monitor logs/resources
 9. Create indexes
-10. Keep MongoDB updated
+10. Monitor storage usage
+11. Keep MongoDB updated
+12. Backup databases regularly
