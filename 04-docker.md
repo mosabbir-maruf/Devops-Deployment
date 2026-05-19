@@ -42,7 +42,7 @@ Allows communication between containers/services.
 
 ---
 
-# Install Docker
+# 1. Install Docker
 
 ## Remove Old Docker Packages
 
@@ -193,7 +193,7 @@ Login again after exiting.
 
 ---
 
-# Verify Docker Installation
+# 2. Verify Docker Installation
 
 ## Check Docker Version
 
@@ -231,7 +231,7 @@ Hello from Docker!
 
 ---
 
-# Basic Docker Commands
+# 3. Basic Docker Commands
 
 ## Check Running Containers
 
@@ -283,7 +283,7 @@ Displays Docker networks.
 
 ---
 
-# Docker Images
+# 4. Docker Images
 
 ## Pull Docker Image
 
@@ -315,7 +315,7 @@ Deletes Docker image.
 
 ---
 
-# Docker Containers
+# 5. Docker Containers
 
 ## Run Container
 
@@ -360,16 +360,6 @@ Format:
 ```txt
 HOST_PORT:CONTAINER_PORT
 ```
-
----
-
-## Run Container With Volume
-
-```bash
-docker run -d -v myvolume:/app/data nginx
-```
-
-Mounts persistent Docker volume.
 
 ---
 
@@ -423,7 +413,185 @@ Force removes container.
 
 ---
 
-# Docker Restart Policies
+# 6. Docker Volumes
+
+## What Is A Docker Volume?
+
+Docker volumes provide persistent storage for containers.
+
+Volumes keep data safe even if:
+
+- containers are removed
+- containers restart
+- Docker restarts
+- VPS reboots
+
+Recommended for:
+
+- databases
+- uploads
+- application data
+- production deployments
+
+---
+
+## Create Docker Volume
+
+```bash
+docker volume create nginx-data
+```
+
+Creates a Docker volume named `nginx-data`.
+
+---
+
+## Check Docker Volumes
+
+```bash
+docker volume ls
+```
+
+Displays available Docker volumes.
+
+Should show:
+
+```txt
+nginx-data
+```
+
+---
+
+## Inspect Docker Volume
+
+```bash
+docker volume inspect nginx-data
+```
+
+Displays detailed Docker volume information.
+
+---
+
+## Stop Existing Container
+
+```bash
+docker stop nginx-server
+```
+
+Stops the currently running Nginx container.
+
+---
+
+## Remove Existing Container
+
+```bash
+docker rm nginx-server
+```
+
+Deletes the old container before recreating it with a persistent volume.
+
+---
+
+## Run Nginx With Persistent Volume
+
+```bash
+docker run -d \
+  --name nginx-server \
+  -p 8080:80 \
+  --restart unless-stopped \
+  -v nginx-data:/usr/share/nginx/html \
+  nginx
+```
+
+Runs Nginx container with:
+
+- persistent Docker volume
+- automatic restart policy
+- public port mapping
+
+---
+
+## About Volume Mounting
+
+```txt
+-v nginx-data:/usr/share/nginx/html
+```
+
+Meaning:
+
+```txt
+Docker Volume:
+nginx-data
+
+Mounted Inside Container:
+ /usr/share/nginx/html
+```
+
+This container path stores Nginx website files.
+
+---
+
+## Verify Running Container
+
+```bash
+docker ps
+```
+
+Checks whether the new Nginx container is running correctly.
+
+---
+
+## Verify In Browser
+
+```txt
+http://YOUR_PUBLIC_IP:8080
+```
+
+Should display:
+
+```txt
+Welcome to nginx!
+```
+
+---
+
+## Remove Unused Volumes
+
+```bash
+docker volume prune
+```
+
+Deletes unused Docker volumes.
+
+Use carefully in production environments.
+
+---
+
+## Remove Specific Volume
+
+```bash
+docker volume rm nginx-data
+```
+
+Deletes a specific Docker volume.
+
+---
+
+## Check Docker Disk Usage
+
+```bash
+docker system df
+```
+
+Displays Docker storage usage including:
+
+- images
+- containers
+- volumes
+- build cache
+
+---
+
+# 7. Docker Restart Policies
 
 ## Restart Container Automatically
 
@@ -459,7 +627,7 @@ on-failure
 
 ---
 
-# Docker Logs
+# 8. Docker Logs
 
 ## Show Logs
 
@@ -491,7 +659,7 @@ Displays last 100 log lines.
 
 ---
 
-# Execute Commands Inside Container
+# 9. Execute Commands Inside Container
 
 ## Open Container Shell
 
@@ -513,7 +681,7 @@ Runs command inside container.
 
 ---
 
-# Docker Compose
+# 10. Docker Compose
 
 ## Check Docker Compose Version
 
@@ -575,29 +743,7 @@ Streams Docker Compose logs live.
 
 ---
 
-# Docker Volumes
-
-## Create Volume
-
-```bash
-docker volume create myvolume
-```
-
-Creates Docker volume.
-
----
-
-## Inspect Volume
-
-```bash
-docker volume inspect myvolume
-```
-
-Displays Docker volume details.
-
----
-
-# Docker Networks
+# 11. Docker Networks
 
 ## Create Network
 
@@ -619,7 +765,7 @@ Displays Docker network details.
 
 ---
 
-# Docker Security
+# 12. Docker Security
 
 ## Check Open Ports
 
@@ -673,7 +819,7 @@ Requires Docker Scout support.
 
 ---
 
-# Useful Docker Service Commands
+# 13. Useful Docker Service Commands
 
 ## Restart Docker Service
 
@@ -705,7 +851,7 @@ Streams live Docker service logs.
 
 ---
 
-# Docker Cleanup
+# 14. Docker Cleanup
 
 ## Remove Stopped Containers
 
@@ -757,7 +903,7 @@ Deletes unused Docker resources.
 
 ---
 
-# Docker Monitoring
+# 15. Docker Monitoring
 
 ## Check Resource Usage
 
@@ -779,7 +925,7 @@ Displays Docker disk usage.
 
 ---
 
-# Dockerfile Example
+# 16. Dockerfile Example
 
 ## Basic Dockerfile
 
@@ -801,7 +947,7 @@ Basic Node.js Dockerfile example.
 
 ---
 
-# Example Docker Compose File
+# 17. Example Docker Compose File
 
 ## docker-compose.yml
 
@@ -817,7 +963,7 @@ Basic Docker Compose example.
 
 ---
 
-# Docker Security Best Practices
+# 18. Docker Security Best Practices
 
 - Avoid exposing unnecessary ports
 - Do not expose databases publicly
@@ -834,7 +980,7 @@ Basic Docker Compose example.
 
 ---
 
-# Common Docker Issues
+# 19. Common Docker Issues
 
 ## Port Already In Use
 
@@ -872,7 +1018,7 @@ Then logout/login again.
 
 ---
 
-# Useful Docker Workflow
+# 20. Useful Docker Workflow
 
 1. Install Docker
 2. Verify Docker installation
