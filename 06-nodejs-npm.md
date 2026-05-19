@@ -30,27 +30,35 @@ Used for:
 
 ---
 
-# 1. Node.js Installation Approaches
+# Node.js Installation Approaches
 
-There are two common ways to use Node.js on a VPS:
+There are two common ways to use Node.js on a VPS.
+
+Choose ONE workflow depending on your use case.
 
 ---
 
-## Global Node.js Installation
+## Option 1 → Global Node.js Installation
 
 Node.js is installed directly on the VPS operating system.
 
 Best for:
 
 - learning Node.js
-- local scripts
-- simple VPS apps
+- local development
 - PM2 deployments
-- development environments
+- simple VPS apps
+- running scripts directly
+
+Go to:
+
+```txt
+# Global Node.js Workflow
+```
 
 ---
 
-## Docker-Based Node.js
+## Option 2 → Docker-Based Node.js
 
 Node.js runs inside Docker containers.
 
@@ -59,15 +67,23 @@ Best for:
 - production deployments
 - isolated environments
 - scalable applications
-- version management
+- version consistency
 - microservices
 - modern DevOps workflows
 
-Recommended for modern production deployments.
+Recommended for production deployments.
+
+Go to:
+
+```txt
+# Docker-Based Node.js Workflow
+```
 
 ---
 
-# 2. Install Node.js Globally
+# Global Node.js Workflow
+
+# 1. Install Node.js Globally
 
 ## Update Packages
 
@@ -102,7 +118,7 @@ Installs latest LTS version of:
 
 ---
 
-# 3. Verify Global Installation
+# 2. Verify Global Installation
 
 ## Check Node.js Version
 
@@ -124,105 +140,7 @@ Displays installed npm version.
 
 ---
 
-# 4. Install Node.js Using Docker
-
-Docker-based Node.js is recommended for production deployments.
-
----
-
-## Pull Node.js Docker Image
-
-```bash
-docker pull node:20
-```
-
-Downloads official Node.js Docker image.
-
----
-
-## Check Downloaded Images
-
-```bash
-docker images
-```
-
-Displays downloaded Docker images.
-
-Should show:
-
-```txt
-node:20
-```
-
----
-
-## Run Temporary Node.js Container
-
-```bash
-docker run -it node:20 bash
-```
-
-Starts interactive Node.js container.
-
----
-
-## Check Node.js Version Inside Docker
-
-```bash
-node -v
-```
-
-Displays Node.js version inside container.
-
----
-
-## Check npm Version Inside Docker
-
-```bash
-npm -v
-```
-
-Displays npm version inside container.
-
----
-
-## Exit Container
-
-```bash
-exit
-```
-
-Stops and exits the temporary container.
-
----
-
-# 5. Run Persistent Node.js Docker Container
-
-## Run Node.js Container
-
-```bash
-docker run -d \
-  --name node-server \
-  -p 3000:3000 \
-  --restart unless-stopped \
-  node:20
-```
-
-Runs Node.js container in background.
-
----
-
-## Verify Running Container
-
-```bash
-docker ps
-```
-
-Checks running Docker containers.
-
----
-
-# 6. Package Managers
+# 3. Package Managers
 
 ## npm
 
@@ -260,7 +178,7 @@ Alternative to npm.
 
 ---
 
-# 7. Create Node.js Project
+# 4. Create Node.js Project
 
 ## Create Project Folder
 
@@ -292,7 +210,7 @@ Creates `package.json` automatically.
 
 ---
 
-# 8. package.json
+# 5. package.json
 
 `package.json` contains:
 
@@ -316,7 +234,7 @@ Example:
 
 ---
 
-# 9. Create Basic Node.js App
+# 6. Create Basic Node.js App
 
 ## Create index.js
 
@@ -362,7 +280,7 @@ Saves file.
 
 ---
 
-# 10. Run Node.js App
+# 7. Run Node.js App
 
 ## Run Application
 
@@ -400,7 +318,7 @@ Stops the Node.js application.
 
 ---
 
-# 11. Install Packages
+# 8. Install Packages
 
 ## Install Dependency
 
@@ -432,7 +350,7 @@ Installs package globally.
 
 ---
 
-# 12. Remove Packages
+# 9. Remove Packages
 
 ## Remove Package
 
@@ -444,7 +362,7 @@ Removes package.
 
 ---
 
-# 13. npm Scripts
+# 10. npm Scripts
 
 ## Run npm Script
 
@@ -467,7 +385,7 @@ Runs scripts from `package.json`.
 
 ---
 
-# 14. Environment Variables
+# 11. Environment Variables
 
 Environment variables store sensitive or configurable values.
 
@@ -496,7 +414,7 @@ Add to `.gitignore`:
 
 ---
 
-# 15. node_modules
+# 12. node_modules
 
 `node_modules` contains installed dependencies.
 
@@ -512,7 +430,7 @@ node_modules
 
 ---
 
-# 16. package-lock.json
+# 13. package-lock.json
 
 `package-lock.json` locks exact dependency versions.
 
@@ -528,7 +446,7 @@ Recommended:
 
 ---
 
-# 17. Install Dependencies
+# 14. Install Dependencies
 
 ## Install Project Dependencies
 
@@ -552,7 +470,7 @@ Useful for VPS deployments.
 
 ---
 
-# 18. npm Security & Maintenance
+# 15. npm Security & Maintenance
 
 ## Check Security Vulnerabilities
 
@@ -606,7 +524,7 @@ Updates installed dependencies.
 
 ---
 
-# 19. Useful npm Commands
+# 16. Useful npm Commands
 
 ## List Installed Packages
 
@@ -638,7 +556,7 @@ Verifies npm cache integrity.
 
 ---
 
-# 20. Build Applications
+# 17. Build Applications
 
 ## Build Production App
 
@@ -657,7 +575,7 @@ Common in frameworks like:
 
 ---
 
-# 21. Production Process Manager (PM2)
+# 18. Production Process Manager (PM2)
 
 ## Install PM2
 
@@ -749,7 +667,7 @@ Displays application logs.
 
 ---
 
-# 22. PM2 Auto Start On Server Reboot
+# 19. PM2 Auto Start On Server Reboot
 
 ## Save PM2 Processes
 
@@ -771,7 +689,7 @@ Enables automatic startup after reboot.
 
 ---
 
-# 23. Node.js Monitoring
+# 20. Node.js Monitoring
 
 ## Check Running Node Processes
 
@@ -803,7 +721,7 @@ Displays live CPU/RAM usage.
 
 ---
 
-# 24. Node.js Security Basics
+# 21. Node.js Security Basics
 
 - Never expose `.env` files
 - Use strong secrets/passwords
@@ -817,23 +735,86 @@ Displays live CPU/RAM usage.
 
 ---
 
-# 25. Docker + Node.js Production Setup
+# Docker-Based Node.js Workflow
 
-## Why Docker For Node.js?
+# 1. Pull Node.js Docker Image
 
-Docker provides:
+## Download Node.js Docker Image
 
-- isolated environments
-- easier deployments
-- version consistency
-- cleaner production workflows
-- easier scaling
+```bash
+docker pull node:20
+```
 
-Recommended for production deployments.
+Downloads official Node.js Docker image.
 
 ---
 
-## Create Docker Project Folder
+## Verify Downloaded Images
+
+```bash
+docker images
+```
+
+Should show:
+
+```txt
+node:20
+```
+
+---
+
+# 2. Run Temporary Node.js Container
+
+## Start Interactive Node.js Container
+
+```bash
+docker run -it node:20 bash
+```
+
+Starts temporary interactive Node.js container.
+
+Useful for:
+
+- testing Node.js
+- testing npm
+- temporary development
+- quick experiments
+
+---
+
+## Check Node.js Version
+
+```bash
+node -v
+```
+
+Displays Node.js version inside Docker container.
+
+---
+
+## Check npm Version
+
+```bash
+npm -v
+```
+
+Displays npm version inside Docker container.
+
+---
+
+## Exit Container
+
+```bash
+exit
+```
+
+Stops and exits temporary container.
+
+---
+
+# 3. Create Docker-Based Node.js Project
+
+## Create Project Folder
 
 ```bash
 mkdir docker-node-app
@@ -859,7 +840,7 @@ Moves into project directory.
 npm init -y
 ```
 
-Creates Node.js project configuration.
+Creates `package.json`.
 
 ---
 
@@ -872,6 +853,8 @@ npm install express
 Installs Express framework.
 
 ---
+
+# 4. Create Node.js App
 
 ## Create index.js
 
@@ -915,6 +898,8 @@ Saves file.
 
 ---
 
+# 5. Create Dockerfile
+
 ## Create Dockerfile
 
 ```bash
@@ -947,15 +932,29 @@ Production-ready basic Node.js Dockerfile.
 
 ---
 
-## Add Start Script
+## Save Dockerfile
 
-Open:
+```txt
+Ctrl + O
+Enter
+Ctrl + X
+```
+
+Saves Dockerfile.
+
+---
+
+# 6. Configure package.json
+
+## Open package.json
 
 ```bash
 nano package.json
 ```
 
-Add:
+---
+
+## Add Start Script
 
 ```json
 "scripts": {
@@ -965,7 +964,21 @@ Add:
 
 ---
 
-## Build Docker Image
+## Save package.json
+
+```txt
+Ctrl + O
+Enter
+Ctrl + X
+```
+
+Saves package.json.
+
+---
+
+# 7. Build Docker Image
+
+## Build Node.js Docker Image
 
 ```bash
 docker build -t node-app .
@@ -975,7 +988,19 @@ Builds Docker image.
 
 ---
 
-## Run Docker Container
+## Verify Docker Images
+
+```bash
+docker images
+```
+
+Displays Docker images.
+
+---
+
+# 8. Run Docker Container
+
+## Run Node.js Docker Container
 
 ```bash
 docker run -d \
@@ -985,11 +1010,11 @@ docker run -d \
   node-app
 ```
 
-Runs Node.js Docker container.
+Runs Node.js Docker container in background.
 
 ---
 
-## Verify Running Container
+## Verify Running Containers
 
 ```bash
 docker ps
@@ -1015,7 +1040,84 @@ Docker Node.js App Running!
 
 ---
 
-# 26. Common Node.js Issues
+# 9. Docker Container Management
+
+## View Container Logs
+
+```bash
+docker logs node-app
+```
+
+Displays container logs.
+
+---
+
+## Live Container Logs
+
+```bash
+docker logs -f node-app
+```
+
+Streams live container logs.
+
+---
+
+## Restart Container
+
+```bash
+docker restart node-app
+```
+
+Restarts container.
+
+---
+
+## Stop Container
+
+```bash
+docker stop node-app
+```
+
+Stops container.
+
+---
+
+## Start Container Again
+
+```bash
+docker start node-app
+```
+
+Starts stopped container.
+
+---
+
+## Remove Container
+
+```bash
+docker rm -f node-app
+```
+
+Deletes container.
+
+---
+
+# 10. Docker-Based Production Best Practices
+
+- Use Docker for production deployments
+- Use restart policies
+- Use environment variables
+- Use Docker volumes for persistent storage
+- Keep Docker images updated
+- Avoid running containers as root
+- Monitor logs regularly
+- Use reverse proxy in production
+- Use HTTPS/SSL
+- Use Docker Compose for multi-service apps
+
+---
+
+# 11. Common Node.js Issues
 
 ## Port Already In Use
 
@@ -1073,9 +1175,9 @@ Displays Docker container logs.
 
 ---
 
-# 27. Performance Tips
+# 12. Performance Tips
 
-- Use PM2 in production
+- Use PM2 for global Node.js deployments
 - Use Docker for isolated deployments
 - Remove unused dependencies
 - Keep Node.js updated
@@ -1088,17 +1190,31 @@ Displays Docker container logs.
 
 ---
 
-# 28. Recommended Production Workflow
+# 13. Recommended Production Workflow
+
+## Global Node.js Workflow
+
+1. Install Node.js
+2. Create project
+3. Configure environment variables
+4. Install PM2
+5. Run application with PM2
+6. Configure reverse proxy
+7. Configure SSL
+8. Monitor logs/processes
+9. Configure backups
+
+---
+
+## Docker-Based Workflow
 
 1. Install Docker
-2. Install Node.js globally (optional)
-3. Create Node.js project
-4. Configure environment variables
-5. Build Docker image
-6. Run Docker container
-7. Configure reverse proxy
-8. Configure SSL
-9. Monitor logs/processes
-10. Configure backups
-11. Keep dependencies updated
-12. Use Docker Compose for multi-service apps
+2. Create Node.js project
+3. Create Dockerfile
+4. Build Docker image
+5. Run Docker container
+6. Configure reverse proxy
+7. Configure SSL
+8. Monitor container logs
+9. Configure backups
+10. Use Docker Compose for multi-service apps
