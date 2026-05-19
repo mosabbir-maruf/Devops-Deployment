@@ -537,6 +537,10 @@ Host vps
 
 Allows simplified SSH login commands.
 
+Here `vps` is just a shortcut/alias name for easier future SSH logins.
+
+You can replace `vps` with any name you prefer.
+
 ---
 
 ## Save SSH Config
