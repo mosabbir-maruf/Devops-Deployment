@@ -537,7 +537,21 @@ Host vps
 
 Creates a simplified SSH shortcut for easier future VPS logins.
 
-Here `vps` is just a shortcut/alias name.
+---
+
+## About Each Option
+
+```txt
+Host vps
+```
+
+The shortcut/alias name used for future SSH logins.
+
+Example:
+
+```bash
+ssh vps
+```
 
 You can replace `vps` with any custom name you prefer.
 
@@ -552,13 +566,61 @@ Host my-server
 
 ---
 
-## Connect Using Alias
-
-```bash
-ssh vps
+```txt
+HostName YOUR_PUBLIC_IP
 ```
 
-Allows connecting to the VPS without typing the full SSH command every time.
+Your VPS public IP address.
+
+Example:
+
+```txt
+HostName 123.123.123.123
+```
+
+---
+
+```txt
+User mosabbir
+```
+
+The Linux username used for SSH login.
+
+Example:
+
+```txt
+User mosabbir
+```
+
+---
+
+```txt
+Port 1182
+```
+
+Your custom SSH port configured inside `sshd_config`.
+
+Example:
+
+```txt
+Port 1182
+```
+
+---
+
+```txt
+IdentityFile ~/.ssh/vps_ed25519
+```
+
+The SSH private key used for VPS authentication.
+
+Example:
+
+```txt
+IdentityFile ~/.ssh/vps_ed25519
+```
+
+---
 
 ## Save SSH Config
 
@@ -578,7 +640,7 @@ Saves SSH config file.
 ssh vps
 ```
 
-Simplified SSH login command using the configured alias.
+Allows connecting to the VPS without typing the full SSH command every time.
 
 Recommended for daily VPS workflows.
 
