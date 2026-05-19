@@ -353,23 +353,23 @@ This repository focuses on:
 
 Suggested order:
 
-1. `initial-vps-security-setup.md`
-2. `ssh-guide.md`
-3. `linux-basics.md`
-4. `docker.md`
-5. `coolify.md`
-6. `nodejs-npm.md`
-7. `mongodb.md`
-8. `postgresql.md`
-9. `redis.md`
-10. `project-deployment.md`
-11. `nginx-reverse-proxy.md`
-12. `domain-dns-cloudflare.md`
-13. `git-github-ci-cd.md`
-14. `server-monitoring.md`
-15. `backup-snapshots.md`
-16. `troubleshooting.md`
-17. `useful-commands.md`
+1. [initial-vps-security-setup.md](./initial-vps-security-setup.md)
+2. [ssh-guide.md](./ssh-guide.md)
+3. [linux-basics.md](./linux-basics.md)
+4. [docker.md](./docker.md)
+5. [coolify.md](./coolify.md)
+6. [nodejs-npm.md](./nodejs-npm.md)
+7. [mongodb.md](./mongodb.md)
+8. [postgresql.md](./postgresql.md)
+9. [redis.md](./redis.md)
+10. [project-deployment.md](./project-deployment.md)
+11. [nginx-reverse-proxy.md](./nginx-reverse-proxy.md)
+12. [domain-dns-cloudflare.md](./domain-dns-cloudflare.md)
+13. [git-github-ci-cd.md](./git-github-ci-cd.md)
+14. [server-monitoring.md](./server-monitoring.md)
+15. [backup-snapshots.md](./backup-snapshots.md)
+16. [troubleshooting.md](./troubleshooting.md)
+17. [useful-commands.md](./useful-commands.md)
 
 ---
 
