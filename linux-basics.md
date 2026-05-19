@@ -1,5 +1,18 @@
 # Linux Basics
 
+## What Is Linux?
+
+Linux is an open-source operating system widely used for:
+
+- VPS servers
+- cloud infrastructure
+- backend systems
+- DevOps workflows
+- Docker containers
+- hosting applications
+
+---
+
 # Current Directory
 
 ## Show Current Directory
@@ -64,6 +77,16 @@ Moves to the home directory.
 
 ---
 
+## Go To Root Directory
+
+```bash
+cd /
+```
+
+Moves to the Linux root directory.
+
+---
+
 # Create & Remove Files/Folders
 
 ## Create Folder
@@ -113,6 +136,18 @@ rm -r folder-name
 ```
 
 Deletes a folder recursively.
+
+---
+
+## Force Remove Folder
+
+```bash
+rm -rf folder-name
+```
+
+Force deletes folder recursively.
+
+Use carefully.
 
 ---
 
@@ -167,6 +202,43 @@ less file.txt
 ```
 
 Reads long files page by page.
+
+Press:
+
+- `q` → quit
+- `space` → next page
+
+---
+
+## Show First Lines
+
+```bash
+head file.txt
+```
+
+Displays first lines of file.
+
+---
+
+## Show Last Lines
+
+```bash
+tail file.txt
+```
+
+Displays last lines of file.
+
+---
+
+## Live File Monitoring
+
+```bash
+tail -f file.txt
+```
+
+Monitors file changes live.
+
+Useful for logs.
 
 ---
 
@@ -224,6 +296,16 @@ Changes file/folder permissions.
 
 ---
 
+## Add Execute Permission
+
+```bash
+chmod +x script.sh
+```
+
+Makes file executable.
+
+---
+
 ## Change Ownership
 
 ```bash
@@ -246,6 +328,102 @@ Runs command with administrator privileges.
 
 ---
 
+# Search & Find
+
+## Find File
+
+```bash
+find / -name file.txt
+```
+
+Searches for files.
+
+---
+
+## Search Text Inside Files
+
+```bash
+grep "text" file.txt
+```
+
+Searches text inside file.
+
+---
+
+## Recursive Search
+
+```bash
+grep -r "text" folder-name
+```
+
+Searches recursively inside folders.
+
+---
+
+# Download Files
+
+## Download Using wget
+
+```bash
+wget URL
+```
+
+Downloads files from internet.
+
+---
+
+## Download Using curl
+
+```bash
+curl -O URL
+```
+
+Downloads files using curl.
+
+---
+
+# Archive & Compression
+
+## Create ZIP Archive
+
+```bash
+zip -r archive.zip folder-name
+```
+
+Creates zip archive.
+
+---
+
+## Extract ZIP Archive
+
+```bash
+unzip archive.zip
+```
+
+Extracts zip archive.
+
+---
+
+## Create tar.gz Archive
+
+```bash
+tar -czvf archive.tar.gz folder-name
+```
+
+Creates compressed tar archive.
+
+---
+
+## Extract tar.gz Archive
+
+```bash
+tar -xzvf archive.tar.gz
+```
+
+Extracts compressed tar archive.
+
+---
+
 # System Information
 
 ## Show Logged-in User
@@ -258,13 +436,23 @@ Displays current username.
 
 ---
 
+## Show Linux Distribution
+
+```bash
+cat /etc/os-release
+```
+
+Displays Linux distribution information.
+
+---
+
 ## Show System Info
 
 ```bash
 uname -a
 ```
 
-Displays Linux system information.
+Displays Linux kernel/system information.
 
 ---
 
@@ -278,6 +466,16 @@ Displays disk storage usage.
 
 ---
 
+## Show Folder Size
+
+```bash
+du -sh folder-name
+```
+
+Displays folder size.
+
+---
+
 ## Show RAM Usage
 
 ```bash
@@ -285,6 +483,16 @@ free -h
 ```
 
 Displays memory usage.
+
+---
+
+## Show CPU Information
+
+```bash
+lscpu
+```
+
+Displays CPU information.
 
 ---
 
@@ -308,6 +516,12 @@ htop
 
 Shows real-time CPU/RAM usage.
 
+Install htop:
+
+```bash
+sudo apt install htop -y
+```
+
 ---
 
 ## Kill Process
@@ -317,6 +531,60 @@ kill PROCESS_ID
 ```
 
 Stops a running process.
+
+---
+
+## Force Kill Process
+
+```bash
+kill -9 PROCESS_ID
+```
+
+Force stops process.
+
+Use carefully.
+
+---
+
+# Network Commands
+
+## Check IP Address
+
+```bash
+ip a
+```
+
+Displays network interfaces and IP addresses.
+
+---
+
+## Check Open Ports
+
+```bash
+ss -tulpn
+```
+
+Displays open ports and services.
+
+---
+
+## Ping Server
+
+```bash
+ping google.com
+```
+
+Tests network connectivity.
+
+---
+
+## Test Port Connectivity
+
+```bash
+nc -zv SERVER_IP PORT
+```
+
+Checks if port is reachable.
 
 ---
 
@@ -362,6 +630,100 @@ Removes installed packages.
 
 ---
 
+## Search Package
+
+```bash
+apt search package-name
+```
+
+Searches available packages.
+
+---
+
+# Service Management
+
+## Start Service
+
+```bash
+sudo systemctl start service-name
+```
+
+Starts service.
+
+---
+
+## Stop Service
+
+```bash
+sudo systemctl stop service-name
+```
+
+Stops service.
+
+---
+
+## Restart Service
+
+```bash
+sudo systemctl restart service-name
+```
+
+Restarts service.
+
+---
+
+## Check Service Status
+
+```bash
+sudo systemctl status service-name
+```
+
+Displays service status.
+
+---
+
+## Enable Service On Boot
+
+```bash
+sudo systemctl enable service-name
+```
+
+Starts service automatically on boot.
+
+---
+
+# Logs
+
+## View System Logs
+
+```bash
+journalctl
+```
+
+Displays system logs.
+
+---
+
+## View Service Logs
+
+```bash
+journalctl -u service-name
+```
+
+Displays service logs.
+
+---
+
+## Live Log Monitoring
+
+```bash
+journalctl -f
+```
+
+Streams logs live.
+
+---
+
 # Restart & Shutdown
 
 ## Reboot Server
@@ -381,3 +743,29 @@ shutdown now
 ```
 
 Turns off the server immediately.
+
+---
+
+# Linux Security Basics
+
+- Avoid using root user directly
+- Keep packages updated
+- Use strong passwords
+- Use SSH keys instead of passwords
+- Configure firewall
+- Remove unused packages
+- Monitor open ports/services
+- Backup important data regularly
+
+---
+
+# Recommended Linux Workflow
+
+1. Update system
+2. Create non-root user
+3. Configure SSH security
+4. Setup firewall
+5. Install required software
+6. Monitor logs/services
+7. Keep system updated
+8. Backup important data
