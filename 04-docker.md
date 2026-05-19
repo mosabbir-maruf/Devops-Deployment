@@ -401,7 +401,15 @@ Displays built Docker images.
 docker run nginx
 ```
 
-Runs a container.
+Runs container in foreground mode.
+
+The terminal remains attached to the container logs.
+
+Stop the container using:
+
+```txt
+Ctrl + C
+```
 
 ---
 
@@ -411,7 +419,7 @@ Runs a container.
 docker run -d --name nginx-server --restart unless-stopped nginx
 ```
 
-Runs container in detached mode with automatic restart policy.
+Runs container in detached/background mode with automatic restart policy.
 
 ---
 
@@ -428,15 +436,56 @@ Runs container with custom name.
 ## Run Container With Port Mapping
 
 ```bash
-docker run -d --name myapp -p 3000:3000 --restart unless-stopped nginx
+docker run -d \
+  --name myapp \
+  -p 3000:80 \
+  --restart unless-stopped \
+  myapp
 ```
 
 Maps VPS port to container port.
+
+Meaning:
+
+```txt
+VPS Port 3000
+→ Container Port 80
+```
 
 Format:
 
 ```txt
 HOST_PORT:CONTAINER_PORT
+```
+
+---
+
+## Verify Running Container
+
+```bash
+docker ps
+```
+
+Should show:
+
+```txt
+0.0.0.0:3000->80/tcp
+```
+
+---
+
+## Verify In Browser
+
+Open:
+
+```txt
+http://YOUR_PUBLIC_IP:3000
+```
+
+Should display:
+
+```txt
+Welcome to nginx!
 ```
 
 ---
@@ -1101,12 +1150,13 @@ Then logout/login again.
 3. Pull/build image
 4. Create Dockerfile
 5. Build Docker image
-6. Create Docker volume
-7. Run container
-8. Map ports
-9. Check logs
-10. Monitor resources
-11. Configure backups
-12. Clean unused resources
-13. Use restart policies
-14. Monitor Docker service
+6. Run container
+7. Map ports
+8. Verify browser access
+9. Create Docker volume
+10. Check logs
+11. Monitor resources
+12. Configure backups
+13. Clean unused resources
+14. Use restart policies
+15. Monitor Docker service
