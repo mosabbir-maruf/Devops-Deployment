@@ -513,7 +513,7 @@ Connects securely using:
 
 ---
 
-# 18. Create SSH Shortcut Alias (Recommended)
+# 18. Create SSH Shortcut Alias In Your Mac (Recommended)
 
 ## Open SSH Config
 
