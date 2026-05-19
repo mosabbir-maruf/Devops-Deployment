@@ -301,7 +301,15 @@ Downloads Docker image from Docker Hub.
 docker build -t myapp .
 ```
 
-Builds Docker image from Dockerfile.
+Builds Docker image from a Dockerfile inside the current directory.
+
+Requires a valid:
+
+```txt
+Dockerfile
+```
+
+inside the current folder.
 
 ---
 
@@ -315,7 +323,85 @@ Deletes Docker image.
 
 ---
 
-# 5. Docker Containers
+# 5. Dockerfile Example
+
+## Create Project Folder
+
+```bash
+mkdir myapp
+```
+
+Creates project folder.
+
+---
+
+## Enter Project Folder
+
+```bash
+cd myapp
+```
+
+Moves into the project directory.
+
+---
+
+## Create Dockerfile
+
+```bash
+nano Dockerfile
+```
+
+Creates Dockerfile.
+
+---
+
+## Basic Dockerfile
+
+```dockerfile
+FROM nginx
+```
+
+Basic Nginx Dockerfile example.
+
+---
+
+## Save Dockerfile
+
+```txt
+Ctrl + O
+Enter
+Ctrl + X
+```
+
+Saves Dockerfile.
+
+---
+
+## Build Docker Image
+
+```bash
+docker build -t myapp .
+```
+
+Builds custom Docker image named:
+
+```txt
+myapp
+```
+
+---
+
+## Verify Docker Images
+
+```bash
+docker images
+```
+
+Displays built Docker images.
+
+---
+
+# 6. Docker Containers
 
 ## Run Container
 
@@ -413,7 +499,7 @@ Force removes container.
 
 ---
 
-# 6. Docker Volumes
+# 7. Docker Volumes
 
 ## What Is A Docker Volume?
 
@@ -591,7 +677,7 @@ Displays Docker storage usage including:
 
 ---
 
-# 7. Docker Restart Policies
+# 8. Docker Restart Policies
 
 ## Restart Container Automatically
 
@@ -627,7 +713,7 @@ on-failure
 
 ---
 
-# 8. Docker Logs
+# 9. Docker Logs
 
 ## Show Logs
 
@@ -659,7 +745,7 @@ Displays last 100 log lines.
 
 ---
 
-# 9. Execute Commands Inside Container
+# 10. Execute Commands Inside Container
 
 ## Open Container Shell
 
@@ -681,7 +767,7 @@ Runs command inside container.
 
 ---
 
-# 10. Docker Compose
+# 11. Docker Compose
 
 ## Check Docker Compose Version
 
@@ -743,7 +829,7 @@ Streams Docker Compose logs live.
 
 ---
 
-# 11. Docker Networks
+# 12. Docker Networks
 
 ## Create Network
 
@@ -765,7 +851,7 @@ Displays Docker network details.
 
 ---
 
-# 12. Docker Security
+# 13. Docker Security
 
 ## Check Open Ports
 
@@ -819,7 +905,7 @@ Requires Docker Scout support.
 
 ---
 
-# 13. Useful Docker Service Commands
+# 14. Useful Docker Service Commands
 
 ## Restart Docker Service
 
@@ -851,7 +937,7 @@ Streams live Docker service logs.
 
 ---
 
-# 14. Docker Cleanup
+# 15. Docker Cleanup
 
 ## Remove Stopped Containers
 
@@ -903,7 +989,7 @@ Deletes unused Docker resources.
 
 ---
 
-# 15. Docker Monitoring
+# 16. Docker Monitoring
 
 ## Check Resource Usage
 
@@ -922,28 +1008,6 @@ docker system df
 ```
 
 Displays Docker disk usage.
-
----
-
-# 16. Dockerfile Example
-
-## Basic Dockerfile
-
-```dockerfile
-FROM node:20
-
-WORKDIR /app
-
-COPY . .
-
-RUN npm install
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
-```
-
-Basic Node.js Dockerfile example.
 
 ---
 
@@ -981,6 +1045,26 @@ Basic Docker Compose example.
 ---
 
 # 19. Common Docker Issues
+
+## Dockerfile Not Found
+
+Possible reason:
+
+- Dockerfile does not exist in current directory
+
+Fix:
+
+```bash
+nano Dockerfile
+```
+
+Then create a valid Dockerfile before running:
+
+```bash
+docker build -t myapp .
+```
+
+---
 
 ## Port Already In Use
 
@@ -1023,12 +1107,14 @@ Then logout/login again.
 1. Install Docker
 2. Verify Docker installation
 3. Pull/build image
-4. Create Docker volume
-5. Run container
-6. Map ports
-7. Check logs
-8. Monitor resources
-9. Configure backups
-10. Clean unused resources
-11. Use restart policies
-12. Monitor Docker service
+4. Create Dockerfile
+5. Build Docker image
+6. Create Docker volume
+7. Run container
+8. Map ports
+9. Check logs
+10. Monitor resources
+11. Configure backups
+12. Clean unused resources
+13. Use restart policies
+14. Monitor Docker service
