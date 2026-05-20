@@ -1,18 +1,22 @@
-# Docker
+.# Docker
 
-## What Is Docker?
+# What Is Docker?
 
-Docker is a container platform used to package and run applications in isolated environments called containers.
+Docker is a container platform used to package, distribute and run applications in isolated environments called containers.
+
+Docker helps developers create consistent development and production environments.
 
 Benefits:
 
-- Easy deployment
 - Consistent environments
+- Easy deployments
 - Lightweight virtualization
-- Fast setup
+- Faster setup
 - Portable applications
 - Production-ready workflows
 - Simplified application management
+- Better scalability
+- Easier CI/CD integration
 
 ---
 
@@ -20,25 +24,222 @@ Benefits:
 
 ## Container
 
-A lightweight isolated environment used to run applications.
+A lightweight isolated runtime environment used to run applications.
+
+Containers are created from Docker images.
 
 ---
 
 ## Image
 
-A reusable template used to create containers.
+A reusable immutable template used to create containers.
+
+Example:
+
+```txt
+node:24-slim
+nginx
+ubuntu
+```
 
 ---
 
 ## Volume
 
-Persistent storage for Docker containers.
+Persistent Docker-managed storage used for containers.
+
+Used for:
+
+- databases
+- uploads
+- application data
+- persistent storage
+
+---
+
+## Bind Mount
+
+Maps a local host folder directly into a container.
+
+Commonly used during development.
+
+Example:
+
+```txt
+Local Project Folder
+↓
+Mounted Into Container
+```
+
+Example:
+
+```bash
+-v $(PWD):/app
+```
 
 ---
 
 ## Network
 
-Allows communication between containers/services.
+Allows communication between containers and services.
+
+Example:
+
+- frontend ↔ backend
+- backend ↔ database
+
+---
+
+# Development Workflow vs Production Workflow
+
+One of the most important Docker concepts:
+
+```txt
+Development Workflow
+≠
+Production Workflow
+```
+
+---
+
+# Development Workflow
+
+During development:
+
+- code changes frequently
+- fast iteration is important
+- hot reload is required
+
+Best practice:
+
+```txt
+Bind Mount
++
+npm run dev
++
+Hot Reload
+```
+
+Development containers are usually temporary.
+
+---
+
+## Development Best Practices
+
+Use:
+
+- bind mounts
+- hot reload
+- dev servers
+- temporary containers
+
+Avoid:
+
+- rebuilding images after every code change
+
+---
+
+# Production Workflow
+
+Production containers should be:
+
+```txt
+Immutable
+Predictable
+Portable
+Stable
+```
+
+Best practice:
+
+```txt
+New Code
+↓
+Build New Image
+↓
+Deploy New Container
+↓
+Remove Old Container
+```
+
+Production containers should not use bind mounts.
+
+---
+
+# Immutable Infrastructure Concept
+
+Production containers should never be manually modified.
+
+Instead:
+
+```txt
+Change Source Code
+↓
+Build New Image
+↓
+Deploy New Container
+```
+
+This ensures:
+
+- consistency
+- rollback safety
+- scalability
+- automation reliability
+
+---
+
+# Docker Image vs Container
+
+```txt
+Dockerfile
+↓
+Build Image
+↓
+Run Container
+↓
+Application Running
+```
+
+---
+
+## Image
+
+Blueprint/template.
+
+---
+
+## Container
+
+Running instance created from an image.
+
+---
+
+# Stateless vs Stateful Services
+
+## Stateless Services
+
+Can be safely recreated anytime.
+
+Examples:
+
+- frontend
+- backend API
+- nginx
+
+---
+
+## Stateful Services
+
+Require persistent storage.
+
+Examples:
+
+- PostgreSQL
+- MongoDB
+- Redis
+
+Usually require Docker volumes.
 
 ---
 
@@ -50,8 +251,6 @@ Allows communication between containers/services.
 sudo apt remove docker docker-engine docker.io containerd runc
 ```
 
-Removes old/outdated Docker packages if they exist.
-
 ---
 
 ## Update Packages
@@ -59,8 +258,6 @@ Removes old/outdated Docker packages if they exist.
 ```bash
 sudo apt update
 ```
-
-Refreshes Ubuntu package lists.
 
 ---
 
@@ -70,8 +267,6 @@ Refreshes Ubuntu package lists.
 sudo apt install -y ca-certificates curl gnupg lsb-release
 ```
 
-Installs required dependencies for Docker repository setup.
-
 ---
 
 ## Create Docker GPG Directory
@@ -79,8 +274,6 @@ Installs required dependencies for Docker repository setup.
 ```bash
 sudo mkdir -p /etc/apt/keyrings
 ```
-
-Creates Docker key storage directory.
 
 ---
 
@@ -90,8 +283,6 @@ Creates Docker key storage directory.
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
 sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 ```
-
-Adds official Docker security key.
 
 ---
 
@@ -105,8 +296,6 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 ```
 
-Adds official Docker repository.
-
 ---
 
 ## Update Packages Again
@@ -114,8 +303,6 @@ Adds official Docker repository.
 ```bash
 sudo apt update
 ```
-
-Refreshes package lists including Docker repository.
 
 ---
 
@@ -129,9 +316,9 @@ Installs:
 
 - Docker Engine
 - Docker CLI
+- Buildx
+- Compose Plugin
 - containerd
-- Docker Buildx
-- Docker Compose plugin
 
 ---
 
@@ -141,8 +328,6 @@ Installs:
 sudo systemctl enable docker
 ```
 
-Starts Docker automatically on server boot.
-
 ---
 
 ## Start Docker Service
@@ -151,17 +336,13 @@ Starts Docker automatically on server boot.
 sudo systemctl start docker
 ```
 
-Starts Docker service.
-
 ---
 
-## Check Docker Service
+## Verify Docker Service
 
 ```bash
 sudo systemctl status docker
 ```
-
-Checks whether Docker is running correctly.
 
 Should show:
 
@@ -177,7 +358,7 @@ active (running)
 sudo usermod -aG docker $USER
 ```
 
-Allows running Docker commands without sudo.
+Allows Docker commands without sudo.
 
 ---
 
@@ -187,9 +368,7 @@ Allows running Docker commands without sudo.
 exit
 ```
 
-Logout after Docker group changes.
-
-Login again after exiting.
+Logout/login again.
 
 ---
 
@@ -201,27 +380,21 @@ Login again after exiting.
 docker --version
 ```
 
-Displays installed Docker version.
-
 ---
 
-## Check Docker Compose Version
+## Check Compose Version
 
 ```bash
 docker compose version
 ```
 
-Displays Docker Compose version.
-
 ---
 
-## Test Docker Installation
+## Test Docker
 
 ```bash
 docker run hello-world
 ```
-
-Tests whether Docker is working correctly.
 
 Should display:
 
@@ -233,75 +406,69 @@ Hello from Docker!
 
 # 3. Basic Docker Commands
 
-## Check Running Containers
+## Running Containers
 
 ```bash
 docker ps
 ```
 
-Shows running containers.
-
 ---
 
-## Check All Containers
+## All Containers
 
 ```bash
 docker ps -a
 ```
 
-Shows all containers.
-
 ---
 
-## Check Docker Images
+## Docker Images
 
 ```bash
 docker images
 ```
 
-Displays downloaded Docker images.
-
 ---
 
-## Check Docker Volumes
+## Docker Volumes
 
 ```bash
 docker volume ls
 ```
 
-Displays Docker volumes.
-
 ---
 
-## Check Docker Networks
+## Docker Networks
 
 ```bash
 docker network ls
 ```
 
-Displays Docker networks.
-
 ---
 
 # 4. Docker Images
 
-## Pull Docker Image
+## Pull Image
 
 ```bash
 docker pull nginx
 ```
 
-Downloads Docker image from Docker Hub.
-
 ---
 
-## Remove Docker Image
+## Remove Image
 
 ```bash
 docker rmi IMAGE_ID
 ```
 
-Deletes Docker image.
+---
+
+## Remove Unused Images
+
+```bash
+docker image prune -a
+```
 
 ---
 
@@ -313,17 +480,13 @@ Deletes Docker image.
 mkdir myapp
 ```
 
-Creates project folder.
-
 ---
 
-## Enter Project Folder
+## Enter Folder
 
 ```bash
 cd myapp
 ```
-
-Moves into the project directory.
 
 ---
 
@@ -333,29 +496,56 @@ Moves into the project directory.
 nano Dockerfile
 ```
 
-Creates Dockerfile.
-
 ---
 
-## Basic Dockerfile
+## Example Dockerfile
 
 ```dockerfile
-FROM nginx
-```
+FROM node:24-slim
 
-Basic Nginx Dockerfile example.
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
+```
 
 ---
 
-## Save Dockerfile
+# .dockerignore
 
-```txt
-Ctrl + O
-Enter
-Ctrl + X
+## Create .dockerignore
+
+```bash
+nano .dockerignore
 ```
 
-Saves Dockerfile.
+---
+
+## Example .dockerignore
+
+```txt
+node_modules
+dist
+.git
+.env
+Dockerfile
+README.md
+```
+
+Prevents unnecessary files from being copied into Docker images.
+
+Improves:
+
+- build speed
+- security
+- image size
 
 ---
 
@@ -365,31 +555,31 @@ Saves Dockerfile.
 docker build -t myapp .
 ```
 
-Builds Docker image from the Dockerfile inside the current directory.
-
-Creates a custom Docker image named:
+Meaning:
 
 ```txt
+Build image:
 myapp
+
+Using:
+current directory (.)
 ```
-
-Requires a valid:
-
-```txt
-Dockerfile
-```
-
-inside the current folder.
 
 ---
 
-## Verify Docker Images
+## Tagged Build
+
+```bash
+docker build -t myapp:latest .
+```
+
+---
+
+## Verify Images
 
 ```bash
 docker images
 ```
-
-Displays built Docker images.
 
 ---
 
@@ -401,35 +591,17 @@ Displays built Docker images.
 docker run nginx
 ```
 
-Runs container in foreground mode.
-
-The terminal remains attached to the container logs.
-
-Stop the container using:
-
-```txt
-Ctrl + C
-```
+Foreground mode.
 
 ---
 
-## Run Container In Background
+## Detached Container
 
 ```bash
-docker run -d --name nginx-server --restart unless-stopped nginx
+docker run -d --name nginx-server nginx
 ```
 
-Runs container in detached/background mode with automatic restart policy.
-
----
-
-## Run Container With Name
-
-```bash
-docker run -d --name myapp nginx
-```
-
-Runs container with custom name.
+Background mode.
 
 ---
 
@@ -437,332 +609,149 @@ Runs container with custom name.
 
 ```bash
 docker run -d \
-  --name myapp \
-  -p 3000:80 \
-  --restart unless-stopped \
-  myapp
+--name myapp \
+-p 3000:80 \
+myapp
 ```
-
-Maps VPS port to container port.
 
 Meaning:
-
-```txt
-VPS Port 3000
-→ Container Port 80
-```
-
-Format:
 
 ```txt
 HOST_PORT:CONTAINER_PORT
 ```
 
----
-
-## Verify Running Container
-
-```bash
-docker ps
-```
-
-Should show:
+Example:
 
 ```txt
-0.0.0.0:3000->80/tcp
+localhost:3000
+↓
+container:80
 ```
 
 ---
 
-## Verify In Browser
-
-Open:
-
-```txt
-http://YOUR_PUBLIC_IP:3000
-```
-
-Should display:
-
-```txt
-Welcome to nginx!
-```
-
----
-
-## Stop Container
+## Production Style Container
 
 ```bash
-docker stop CONTAINER_ID
+docker run --rm -it \
+--name myapp-prod \
+-p 3000:3000 \
+myapp
 ```
-
-Stops a running container.
 
 ---
 
-## Start Container
+# Development Container Workflow
+
+## Best Practice Development Command
 
 ```bash
-docker start CONTAINER_ID
+docker run --rm -it \
+--name myapp-dev \
+-p 3000:3000 \
+-v $(PWD):/app \
+-w /app \
+node:24-slim \
+sh -c "npm install && npm run dev"
 ```
-
-Starts a stopped container.
 
 ---
 
-## Restart Container
+# Why This Development Workflow Is Best
+
+Benefits:
+
+- live reload
+- fast iteration
+- no rebuild every change
+- local development speed
+- isolated runtime environment
+
+---
+
+# How Bind Mount Works
 
 ```bash
-docker restart CONTAINER_ID
-```
-
-Restarts a container.
-
----
-
-## Remove Container
-
-```bash
-docker rm CONTAINER_ID
-```
-
-Deletes a container.
-
----
-
-## Force Remove Container
-
-```bash
-docker rm -f CONTAINER_ID
-```
-
-Force removes container.
-
----
-
-# 7. Docker Volumes
-
-## What Is A Docker Volume?
-
-Docker volumes provide persistent storage for containers.
-
-Volumes keep data safe even if:
-
-- containers are removed
-- containers restart
-- Docker restarts
-- VPS reboots
-
-Recommended for:
-
-- databases
-- uploads
-- application data
-- production deployments
-
----
-
-## Create Docker Volume
-
-```bash
-docker volume create nginx-data
-```
-
-Creates a Docker volume named `nginx-data`.
-
----
-
-## Check Docker Volumes
-
-```bash
-docker volume ls
-```
-
-Displays available Docker volumes.
-
-Should show:
-
-```txt
-nginx-data
-```
-
----
-
-## Inspect Docker Volume
-
-```bash
-docker volume inspect nginx-data
-```
-
-Displays detailed Docker volume information.
-
----
-
-## Stop Existing Container
-
-```bash
-docker stop nginx-server
-```
-
-Stops the currently running Nginx container.
-
----
-
-## Remove Existing Container
-
-```bash
-docker rm nginx-server
-```
-
-Deletes the old container before recreating it with a persistent volume.
-
----
-
-## Run Nginx With Persistent Volume
-
-```bash
-docker run -d \
-  --name nginx-server \
-  -p 8080:80 \
-  --restart unless-stopped \
-  -v nginx-data:/usr/share/nginx/html \
-  nginx
-```
-
-Runs Nginx container with:
-
-- persistent Docker volume
-- automatic restart policy
-- public port mapping
-
----
-
-## About Volume Mounting
-
-```txt
--v nginx-data:/usr/share/nginx/html
+-v $(PWD):/app
 ```
 
 Meaning:
 
 ```txt
-Docker Volume:
-nginx-data
-
-Mounted Inside Container:
- /usr/share/nginx/html
+Local Project Folder
+↓
+Mounted Into Container /app
 ```
 
-This container path stores Nginx website files.
+Local code changes instantly reflect inside the container.
 
 ---
 
-## Verify Running Container
+# Why `--rm` Is Important
 
 ```bash
-docker ps
+--rm
 ```
 
-Checks whether the new Nginx container is running correctly.
-
----
-
-## Verify In Browser
+Meaning:
 
 ```txt
-http://YOUR_PUBLIC_IP:8080
+Container auto deletes after stopping
 ```
 
-Should display:
+Prevents stopped container buildup.
 
-```txt
-Welcome to nginx!
-```
+Best practice for development containers.
 
 ---
 
-## Remove Unused Volumes
+# Stop Container
 
 ```bash
-docker volume prune
+docker stop CONTAINER_ID
 ```
-
-Deletes unused Docker volumes.
-
-Use carefully in production environments.
 
 ---
 
-## Remove Specific Volume
+# Start Container
 
 ```bash
-docker volume rm nginx-data
+docker start CONTAINER_ID
 ```
-
-Deletes a specific Docker volume.
 
 ---
 
-## Check Docker Disk Usage
+# Restart Container
 
 ```bash
-docker system df
+docker restart CONTAINER_ID
 ```
-
-Displays Docker storage usage including:
-
-- images
-- containers
-- volumes
-- build cache
 
 ---
 
-# 8. Docker Restart Policies
-
-## Restart Container Automatically
+# Remove Container
 
 ```bash
-docker run -d --restart unless-stopped nginx
-```
-
-Automatically restarts containers:
-
-- after VPS reboot
-- after Docker restart
-- after unexpected crashes
-
-Recommended for production containers.
-
----
-
-## Restart Policy Types
-
-```txt
-no
-→ No automatic restart
-
-always
-→ Always restart container
-
-unless-stopped
-→ Restart unless manually stopped
-
-on-failure
-→ Restart only if container exits with errors
+docker rm CONTAINER_ID
 ```
 
 ---
 
-# 9. Docker Logs
+# Force Remove Container
+
+```bash
+docker rm -f CONTAINER_ID
+```
+
+---
+
+# Container Logs
 
 ## Show Logs
 
 ```bash
 docker logs CONTAINER_ID
 ```
-
-Displays container logs.
 
 ---
 
@@ -772,29 +761,21 @@ Displays container logs.
 docker logs -f CONTAINER_ID
 ```
 
-Streams live container logs.
-
 ---
 
-## Show Last Logs
+# Execute Commands Inside Container
+
+## Open Shell
 
 ```bash
-docker logs --tail 100 CONTAINER_ID
+docker exec -it CONTAINER_ID sh
 ```
 
-Displays last 100 log lines.
+Meaning:
 
----
-
-# 10. Execute Commands Inside Container
-
-## Open Container Shell
-
-```bash
-docker exec -it CONTAINER_ID bash
+```txt
+Open interactive shell inside running container
 ```
-
-Opens interactive bash shell inside container.
 
 ---
 
@@ -804,257 +785,71 @@ Opens interactive bash shell inside container.
 docker exec CONTAINER_ID ls
 ```
 
-Runs command inside container.
-
 ---
 
-# 11. Docker Compose
+# Docker Volumes
 
-## Check Docker Compose Version
+## Create Volume
 
 ```bash
-docker compose version
+docker volume create my-volume
 ```
-
-Displays Docker Compose version.
 
 ---
 
-## Start Docker Compose
+## Inspect Volume
 
 ```bash
-docker compose up -d
+docker volume inspect my-volume
 ```
-
-Starts services in background.
 
 ---
 
-## Stop Docker Compose
+## Persistent Nginx Example
 
 ```bash
-docker compose down
+docker run -d \
+--name nginx-server \
+-p 8080:80 \
+-v nginx-data:/usr/share/nginx/html \
+nginx
 ```
-
-Stops Docker Compose services.
 
 ---
 
-## Restart Docker Compose
+# Named Volume Example
 
 ```bash
-docker compose restart
+-v my-volume:/app/data
 ```
 
-Restarts Docker Compose services.
+Meaning:
+
+```txt
+Docker Managed Volume
+↓
+Mounted Into Container
+```
 
 ---
 
-## View Docker Compose Logs
+# 7. Docker Compose
 
-```bash
-docker compose logs
-```
+## What Is Docker Compose?
 
-Displays Docker Compose logs.
+Used to manage multiple services together.
 
----
+Examples:
 
-## Live Docker Compose Logs
-
-```bash
-docker compose logs -f
-```
-
-Streams Docker Compose logs live.
+- frontend
+- backend
+- database
+- redis
+- nginx
 
 ---
 
-# 12. Docker Networks
-
-## Create Network
-
-```bash
-docker network create mynetwork
-```
-
-Creates Docker network.
-
----
-
-## Inspect Network
-
-```bash
-docker network inspect mynetwork
-```
-
-Displays Docker network details.
-
----
-
-# 13. Docker Security
-
-## Check Open Ports
-
-```bash
-docker port CONTAINER_ID
-```
-
-Displays exposed container ports.
-
----
-
-## Inspect Container Details
-
-```bash
-docker inspect CONTAINER_ID
-```
-
-Shows detailed container configuration and security information.
-
----
-
-## Check Container Resource Usage
-
-```bash
-docker stats
-```
-
-Displays live CPU, RAM and network usage.
-
----
-
-## Check Docker Service Logs
-
-```bash
-journalctl -u docker
-```
-
-Displays Docker service logs.
-
----
-
-## Scan Image Vulnerabilities
-
-```bash
-docker scout quickview IMAGE_NAME
-```
-
-Checks Docker image vulnerabilities.
-
-Requires Docker Scout support.
-
----
-
-# 14. Useful Docker Service Commands
-
-## Restart Docker Service
-
-```bash
-sudo systemctl restart docker
-```
-
-Restarts Docker service.
-
----
-
-## Stop Docker Service
-
-```bash
-sudo systemctl stop docker
-```
-
-Stops Docker service.
-
----
-
-## View Docker Service Logs
-
-```bash
-journalctl -u docker -f
-```
-
-Streams live Docker service logs.
-
----
-
-# 15. Docker Cleanup
-
-## Remove Stopped Containers
-
-```bash
-docker container prune
-```
-
-Deletes unused containers.
-
----
-
-## Remove Unused Images
-
-```bash
-docker image prune -a
-```
-
-Deletes unused Docker images.
-
----
-
-## Remove Unused Volumes
-
-```bash
-docker volume prune
-```
-
-Deletes unused Docker volumes.
-
----
-
-## Remove Unused Networks
-
-```bash
-docker network prune
-```
-
-Deletes unused Docker networks.
-
----
-
-## Remove Everything Unused
-
-```bash
-docker system prune -a
-```
-
-Deletes unused Docker resources.
-
----
-
-# 16. Docker Monitoring
-
-## Check Resource Usage
-
-```bash
-docker stats
-```
-
-Displays live container resource usage.
-
----
-
-## Check Disk Usage
-
-```bash
-docker system df
-```
-
-Displays Docker disk usage.
-
----
-
-# 17. Example Docker Compose File
-
-## docker-compose.yml
+## docker-compose.yml Example
 
 ```yaml
 services:
@@ -1064,56 +859,243 @@ services:
       - "3000:80"
 ```
 
-Basic Docker Compose example.
+---
+
+## Start Compose
+
+```bash
+docker compose up -d
+```
 
 ---
 
-# 18. Docker Security Best Practices
+## Stop Compose
 
+```bash
+docker compose down
+```
+
+---
+
+## Restart Compose
+
+```bash
+docker compose restart
+```
+
+---
+
+## Compose Logs
+
+```bash
+docker compose logs -f
+```
+
+---
+
+# 8. Docker Networks
+
+## Create Network
+
+```bash
+docker network create mynetwork
+```
+
+---
+
+## Inspect Network
+
+```bash
+docker network inspect mynetwork
+```
+
+---
+
+# 9. Docker Security Best Practices
+
+- Use official images
 - Avoid exposing unnecessary ports
 - Do not expose databases publicly
-- Use official Docker images
-- Keep Docker updated
-- Remove unused containers/images
-- Avoid running containers as root
 - Use environment variables for secrets
-- Use strong passwords for databases/services
-- Monitor container resource usage
-- Use persistent volumes for important data
-- Backup Docker volumes regularly
-- Use restart policies for production containers
+- Remove unused images/containers
+- Keep Docker updated
+- Use restart policies
+- Avoid running containers as root
+- Backup important volumes
+- Monitor resources regularly
 
 ---
 
-# 19. Common Docker Issues
+# 10. Docker Monitoring
+
+## Resource Usage
+
+```bash
+docker stats
+```
+
+---
+
+## Disk Usage
+
+```bash
+docker system df
+```
+
+---
+
+# 11. Docker Cleanup
+
+## Remove Stopped Containers
+
+```bash
+docker container prune
+```
+
+---
+
+## Remove Unused Images
+
+```bash
+docker image prune -a
+```
+
+---
+
+## Remove Unused Volumes
+
+```bash
+docker volume prune
+```
+
+---
+
+## Remove Unused Networks
+
+```bash
+docker network prune
+```
+
+---
+
+## Remove Everything Unused
+
+```bash
+docker system prune -a
+```
+
+---
+
+# 12. Docker Service Commands
+
+## Restart Docker
+
+```bash
+sudo systemctl restart docker
+```
+
+---
+
+## Stop Docker
+
+```bash
+sudo systemctl stop docker
+```
+
+---
+
+## Docker Service Logs
+
+```bash
+journalctl -u docker -f
+```
+
+---
+
+# 13. Useful Docker Development Workflow
+
+```txt
+Write Code
+↓
+Save File
+↓
+Hot Reload
+↓
+Browser Updates Automatically
+```
+
+---
+
+# Development Workflow
+
+```txt
+Bind Mount
++
+npm run dev
++
+Hot Reload
+```
+
+---
+
+# Production Workflow
+
+```txt
+Build Immutable Image
+↓
+Deploy New Container
+↓
+Remove Old Container
+```
+
+---
+
+# CI/CD Workflow
+
+```txt
+GitHub Push
+↓
+GitHub Actions
+↓
+Build Docker Image
+↓
+Push To Registry
+↓
+Deploy New Container
+```
+
+---
+
+# Docker Hub
+
+Docker Hub is a container image registry.
+
+Used to:
+
+- store images
+- distribute images
+- pull images on servers
+- use CI/CD workflows
+
+---
+
+# Common Docker Issues
 
 ## Dockerfile Not Found
 
-Possible reason:
+Ensure:
 
-- Dockerfile does not exist in current directory
-
-Fix:
-
-```bash
-nano Dockerfile
+```txt
+Dockerfile
 ```
 
-Then create a valid Dockerfile before running:
-
-```bash
-docker build -t myapp .
-```
+exists inside current directory.
 
 ---
 
 ## Port Already In Use
 
-Possible reason:
-
-- another service/container already using port
-
-Check ports:
+Check:
 
 ```bash
 sudo ss -tulpn
@@ -1121,17 +1103,7 @@ sudo ss -tulpn
 
 ---
 
-## Container Keeps Restarting
-
-Check logs:
-
-```bash
-docker logs CONTAINER_ID
-```
-
----
-
-## Docker Permission Denied
+## Permission Denied
 
 Fix:
 
@@ -1139,24 +1111,67 @@ Fix:
 sudo usermod -aG docker $USER
 ```
 
-Then logout/login again.
+Logout/login again.
 
 ---
 
-# 20. Useful Docker Workflow
+## Invalid Reference Format
 
-1. Install Docker
-2. Verify Docker installation
-3. Pull/build image
-4. Create Dockerfile
-5. Build Docker image
-6. Run container
-7. Map ports
-8. Verify browser access
-9. Create Docker volume
-10. Check logs
-11. Monitor resources
-12. Configure backups
-13. Clean unused resources
-14. Use restart policies
-15. Monitor Docker service
+Usually caused by incorrect Docker command formatting.
+
+Example wrong:
+
+```bash
+docker run \ --name app
+```
+
+Correct:
+
+```bash
+docker run \
+--name app
+```
+
+---
+
+## Docker Build Requires 1 Argument
+
+Wrong:
+
+```bash
+docker build -t myapp
+```
+
+Correct:
+
+```bash
+docker build -t myapp .
+```
+
+`.` means current directory.
+
+---
+
+# Real-World Docker Learning Path
+
+```txt
+Development Workflow
+↓
+Docker Basics
+↓
+Containers & Images
+↓
+Volumes & Networks
+↓
+Reverse Proxy
+↓
+Docker Compose
+↓
+CI/CD
+↓
+Production Deployment
+↓
+Container Orchestration
+↓
+Kubernetes
+```
