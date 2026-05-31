@@ -76,18 +76,21 @@
 
 ### Cleanup And Uninstall
 
-46. [Remove MongoDB Docker Container](#46-remove-mongodb-docker-container)
+46. [Remove MongoDB Docker Container (Linux / VPS)](#46-remove-mongodb-docker-container-linux--vps)
 47. [Remove MongoDB Volumes](#47-remove-mongodb-volumes)
-48. [Uninstall MongoDB On Linux (Host)](#48-uninstall-mongodb-on-linux-host)
-49. [Cache And Leftover Files](#49-cache-and-leftover-files)
-50. [Verification After Removal](#50-verification-after-removal)
+48. [Remove MongoDB Dev Container (Mac / Docker Desktop)](#48-remove-mongodb-dev-container-mac--docker-desktop)
+49. [Uninstall MongoDB On Mac](#49-uninstall-mongodb-on-mac)
+50. [Uninstall MongoDB On Linux (Host)](#50-uninstall-mongodb-on-linux-host)
+51. [Log Cleanup](#51-log-cleanup)
+52. [Cache And Leftover Files](#52-cache-and-leftover-files)
+53. [Verification After Removal](#53-verification-after-removal)
 
 ### Production Workflows
 
-51. [Recommended Production Workflow](#51-recommended-production-workflow)
-52. [Modern Workflow](#52-modern-workflow)
-53. [Real-World Workflow](#53-real-world-workflow)
-54. [Final Production Checklist](#54-final-production-checklist)
+54. [Recommended Production Workflow](#54-recommended-production-workflow)
+55. [Modern Workflow](#55-modern-workflow)
+56. [Real-World Workflow](#56-real-world-workflow)
+57. [Final Production Checklist](#57-final-production-checklist)
 
 ---
 
@@ -1396,7 +1399,11 @@ free -h
 
 ---
 
-# 46. Remove MongoDB Docker Container
+# 46. Remove MongoDB Docker Container (Linux / VPS)
+
+Production MongoDB runs on the VPS via Docker Compose.
+
+## Stop And Remove Container
 
 ```bash
 cd /var/www/myapp
@@ -1404,13 +1411,26 @@ docker compose stop mongodb
 docker compose rm mongodb
 ```
 
-## Remove With Stack
+## Remove Full Stack
 
 ```bash
 docker compose down
 ```
 
-Warning: `docker compose down -v` deletes volumes and all data.
+Warning: `docker compose down -v` deletes volumes and **all database data**.
+
+## Remove Standalone Container
+
+```bash
+docker stop mongodb
+docker rm mongodb
+```
+
+## Remove Image
+
+```bash
+docker rmi mongo:8
+```
 
 ---
 
@@ -1439,65 +1459,342 @@ docker run --rm \
 docker volume rm myapp_mongodb_data
 ```
 
+✓ Good:
+
+* backup before removing any volume
+
+✗ Avoid:
+
+* `docker volume rm` without backup in production
+
 ---
 
-# 48. Uninstall MongoDB On Linux (Host)
+# 48. Remove MongoDB Dev Container (Mac / Docker Desktop)
+
+Local dev MongoDB from `docker-compose.dev.yml` on Mac.
+
+## Stop Dev Stack
 
 ```bash
-sudo systemctl stop mongod
-sudo systemctl disable mongod
-sudo apt purge -y mongodb-org mongodb-org-database mongodb-org-server \
-  mongodb-org-mongos mongodb-org-tools
-sudo apt autoremove -y
-sudo rm -rf /var/lib/mongodb
-sudo rm -rf /var/log/mongodb
-sudo rm -f /etc/apt/sources.list.d/mongodb-org-8.0.list
-sudo rm -f /usr/share/keyrings/mongodb-server-8.0.gpg
+cd ~/Projects/myapp
+docker compose -f docker-compose.dev.yml stop mongodb
+docker compose -f docker-compose.dev.yml rm mongodb
 ```
 
----
-
-# 49. Cache And Leftover Files
-
-## Docker
+## Remove Dev Stack And Volume
 
 ```bash
-docker image rm mongo:8
+docker compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml down -v
+```
+
+## Remove Dev Image
+
+```bash
+docker rmi mongo:8
 docker image prune -f
 ```
 
-## Host Leftovers
-
-```bash
-sudo rm -rf /var/lib/mongodb
-sudo rm -rf /var/log/mongodb
-sudo rm -f /etc/mongod.conf
-```
-
-## Old Backups
-
-```bash
-ls ~/backups/mongodb/
-rm -rf ~/backups/mongodb/2025-*
-```
-
----
-
-# 50. Verification After Removal
+## Verify (Mac)
 
 ```bash
 docker ps -a | grep mongo
 docker volume ls | grep mongo
 nc -zv localhost 27017
-which mongod
-systemctl status mongod
 ```
 
-Expected: no containers, no volumes (if removed), port closed, command not found.
+Expected: no dev containers, port 27017 closed.
 
 ---
 
-# 51. Recommended Production Workflow
+# 49. Uninstall MongoDB On Mac
+
+For Homebrew-installed `mongosh` and `mongodb-community` — not production VPS MongoDB.
+
+## Stop Local MongoDB Service (If Running)
+
+```bash
+brew services stop mongodb-community@8.0
+```
+
+## Uninstall mongosh And MongoDB Community
+
+```bash
+brew uninstall mongosh
+brew uninstall mongodb-community@8.0
+brew untap mongodb/brew
+```
+
+## Uninstall MongoDB Compass (GUI)
+
+```txt
+Finder → Applications → MongoDB Compass → Move to Trash
+```
+
+Or if installed via Homebrew cask:
+
+```bash
+brew uninstall --cask mongodb-compass
+```
+
+## Remove Mac Data Directories
+
+```bash
+rm -rf ~/data/db
+rm -rf /usr/local/var/mongodb
+rm -rf /opt/homebrew/var/mongodb
+rm -rf ~/.mongodb
+rm -rf ~/Library/Caches/mongodb-compass
+rm -rf ~/Library/Application\ Support/MongoDB\ Compass
+rm -rf ~/Library/Logs/MongoDB
+```
+
+## Remove Homebrew Leftovers
+
+```bash
+brew cleanup
+brew autoremove
+```
+
+## Verify (Mac)
+
+```bash
+which mongosh
+which mongod
+mongosh --version 2>&1
+brew list | grep mongo
+ls ~/Library/Application\ Support/ | grep -i mongo
+```
+
+Expected: commands not found, no mongo packages listed.
+
+---
+
+# 50. Uninstall MongoDB On Linux (Host)
+
+Legacy host install only — production should use Docker.
+
+## Stop And Disable Service
+
+```bash
+sudo systemctl stop mongod
+sudo systemctl disable mongod
+```
+
+## Remove Packages
+
+```bash
+sudo apt purge -y mongodb-org mongodb-org-database mongodb-org-server \
+  mongodb-org-mongos mongodb-org-tools
+sudo apt autoremove -y
+sudo apt autoclean
+```
+
+## Remove Repository And Key
+
+```bash
+sudo rm -f /etc/apt/sources.list.d/mongodb-org-8.0.list
+sudo rm -f /usr/share/keyrings/mongodb-server-8.0.gpg
+```
+
+## Remove Data, Logs, Config
+
+```bash
+sudo rm -rf /var/lib/mongodb
+sudo rm -rf /var/log/mongodb
+sudo rm -f /etc/mongod.conf
+sudo rm -rf /tmp/mongodb-*
+```
+
+## Verify (Linux Host)
+
+```bash
+which mongod
+which mongosh
+systemctl status mongod
+dpkg -l | grep mongo
+sudo ss -tlnp | grep 27017
+```
+
+Expected: commands not found, service not found, port closed.
+
+---
+
+# 51. Log Cleanup
+
+## Docker Logs (Linux / VPS)
+
+```bash
+# Truncate container logs without removing container
+truncate -s 0 $(docker inspect --format='{{.LogPath}}' mongodb)
+
+# Or restart with log rotation in compose:
+# logging:
+#   driver: json-file
+#   options:
+#     max-size: "10m"
+#     max-file: "3"
+```
+
+## Docker Compose Log Export Then Clear
+
+```bash
+docker logs mongodb > ~/logs/mongodb-final.log 2>&1
+docker compose restart mongodb
+```
+
+## Host Install Logs (Linux)
+
+```bash
+sudo truncate -s 0 /var/log/mongodb/mongod.log
+sudo rm -f /var/log/mongodb/mongod.log.*
+sudo journalctl --vacuum-time=7d
+```
+
+## Mac Logs
+
+```bash
+rm -rf ~/Library/Logs/MongoDB
+rm -rf ~/Library/Logs/mongodb-compass
+rm -rf ~/Library/Application\ Support/MongoDB Compass/Cache
+```
+
+## Exported Backup Logs (Safe To Delete)
+
+```bash
+rm -f ~/logs/mongodb-*.log
+rm -f ~/backups/mongodb/*.log
+```
+
+---
+
+# 52. Cache And Leftover Files
+
+## Docker Cache (Linux / Mac)
+
+```bash
+docker builder prune -f
+docker image prune -f
+docker image rm mongo:8
+docker system prune -f
+```
+
+Remove unused MongoDB volumes (backup first):
+
+```bash
+docker volume ls | grep mongo
+docker volume prune -f
+```
+
+Warning: `docker volume prune` deletes unused volumes permanently.
+
+## Linux Host Leftovers
+
+```bash
+sudo rm -rf /var/lib/mongodb
+sudo rm -rf /var/log/mongodb
+sudo rm -f /etc/mongod.conf
+sudo rm -rf /tmp/mongodb-*
+sudo apt autoremove -y
+sudo apt autoclean
+```
+
+## Mac Leftovers
+
+```bash
+rm -rf ~/data/db
+rm -rf /usr/local/var/mongodb
+rm -rf /opt/homebrew/var/mongodb
+rm -rf ~/.mongodb
+rm -rf ~/Library/Caches/mongodb-compass
+rm -rf ~/Library/Application\ Support/MongoDB\ Compass
+rm -rf ~/Library/Saved\ Application\ State/com.mongodb.compass.savedState
+brew cleanup
+```
+
+## Old Backup Files
+
+```bash
+ls ~/backups/mongodb/
+rm -rf ~/backups/mongodb/2025-*
+rm -f ~/backups/mongodb-dump-*.tar.gz
+```
+
+## mongosh History And Temp Files
+
+```bash
+rm -f ~/.mongosh/mongosh.db
+rm -rf ~/.mongosh/snippets
+rm -f /tmp/mongodb-*
+```
+
+## Orphan Docker Networks
+
+```bash
+docker network ls | grep myapp
+docker network prune -f
+```
+
+---
+
+# 53. Verification After Removal
+
+## Docker (Linux / VPS)
+
+```bash
+docker ps -a | grep mongo
+docker volume ls | grep mongo
+docker images | grep mongo
+nc -zv localhost 27017
+```
+
+Expected: no containers, no volumes (if removed), no images, port closed.
+
+## Mac
+
+```bash
+which mongosh
+which mongod
+brew list | grep mongo
+docker ps -a | grep mongo
+docker volume ls | grep mongo
+nc -zv localhost 27017
+ls ~/Library/Application\ Support/ | grep -i mongo
+```
+
+Expected: commands not found, no brew mongo packages, no dev containers, port closed.
+
+## Linux Host
+
+```bash
+which mongod
+which mongosh
+systemctl status mongod
+dpkg -l | grep mongo
+sudo ss -tlnp | grep 27017
+ls /var/lib/mongodb 2>&1
+```
+
+Expected: commands not found, service absent, port closed, data directory gone.
+
+## Cleanup Checklist
+
+✓ Good:
+
+* containers removed
+* volumes backed up then removed (if intended)
+* Mac Homebrew packages uninstalled
+* log and cache directories cleared
+* port 27017 not listening
+
+✗ Avoid:
+
+* `docker volume prune` without backup
+* leaving `mongodb-community` running on Mac after switching to Docker-only dev
+
+---
+
+# 54. Recommended Production Workflow
 
 ```txt
 1. Add MongoDB to docker-compose.prod.yml
@@ -1512,7 +1809,7 @@ Expected: no containers, no volumes (if removed), port closed, command not found
 
 ---
 
-# 52. Modern Workflow
+# 55. Modern Workflow
 
 ```txt
 Developer (Mac)
@@ -1532,7 +1829,7 @@ Backend connects internally
 
 ---
 
-# 53. Real-World Workflow
+# 56. Real-World Workflow
 
 Example: Node.js API with MongoDB on Hetzner VPS.
 
@@ -1565,7 +1862,7 @@ ssh -L 27017:127.0.0.1:27017 vps-prod
 
 ---
 
-# 54. Final Production Checklist
+# 57. Final Production Checklist
 
 ## MongoDB Container
 
@@ -1624,7 +1921,18 @@ docker exec mongodb mongorestore /tmp/backup
 docker stats mongodb --no-stream
 docker exec mongodb du -sh /data/db
 
-# Cleanup
+# Cleanup (VPS / Docker)
 docker compose down        # keeps volume
 docker compose down -v     # DESTROYS data
+docker volume prune -f     # backup first
+
+# Uninstall Mac (Homebrew)
+brew services stop mongodb-community@8.0
+brew uninstall mongosh mongodb-community@8.0
+brew uninstall --cask mongodb-compass
+rm -rf ~/.mongodb ~/Library/Logs/MongoDB ~/Library/Caches/mongodb-compass
+
+# Uninstall Linux (host)
+sudo apt purge -y mongodb-org* && sudo apt autoremove -y
+sudo rm -rf /var/lib/mongodb /var/log/mongodb
 ```
