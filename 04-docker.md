@@ -1824,6 +1824,8 @@ FROM node:24-slim
 
 WORKDIR /app
 
+ENV NODE_ENV=development
+
 COPY package*.json ./
 
 RUN npm install
@@ -2634,6 +2636,13 @@ services:
     env_file:
       - .env
 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
     depends_on:
       - postgres
       - redis
@@ -2648,6 +2657,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: secret
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -2658,6 +2673,12 @@ services:
 
     volumes:
       - redis-data:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   nginx:
     image: nginx:alpine
@@ -3606,11 +3627,25 @@ services:
     expose:
       - "3000"
 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
   backend:
     build: ./backend
 
     expose:
       - "5000"
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   nginx:
     image: nginx:alpine
