@@ -35,10 +35,10 @@
 
 ### Docker Compose
 
-20. [Docker Compose](#docker-compose)
-21. [Docker Compose Commands](#docker-compose-commands)
-22. [Production Docker Compose Structure](#production-docker-compose-structure)
-23. [Health Checks](#health-checks)
+20. [Docker Compose](#20-docker-compose)
+21. [Docker Compose Commands](#21-docker-compose-commands)
+22. [Production Docker Compose Structure](#22-production-docker-compose-structure)
+23. [Health Checks](#23-health-checks)
 
 ### Development Workflow
 
@@ -2317,7 +2317,7 @@ Avoid:
 
 ✗ Using Development Dockerfiles In Production
 ```
-# Docker Compose
+# 20. Docker Compose
 
 Docker Compose is used to manage multiple containers as a single application stack.
 
@@ -2381,7 +2381,7 @@ services:
 
 ---
 
-# Docker Compose Commands
+# 21. Docker Compose Commands
 
 ## Start Stack
 
@@ -2463,7 +2463,7 @@ docker compose up -d --force-recreate
 
 ---
 
-# Production Docker Compose Structure
+# 22. Production Docker Compose Structure
 
 ## Recommended Project Structure
 
@@ -2565,7 +2565,7 @@ Never commit:
 
 ---
 
-# Health Checks
+# 23. Health Checks
 
 Health checks allow Docker to determine whether a service is healthy.
 
