@@ -1,5 +1,119 @@
 # Initial VPS Security Setup
 
+First guide in the series. Harden a fresh Ubuntu VPS before installing Docker, databases, or deploying applications.
+
+**Mac** = generate SSH keys and connect from your workstation. **Linux VPS** = all server-side steps run on the VPS.
+
+Related guides after this: `02-ssh-guide.md`, `04-docker.md`, `11-nginx-reverse-proxy.md`, `10-project-deployment.md`.
+
+---
+
+## Table Of Contents
+
+### Overview
+
+- [What This Guide Covers](#what-this-guide-covers)
+- [Recommended Order Of Operations](#recommended-order-of-operations)
+- [Production Security Architecture](#production-security-architecture)
+
+### SSH Keys (Mac)
+
+1. [Generate SSH Key (Mac)](#1-generate-ssh-key-mac)
+
+### Initial VPS Access
+
+2. [Connect To VPS](#2-connect-to-vps)
+3. [Update Ubuntu](#3-update-ubuntu)
+4. [Reboot VPS](#4-reboot-vps)
+
+### User And SSH Setup (VPS)
+
+5. [Create New Admin User](#5-create-new-admin-user)
+6. [Setup SSH For New User](#6-setup-ssh-for-new-user)
+7. [Fix SSH Permissions](#7-fix-ssh-permissions)
+
+### Firewall And Fail2Ban (VPS)
+
+8. [Setup Firewall (UFW)](#8-setup-firewall-ufw)
+9. [Install Fail2Ban](#9-install-fail2ban)
+
+### SSH Hardening (VPS)
+
+10. [SSH Security Hardening](#10-ssh-security-hardening)
+11. [Allow Custom SSH Port](#11-allow-custom-ssh-port)
+12. [Remove Old SSH Port Rule](#12-remove-old-ssh-port-rule)
+13. [Save & Exit Nano](#13-save--exit-nano)
+14. [Verify SSH Config Before Restart](#14-verify-ssh-config-before-restart)
+15. [Restart SSH](#15-restart-ssh)
+16. [Verify SSH Service](#16-verify-ssh-service)
+17. [Login Using Custom SSH Port](#17-login-using-custom-ssh-port)
+
+### Mac SSH Config And Verification
+
+18. [Create SSH Shortcut Alias In Your Mac (Recommended)](#18-create-ssh-shortcut-alias-in-your-mac-recommended)
+19. [Verify Firewall](#19-verify-firewall)
+20. [Recommended SSH File Structure (Mac)](#20-recommended-ssh-file-structure-mac)
+
+### Best Practices And Checklist
+
+21. [SSH Security Best Practices](#21-ssh-security-best-practices)
+22. [Final Security Checklist](#22-final-security-checklist)
+
+### Next Steps
+
+- [After Initial Setup](#after-initial-setup)
+
+---
+
+## What This Guide Covers
+
+Initial VPS security setup for a fresh Ubuntu server:
+
+- Generate separate SSH keys on Mac (GitHub + VPS)
+- Create non-root admin user with sudo
+- Configure UFW firewall
+- Install Fail2Ban
+- Harden SSH (disable root, disable passwords, custom port)
+- Create Mac SSH alias for daily access
+
+Complete this guide **before** installing Docker or deploying apps.
+
+---
+
+## Recommended Order Of Operations
+
+```txt
+1. Generate VPS SSH key on Mac
+2. First login as root
+3. Update Ubuntu + reboot
+4. Create admin user + authorized_keys
+5. Enable UFW + Fail2Ban
+6. Harden sshd_config (custom port, key-only)
+7. Verify config → restart SSH
+8. Login with new user + custom port
+9. Configure ~/.ssh/config alias on Mac
+10. Run final security checklist
+```
+
+---
+
+## Production Security Architecture
+
+```txt
+Mac (~/.ssh/vps_ed25519)
+↓ SSH port 1182 (key only)
+↓
+UFW (allow 1182, 80, 443 only)
+↓
+Fail2Ban (block brute-force)
+↓
+Non-root user (mosabbir + sudo)
+↓
+Ready for Docker + deployment guides
+```
+
+---
+
 # 1. Generate SSH Key (Mac)
 
 ## Optional GitHub SSH Key Setup
@@ -713,3 +827,27 @@ Recommended:
 - SSH Config Syntax Verified
 - Dedicated VPS SSH Key Configured
 - SSH Alias Workflow Configured
+
+---
+
+## After Initial Setup
+
+Once the final security checklist passes, continue with:
+
+| Step | Guide |
+|------|-------|
+| Advanced SSH workflows | `02-ssh-guide.md` |
+| Linux basics on VPS | `03-linux-basics.md` |
+| Install Docker | `04-docker.md` |
+| Deploy applications | `10-project-deployment.md` |
+| Nginx reverse proxy | `11-nginx-reverse-proxy.md` |
+| Domain + Cloudflare | `12-domain-dns-cloudflare.md` |
+
+Quick verify everything still works:
+
+```bash
+ssh vps
+sudo ufw status
+sudo fail2ban-client status
+sudo systemctl status ssh
+```
