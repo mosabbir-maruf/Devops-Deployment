@@ -4,34 +4,34 @@
 
 ### Fundamentals
 
-1. [What Is Docker](#what-is-docker)
-2. [Docker Concepts](#docker-concepts)
-3. [Development Workflow vs Production Workflow](#development-workflow-vs-production-workflow)
-4. [Development Workflow](#development-workflow)
-5. [Production Workflow](#production-workflow)
-6. [Immutable Infrastructure Concept](#immutable-infrastructure-concept)
-7. [Docker Image vs Container](#docker-image-vs-container)
-8. [Stateless vs Stateful Services](#stateless-vs-stateful-services)
+1. [What Is Docker](#1-what-is-docker)
+2. [Docker Concepts](#2-docker-concepts)
+3. [Development Workflow vs Production Workflow](#3-development-workflow-vs-production-workflow)
+4. [Development Workflow](#4-development-workflow)
+5. [Production Workflow](#5-production-workflow)
+6. [Immutable Infrastructure Concept](#6-immutable-infrastructure-concept)
+7. [Docker Image vs Container](#7-docker-image-vs-container)
+8. [Stateless vs Stateful Services](#8-stateless-vs-stateful-services)
 
 ### Installation
 
-9. [Install Docker On Linux](#install-docker-on-linux)
-10. [Install Docker On Mac](#install-docker-on-mac)
-11. [Verify Docker Installation](#verify-docker-installation)
+9. [Install Docker On Linux](#9-install-docker-on-linux)
+10. [Install Docker On Mac](#10-install-docker-on-mac)
+11. [Verify Docker Installation](#11-verify-docker-installation)
 
 ### Core Components
 
-12. [Docker Images](#docker-images)
-13. [Docker Containers](#docker-containers)
-14. [Docker Volumes](#docker-volumes)
-15. [Bind Mounts](#bind-mounts)
-16. [Docker Networks](#docker-networks)
+12. [Docker Images](#12-docker-images)
+13. [Docker Containers](#13-docker-containers)
+14. [Docker Volumes](#14-docker-volumes)
+15. [Bind Mounts](#15-bind-mounts)
+16. [Docker Networks](#16-docker-networks)
 
 ### Dockerfile
 
-17. [Dockerfile](#dockerfile)
-18. [Docker Ignore](#docker-ignore)
-19. [Build Docker Images](#build-docker-images)
+17. [Dockerfile](#17-dockerfile)
+18. [Docker Ignore](#18-docker-ignore)
+19. [Build Docker Images](#19-build-docker-images)
 
 ### Docker Compose
 
@@ -42,61 +42,61 @@
 
 ### Development Workflow
 
-24. [Development Containers](#development-containers)
-25. [Hot Reload Workflow](#hot-reload-workflow)
-26. [Development Best Practices](#development-best-practices)
+24. [Development Containers](#24-development-containers)
+25. [Hot Reload Workflow](#25-hot-reload-workflow)
+26. [Development Best Practices](#26-development-best-practices)
 
 ### Production Workflow
 
-27. [Production Containers](#production-containers)
-28. [Production Deployment Workflow](#production-deployment-workflow)
-29. [Frontend Backend Database Architecture](#frontend-backend-database-architecture)
-30. [Docker With Nginx](#docker-with-nginx)
-31. [Docker With Cloudflare](#docker-with-cloudflare)
+27. [Production Containers](#27-production-containers)
+28. [Production Deployment Workflow](#28-production-deployment-workflow)
+29. [Frontend Backend Database Architecture](#29-frontend-backend-database-architecture)
+30. [Docker With Nginx](#30-docker-with-nginx)
+31. [Docker With Cloudflare](#31-docker-with-cloudflare)
 
 ### Registry
 
-32. [Docker Hub](#docker-hub)
-33. [Push Images](#push-images)
-34. [Pull Images](#pull-images)
+32. [Docker Hub](#32-docker-hub)
+33. [Push Images](#33-push-images)
+34. [Pull Images](#34-pull-images)
 
 ### Logs Monitoring Debugging
 
-35. [Container Logs](#container-logs)
-36. [Docker Compose Logs](#docker-compose-logs)
-37. [Docker Exec](#docker-exec)
-38. [Docker Inspect](#docker-inspect)
-39. [Docker Monitoring](#docker-monitoring)
-40. [Docker Debugging](#docker-debugging)
+35. [Container Logs](#35-container-logs)
+36. [Docker Compose Logs](#36-docker-compose-logs)
+37. [Docker Exec](#37-docker-exec)
+38. [Docker Inspect](#38-docker-inspect)
+39. [Docker Monitoring](#39-docker-monitoring)
+40. [Docker Debugging](#40-docker-debugging)
 
 ### Security
 
-41. [Docker Security Best Practices](#docker-security-best-practices)
-42. [Environment Variables](#environment-variables)
-43. [Secrets Management](#secrets-management)
+41. [Docker Security Best Practices](#41-docker-security-best-practices)
+42. [Environment Variables](#42-environment-variables)
+43. [Secrets Management](#43-secrets-management)
 
 ### Cleanup
 
-44. [Docker Cleanup](#docker-cleanup)
-45. [Uninstall Docker On Linux](#uninstall-docker-on-linux)
-46. [Uninstall Docker On Mac](#uninstall-docker-on-mac)
-47. [Remove Docker Desktop](#remove-docker-desktop)
-48. [Full Cleanup Verification](#full-cleanup-verification)
+44. [Docker Cleanup](#44-docker-cleanup)
+45. [Uninstall Docker On Linux](#45-uninstall-docker-on-linux)
+46. [Uninstall Docker On Mac](#46-uninstall-docker-on-mac)
+47. [Remove Docker Desktop](#47-remove-docker-desktop)
+48. [Full Cleanup Verification](#48-full-cleanup-verification)
 
 ### VPS Deployment
 
-49. [VPS Docker Workflow](#vps-docker-workflow)
-50. [Deployment Commands](#deployment-commands)
-51. [Rollback Workflow](#rollback-workflow)
+49. [VPS Docker Workflow](#49-vps-docker-workflow)
+50. [Deployment Commands](#50-deployment-commands)
+51. [Rollback Workflow](#51-rollback-workflow)
 
 ### Reference
 
-52. [Docker Service Commands](#docker-service-commands)
-53. [Docker Quick Commands Cheat Sheet](#docker-quick-commands-cheat-sheet)
-54. [Common Docker Issues](#common-docker-issues)
-55. [Real World Docker Learning Path](#real-world-docker-learning-path)
+52. [Docker Service Commands](#52-docker-service-commands)
+53. [Docker Quick Commands Cheat Sheet](#53-docker-quick-commands-cheat-sheet)
+54. [Common Docker Issues](#54-common-docker-issues)
+55. [Real World Docker Learning Path](#55-real-world-docker-learning-path)
 
-# What Is Docker
+# 1. What Is Docker
 
 Docker is a container platform used to package, distribute and run applications in isolated environments called containers.
 
@@ -120,7 +120,7 @@ Benefits:
 
 ---
 
-# Docker Concepts
+# 2. Docker Concepts
 
 Understanding these concepts is essential before using Docker in production.
 
@@ -249,7 +249,7 @@ backend:5000
 
 ---
 
-# Development Workflow vs Production Workflow
+# 3. Development Workflow vs Production Workflow
 
 One of the most important Docker concepts:
 
@@ -265,7 +265,7 @@ Avoid this.
 
 ---
 
-# Development Workflow
+# 4. Development Workflow
 
 Development focuses on:
 
@@ -339,7 +339,7 @@ This slows development significantly.
 
 ---
 
-# Production Workflow
+# 5. Production Workflow
 
 Production focuses on:
 
@@ -401,7 +401,7 @@ Manually Edit Running Containers
 
 ---
 
-# Immutable Infrastructure Concept
+# 6. Immutable Infrastructure Concept
 
 Production containers should never be modified manually.
 
@@ -427,7 +427,7 @@ Benefits:
 
 ---
 
-# Docker Image vs Container
+# 7. Docker Image vs Container
 
 Relationship:
 
@@ -481,7 +481,7 @@ One image can create many containers.
 
 ---
 
-# Stateless vs Stateful Services
+# 8. Stateless vs Stateful Services
 
 Understanding this concept is critical for production deployments.
 
@@ -578,7 +578,7 @@ Replace Old Container
 ```
 
 This is the workflow used in modern Docker-based production environments.
-# Install Docker On Linux
+# 9. Install Docker On Linux
 
 ## Supported Distributions
 
@@ -758,7 +758,7 @@ docker
 
 ---
 
-# Install Docker On Mac
+# 10. Install Docker On Mac
 
 ## Recommended Method
 
@@ -932,7 +932,7 @@ Saves RAM and CPU resources.
 
 ---
 
-# Verify Docker Installation
+# 11. Verify Docker Installation
 
 ## Verify Docker Version
 
@@ -1073,7 +1073,7 @@ Start Docker Desktop and try again.
 
 ✓ Volumes Accessible
 ```
-# Docker Images
+# 12. Docker Images
 
 Images are immutable templates used to create containers.
 
@@ -1201,7 +1201,7 @@ postgres:latest
 
 ---
 
-# Docker Containers
+# 13. Docker Containers
 
 Containers are running instances of images.
 
@@ -1315,7 +1315,7 @@ Recommended for production.
 
 ---
 
-# Docker Volumes
+# 14. Docker Volumes
 
 Volumes provide persistent storage.
 
@@ -1427,7 +1427,7 @@ Production code should come from images.
 
 ---
 
-# Bind Mounts
+# 15. Bind Mounts
 
 Bind mounts connect local folders directly to containers.
 
@@ -1572,7 +1572,7 @@ Named Volume
 
 ---
 
-# Docker Networks
+# 16. Docker Networks
 
 Networks allow containers to communicate.
 
@@ -1791,7 +1791,7 @@ Volume
 ↓
 Application
 ```
-# Dockerfile
+# 17. Dockerfile
 
 A Dockerfile is a set of instructions used to build Docker images.
 
@@ -1901,7 +1901,7 @@ CMD ["npm", "run", "start"]
 
 ---
 
-# Docker Ignore
+# 18. Docker Ignore
 
 ## Why Use .dockerignore?
 
@@ -1964,7 +1964,7 @@ Never send secrets into images.
 
 ---
 
-# Build Docker Images
+# 19. Build Docker Images
 
 ## Build Image
 
@@ -2905,7 +2905,7 @@ Avoid:
 
 ✗ Manual container modifications
 ```
-# Development Containers
+# 24. Development Containers
 
 Development containers are optimized for:
 
@@ -2964,7 +2964,7 @@ No image rebuild required.
 
 ---
 
-# Hot Reload Workflow
+# 25. Hot Reload Workflow
 
 Hot reload automatically reloads the application when files change.
 
@@ -3316,7 +3316,7 @@ Saves RAM and CPU.
 
 ---
 
-# Development Best Practices
+# 26. Development Best Practices
 
 Always:
 
@@ -3381,7 +3381,7 @@ Hot Reload
 +
 npm run dev
 ```
-# Production Containers
+# 27. Production Containers
 
 Production containers are optimized for:
 
@@ -3429,7 +3429,7 @@ Deploy New Container
 
 ---
 
-# Production Deployment Workflow
+# 28. Production Deployment Workflow
 
 Recommended workflow:
 
@@ -3493,7 +3493,7 @@ docker compose logs -f
 
 ---
 
-# Frontend Backend Database Architecture
+# 29. Frontend Backend Database Architecture
 
 ## Recommended Architecture
 
@@ -3559,7 +3559,7 @@ project/
 
 ---
 
-# Docker With Nginx
+# 30. Docker With Nginx
 
 Nginx should be the only public entry point.
 
@@ -3704,7 +3704,7 @@ Only Nginx Can Reach It
 
 ---
 
-# Docker With Cloudflare
+# 31. Docker With Cloudflare
 
 Recommended production setup.
 
@@ -3760,7 +3760,7 @@ Flexible
 
 ---
 
-# Production Update Workflow
+# Production Update Workflow (Legacy)
 
 ## Deploy New Version
 
@@ -3776,7 +3776,7 @@ Remove Old Container
 
 ---
 
-## Commands
+# 50. Deployment Commands (Legacy)
 
 ```bash id="dtx2vc"
 git pull origin main
@@ -3841,7 +3841,7 @@ Users
 ```
 
 This is the recommended production workflow for modern Docker-based applications.
-# Docker Hub
+# 32. Docker Hub
 
 Docker Hub is a container image registry.
 
@@ -4011,7 +4011,7 @@ latest only
 
 ---
 
-# Push Images
+# 33. Push Images
 
 ## Push Latest
 
@@ -4039,7 +4039,7 @@ docker push your-username/myapp:v1.0.0
 
 ---
 
-# Pull Images
+# 34. Pull Images
 
 ## Pull Latest
 
@@ -4342,7 +4342,7 @@ Cloudflare
 ↓
 Users
 ```
-# Container Logs
+# 35. Container Logs
 
 Logs are the first place to check when debugging containers.
 
@@ -4418,7 +4418,7 @@ docker logs --since 1h CONTAINER_ID
 
 ---
 
-# Docker Compose Logs
+# 36. Docker Compose Logs
 
 ## View All Logs
 
@@ -4468,7 +4468,7 @@ docker compose logs -t
 
 ---
 
-# Docker Exec
+# 37. Docker Exec
 
 Used to run commands inside running containers.
 
@@ -4540,7 +4540,7 @@ docker exec backend ping postgres
 
 ---
 
-# Docker Inspect
+# 38. Docker Inspect
 
 Inspect shows low-level container information.
 
@@ -4600,7 +4600,7 @@ docker network inspect app-network
 
 ---
 
-# Docker Monitoring
+# 39. Docker Monitoring
 
 Monitoring helps identify:
 
@@ -4677,7 +4677,7 @@ docker images
 
 ---
 
-# Docker Debugging
+# 40. Docker Debugging
 
 ## Check Running Containers
 
@@ -4920,7 +4920,7 @@ docker compose logs
 ```
 
 before making any changes.
-# Docker Security Best Practices
+# 41. Docker Security Best Practices
 
 Docker security is a production requirement, not an optional feature.
 
@@ -4934,7 +4934,7 @@ Goals:
 
 ---
 
-# Environment Variables
+# 42. Environment Variables
 
 Environment variables are the recommended way to pass configuration into containers.
 
@@ -5016,7 +5016,7 @@ inside environment variables.
 
 ---
 
-# Secrets Management
+# 43. Secrets Management
 
 Secrets should never be hardcoded.
 
@@ -5521,7 +5521,7 @@ Private Databases
 ```
 
 These practices form the baseline security model for modern Docker-based production deployments.
-# Docker Cleanup
+# 44. Docker Cleanup
 
 Docker accumulates:
 
@@ -5720,7 +5720,7 @@ docker system df -v
 
 ---
 
-# Uninstall Docker On Linux
+# 45. Uninstall Docker On Linux
 
 ## Stop Docker
 
@@ -5841,7 +5841,7 @@ Unit docker.service could not be found
 
 ---
 
-# Uninstall Docker On Mac
+# 46. Uninstall Docker On Mac
 
 ## Quit Docker Desktop
 
@@ -5867,7 +5867,7 @@ docker stop $(docker ps -aq)
 
 ---
 
-# Remove Docker Desktop
+# 47. Remove Docker Desktop
 
 ## Homebrew Install
 
@@ -5985,7 +5985,7 @@ Should fail if Docker is fully removed.
 
 ---
 
-# Full Cleanup Verification
+# 48. Full Cleanup Verification
 
 ## Containers
 
@@ -6076,7 +6076,7 @@ Should be near zero.
 
 ✓ Leftover Files Removed
 ```
-# VPS Docker Workflow
+# 49. VPS Docker Workflow
 
 This is the recommended production workflow.
 
@@ -6186,7 +6186,7 @@ docker compose logs -f
 
 ---
 
-# Production Update Workflow
+# Production Update Workflow (Legacy)
 
 ## Standard Deployment
 
@@ -6268,7 +6268,7 @@ docker compose up -d
 
 ---
 
-# Rollback Workflow
+# 51. Rollback Workflow
 
 Rollbacks should be simple.
 
@@ -6322,7 +6322,7 @@ Deploy
 
 ---
 
-# Docker Service Commands
+# 52. Docker Service Commands
 
 ## Start Docker
 
@@ -6380,7 +6380,7 @@ sudo systemctl disable docker
 
 ---
 
-# Docker Quick Commands Cheat Sheet
+# 53. Docker Quick Commands Cheat Sheet
 
 ## Containers
 
@@ -6580,7 +6580,7 @@ docker compose build
 
 ---
 
-# Common Docker Issues
+# 54. Common Docker Issues
 
 ## Cannot Connect To Docker Daemon
 
@@ -6700,7 +6700,7 @@ docker system prune -a --volumes
 
 ---
 
-# Real World Docker Learning Path
+# 55. Real World Docker Learning Path
 
 ```txt id="n6q4vx"
 Docker Basics
