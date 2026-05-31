@@ -25,62 +25,34 @@ Each guide includes a full **Table of Contents**, numbered sections, production 
 ```bash
 git clone https://github.com/mosabbir-maruf/devops-deployment.git
 cd devops-deployment
-make help      # show all Makefile targets
+make help      # show all targets
 make info      # show detected project info
-make docs      # list guides in recommended order
-make serve     # browse docs at http://localhost:8080
-```
-
-Or if this is an **application project** (Node.js / Go / Python):
-```bash
 make dev       # run in dev mode (hot-reload)
-make prod      # build & run in production mode
-make test      # run tests
-make lint      # run linter
+make prod      # build & run in production
 ```
 
-Start with [01-initial-vps-security-setup.md](./01-initial-vps-security-setup.md) on a fresh VPS, then follow the [Recommended Learning Path](#recommended-learning-path) below.
+Start with [01-initial-vps-security-setup.md](./01-initial-vps-security-setup.md) on a fresh VPS, then follow the guides in order.
 
 ---
 
 # Makefile
 
-The **Makefile** auto-detects your project type (Node.js, Go, Python, Docker) and adapts commands accordingly. No build step required for docs — all guides are plain Markdown.
-
-## Documentation targets
+The Makefile auto-detects your project type (**Node.js**, **Go**, **Python**) and adapts commands.
 
 | Command | Description |
 |---------|-------------|
-| `make help` | Show all available targets (default) |
-| `make info` | Show detected project info |
-| `make docs` | List all 17 guides in recommended reading order |
-| `make stats` | Line and word count per guide |
-| `make serve` | Serve the repo locally (`PORT=8080` by default) |
-| `make serve PORT=3000` | Serve on a custom port |
-| `make paths` | Print absolute paths to every guide |
-| `make check-links` | Verify all guide files exist |
-| `make security` | List guides 01–03 (VPS & security) |
-| `make docker` | List guides 04–05 (Docker & Coolify) |
-| `make runtime` | List guide 06 (Node.js) |
-| `make databases` | List guides 07–09 (PostgreSQL, MongoDB, Redis) |
-| `make deploy` | List guides 10–13 (deployment, Nginx, DNS, CI/CD) |
-| `make ops` | List guides 14–17 (monitoring, backup, troubleshooting, commands) |
-
-## Development targets (auto-adapts to project type)
-
-| Command | Description |
-|---------|-------------|
-| `make dev` | Run project in dev mode — auto-deletes container, image, and build cache on stop |
+| `make dev` | Run in dev mode — auto-deletes container, image & build cache on stop |
 | `make build` | Build Docker image |
-| `make prod` | Build + run in production mode |
+| `make prod` | Build & run in production mode |
 | `make stop` | Stop dev & prod containers |
 | `make logs` | Follow production container logs |
 | `make install` | Install dependencies (npm / go mod / pip) |
 | `make lint` | Run linter (ESLint / golangci-lint / ruff) |
 | `make test` | Run tests (npm test / go test / pytest) |
-| `make shell` | Open a shell in a Node container |
+| `make shell` | Open shell in Node container |
 | `make clean` | Remove dangling Docker resources |
 | `make deep-clean` | Remove ALL unused Docker resources |
+| `make info` | Show detected project info |
 
 ## Overridable variables
 
@@ -94,9 +66,9 @@ The **Makefile** auto-detects your project type (Node.js, Go, Python, Docker) an
 Example workflow:
 
 ```bash
-make info          # see detected project type & settings
+make info          # see detected project type
 make install       # install dependencies
-make dev           # start development server
+make dev           # start development (cleans up on stop)
 make lint && make test   # check quality
 make prod          # build & run for production
 make stop          # stop everything
@@ -392,12 +364,6 @@ Follow this order for a complete production setup:
 | 15 | [backup-snapshots](./15-backup-snapshots.md) | Backup strategy |
 | 16 | [troubleshooting](./16-troubleshooting.md) | Debug production |
 | 17 | [useful-commands](./17-useful-commands.md) | Quick reference |
-
-Or run:
-
-```bash
-make docs
-```
 
 ---
 
