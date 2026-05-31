@@ -77,24 +77,27 @@
 
 ### Cleanup And Uninstall
 
-47. [Remove node_modules And Cache (Mac)](#47-remove-node_modules-and-cache-mac)
-48. [Remove node_modules And Cache (Linux)](#48-remove-node_modules-and-cache-linux)
-49. [Uninstall Node.js On Mac](#49-uninstall-nodejs-on-mac)
-50. [Uninstall Node.js On Linux](#50-uninstall-nodejs-on-linux)
-51. [Remove Node.js Docker Images](#51-remove-nodejs-docker-images)
-52. [Verification After Removal](#52-verification-after-removal)
+47. [Remove node_modules And Project Cache (Mac)](#47-remove-node_modules-and-project-cache-mac)
+48. [Remove node_modules And Project Cache (Linux)](#48-remove-node_modules-and-project-cache-linux)
+49. [Remove Node.js Dev Container (Mac / Docker Desktop)](#49-remove-nodejs-dev-container-mac--docker-desktop)
+50. [Uninstall Node.js On Mac](#50-uninstall-nodejs-on-mac)
+51. [Uninstall Node.js On Linux](#51-uninstall-nodejs-on-linux)
+52. [Remove Node.js Docker Images](#52-remove-nodejs-docker-images)
+53. [Log Cleanup](#53-log-cleanup)
+54. [Cache And Leftover Files](#54-cache-and-leftover-files)
+55. [Verification After Removal](#55-verification-after-removal)
 
 ### Legacy: Global Node.js + PM2
 
-53. [PM2 Process Manager (Legacy)](#53-pm2-process-manager-legacy)
-54. [When To Avoid PM2 In Production](#54-when-to-avoid-pm2-in-production)
+56. [PM2 Process Manager (Legacy)](#56-pm2-process-manager-legacy)
+57. [When To Avoid PM2 In Production](#57-when-to-avoid-pm2-in-production)
 
 ### Production Workflows
 
-55. [Recommended Production Workflow](#55-recommended-production-workflow)
-56. [Modern Workflow](#56-modern-workflow)
-57. [Real-World Workflow](#57-real-world-workflow)
-58. [Final Production Checklist](#58-final-production-checklist)
+58. [Recommended Production Workflow](#58-recommended-production-workflow)
+59. [Modern Workflow](#59-modern-workflow)
+60. [Real-World Workflow](#60-real-world-workflow)
+61. [Final Production Checklist](#61-final-production-checklist)
 
 ---
 

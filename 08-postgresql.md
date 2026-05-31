@@ -77,18 +77,21 @@
 
 ### Cleanup And Uninstall
 
-47. [Remove PostgreSQL Docker Container](#47-remove-postgresql-docker-container)
+47. [Remove PostgreSQL Docker Container (Linux / VPS)](#47-remove-postgresql-docker-container-linux--vps)
 48. [Remove PostgreSQL Volumes](#48-remove-postgresql-volumes)
-49. [Uninstall PostgreSQL On Linux (Host)](#49-uninstall-postgresql-on-linux-host)
-50. [Cache And Leftover Files](#50-cache-and-leftover-files)
-51. [Verification After Removal](#51-verification-after-removal)
+49. [Remove PostgreSQL Dev Container (Mac / Docker Desktop)](#49-remove-postgresql-dev-container-mac--docker-desktop)
+50. [Uninstall PostgreSQL On Mac](#50-uninstall-postgresql-on-mac)
+51. [Uninstall PostgreSQL On Linux (Host)](#51-uninstall-postgresql-on-linux-host)
+52. [Log Cleanup](#52-log-cleanup)
+53. [Cache And Leftover Files](#53-cache-and-leftover-files)
+54. [Verification After Removal](#54-verification-after-removal)
 
 ### Production Workflows
 
-52. [Recommended Production Workflow](#52-recommended-production-workflow)
-53. [Modern Workflow](#53-modern-workflow)
-54. [Real-World Workflow](#54-real-world-workflow)
-55. [Final Production Checklist](#55-final-production-checklist)
+55. [Recommended Production Workflow](#55-recommended-production-workflow)
+56. [Modern Workflow](#56-modern-workflow)
+57. [Real-World Workflow](#57-real-world-workflow)
+58. [Final Production Checklist](#58-final-production-checklist)
 
 ---
 
@@ -1423,7 +1426,11 @@ Restore from backup if data corruption confirmed.
 
 ---
 
-# 47. Remove PostgreSQL Docker Container
+# 47. Remove PostgreSQL Docker Container (Linux / VPS)
+
+Production PostgreSQL runs on the VPS via Docker Compose.
+
+## Stop And Remove Container
 
 ```bash
 cd /var/www/myapp
@@ -1431,16 +1438,26 @@ docker compose stop postgres
 docker compose rm postgres
 ```
 
-## Full Stack Down
+## Remove Full Stack
 
 ```bash
 docker compose down       # keeps volumes
 docker compose down -v    # DESTROYS all data
 ```
 
+## Remove Standalone Container
+
+```bash
+docker stop postgres
+docker rm postgres
+docker rmi postgres:17
+```
+
 ---
 
 # 48. Remove PostgreSQL Volumes
+
+## List Volumes
 
 ```bash
 docker volume ls | grep postgres
@@ -1454,66 +1471,328 @@ docker compose down
 docker volume rm myapp_postgres_data
 ```
 
----
+✓ Good:
 
-# 49. Uninstall PostgreSQL On Linux (Host)
+* backup before removing any volume
 
-```bash
-sudo systemctl stop postgresql
-sudo systemctl disable postgresql
-sudo apt purge -y postgresql postgresql-* 
-sudo apt autoremove -y
-sudo rm -rf /var/lib/postgresql
-sudo rm -rf /var/log/postgresql
-sudo rm -rf /etc/postgresql
-```
+✗ Avoid:
 
-## Verify
-
-```bash
-which psql
-systemctl status postgresql
-```
+* `docker volume rm` without backup in production
 
 ---
 
-# 50. Cache And Leftover Files
+# 49. Remove PostgreSQL Dev Container (Mac / Docker Desktop)
 
-## Docker
+Local dev PostgreSQL from `docker-compose.dev.yml` on Mac.
+
+## Stop Dev Stack
 
 ```bash
-docker image rm postgres:17
+cd ~/Projects/myapp
+docker compose -f docker-compose.dev.yml stop postgres
+docker compose -f docker-compose.dev.yml rm postgres
+```
+
+## Remove Dev Stack And Volume
+
+```bash
+docker compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml down -v
+```
+
+## Remove Dev Image
+
+```bash
+docker rmi postgres:17
 docker image prune -f
 ```
 
-## Old Backups
-
-```bash
-ls ~/backups/
-rm ~/backups/myapp-2025-*.sql.gz
-```
-
-## WAL Files (Host — After Backup)
-
-Managed automatically by PostgreSQL — do not delete manually unless you understand WAL archiving.
-
----
-
-# 51. Verification After Removal
+## Verify (Mac)
 
 ```bash
 docker ps -a | grep postgres
 docker volume ls | grep postgres
 nc -zv localhost 5432
-which psql
-systemctl status postgresql
 ```
 
-Expected: no containers, no volumes (if removed), port closed.
+Expected: no dev containers, port 5432 closed.
 
 ---
 
-# 52. Recommended Production Workflow
+# 50. Uninstall PostgreSQL On Mac
+
+For Homebrew-installed `psql` and local PostgreSQL — not production VPS.
+
+## Stop Local PostgreSQL Service (If Running)
+
+```bash
+brew services stop postgresql@17
+```
+
+## Uninstall PostgreSQL
+
+```bash
+brew uninstall postgresql@17
+brew unlink postgresql@17
+```
+
+## Uninstall GUI Tools (Optional)
+
+```bash
+brew uninstall --cask tableplus
+brew uninstall --cask pgadmin4
+brew uninstall --cask dbeaver-community
+```
+
+## Remove Mac Data Directories
+
+```bash
+rm -rf /usr/local/var/postgresql@17
+rm -rf /opt/homebrew/var/postgresql@17
+rm -rf ~/Library/Application\ Support/Postgres
+rm -rf ~/Library/Logs/PostgreSQL
+rm -rf ~/.pgadmin
+rm -rf ~/Library/Preferences/org.pgadmin.pgadmin4.plist
+```
+
+## Remove Homebrew Leftovers
+
+```bash
+brew cleanup
+brew autoremove
+```
+
+## Verify (Mac)
+
+```bash
+which psql
+which postgres
+psql --version 2>&1
+brew list | grep postgres
+ls ~/Library/Application\ Support/ | grep -i postgres
+```
+
+Expected: commands not found, no postgres packages listed.
+
+---
+
+# 51. Uninstall PostgreSQL On Linux (Host)
+
+Legacy host install only — production should use Docker.
+
+## Stop And Disable Service
+
+```bash
+sudo systemctl stop postgresql
+sudo systemctl disable postgresql
+```
+
+## Remove Packages
+
+```bash
+sudo apt purge -y postgresql postgresql-* 
+sudo apt autoremove -y
+sudo apt autoclean
+```
+
+## Remove Data, Logs, Config
+
+```bash
+sudo rm -rf /var/lib/postgresql
+sudo rm -rf /var/log/postgresql
+sudo rm -rf /etc/postgresql
+sudo rm -rf /tmp/pgsql-*
+```
+
+## Verify (Linux Host)
+
+```bash
+which psql
+which postgres
+systemctl status postgresql
+dpkg -l | grep postgres
+sudo ss -tlnp | grep 5432
+```
+
+Expected: commands not found, service absent, port closed.
+
+---
+
+# 52. Log Cleanup
+
+## Docker Logs (Linux / VPS)
+
+```bash
+# Truncate container logs without removing container
+truncate -s 0 $(docker inspect --format='{{.LogPath}}' postgres)
+
+# Or configure log rotation in compose:
+# logging:
+#   driver: json-file
+#   options:
+#     max-size: "10m"
+#     max-file: "3"
+```
+
+## Docker Compose Log Export Then Restart
+
+```bash
+docker logs postgres > ~/logs/postgres-final.log 2>&1
+docker compose restart postgres
+```
+
+## Host Install Logs (Linux)
+
+```bash
+sudo truncate -s 0 /var/log/postgresql/postgresql-17-main.log
+sudo rm -f /var/log/postgresql/postgresql-17-main.log.*
+sudo journalctl --vacuum-time=7d
+```
+
+## Mac Logs
+
+```bash
+rm -rf ~/Library/Logs/PostgreSQL
+rm -rf ~/Library/Application\ Support/Postgres/var-17
+rm -rf ~/.pgadmin/pgadmin4.log
+```
+
+## Exported Backup Logs (Safe To Delete)
+
+```bash
+rm -f ~/logs/postgres-*.log
+rm -f ~/backups/*.log
+```
+
+## WAL Files (Host — Do Not Delete Manually)
+
+WAL files are managed by PostgreSQL. Only remove after understanding WAL archiving or during full uninstall.
+
+---
+
+# 53. Cache And Leftover Files
+
+## Docker Cache (Linux / Mac)
+
+```bash
+docker builder prune -f
+docker image prune -f
+docker image rm postgres:17
+docker system prune -f
+```
+
+Remove unused PostgreSQL volumes (backup first):
+
+```bash
+docker volume ls | grep postgres
+docker volume prune -f
+```
+
+Warning: `docker volume prune` deletes unused volumes permanently.
+
+## Linux Host Leftovers
+
+```bash
+sudo rm -rf /var/lib/postgresql
+sudo rm -rf /var/log/postgresql
+sudo rm -rf /etc/postgresql
+sudo rm -rf /tmp/pgsql-*
+sudo apt autoremove -y
+sudo apt autoclean
+```
+
+## Mac Leftovers
+
+```bash
+rm -rf /usr/local/var/postgresql@17
+rm -rf /opt/homebrew/var/postgresql@17
+rm -rf ~/.pgadmin
+rm -rf ~/Library/Application\ Support/Postgres
+rm -rf ~/Library/Caches/com.tinyapp.TablePlus
+brew cleanup
+```
+
+## Old Backup Files
+
+```bash
+ls ~/backups/
+rm ~/backups/myapp-2025-*.sql.gz
+rm -f ~/backups/all-databases-2025-*.sql
+```
+
+## psql History And Temp Files
+
+```bash
+rm -f ~/.psql_history
+rm -f /tmp/pgsql-*
+```
+
+## Orphan Docker Networks
+
+```bash
+docker network ls | grep myapp
+docker network prune -f
+```
+
+---
+
+# 54. Verification After Removal
+
+## Docker (Linux / VPS)
+
+```bash
+docker ps -a | grep postgres
+docker volume ls | grep postgres
+docker images | grep postgres
+nc -zv localhost 5432
+```
+
+Expected: no containers, no volumes (if removed), no images, port closed.
+
+## Mac
+
+```bash
+which psql
+which postgres
+brew list | grep postgres
+docker ps -a | grep postgres
+docker volume ls | grep postgres
+nc -zv localhost 5432
+ls ~/Library/Application\ Support/ | grep -i postgres
+```
+
+Expected: commands not found, no brew postgres packages, no dev containers, port closed.
+
+## Linux Host
+
+```bash
+which psql
+systemctl status postgresql
+dpkg -l | grep postgres
+sudo ss -tlnp | grep 5432
+ls /var/lib/postgresql 2>&1
+```
+
+Expected: command not found, service absent, port closed, data directory gone.
+
+## Cleanup Checklist
+
+✓ Good:
+
+* containers removed
+* volumes backed up then removed (if intended)
+* Mac Homebrew packages uninstalled
+* log and cache directories cleared
+* port 5432 not listening
+
+✗ Avoid:
+
+* `docker volume prune` without backup
+* deleting WAL files manually on running host install
+
+---
+
+# 55. Recommended Production Workflow
 
 ```txt
 1. Add postgres:17 to docker-compose.prod.yml
@@ -1529,7 +1808,7 @@ Expected: no containers, no volumes (if removed), port closed.
 
 ---
 
-# 53. Modern Workflow
+# 56. Modern Workflow
 
 ```txt
 Developer (Mac)
@@ -1551,7 +1830,7 @@ Backend connects internally
 
 ---
 
-# 54. Real-World Workflow
+# 57. Real-World Workflow
 
 Example: SaaS API with Prisma on Hetzner VPS.
 
@@ -1590,7 +1869,7 @@ ssh -L 5432:127.0.0.1:5432 vps-prod
 
 ---
 
-# 55. Final Production Checklist
+# 58. Final Production Checklist
 
 ## PostgreSQL Container
 
@@ -1652,7 +1931,17 @@ docker exec postgres psql -U admin myapp -c "SELECT pg_size_pretty(pg_database_s
 # Connections
 docker exec postgres psql -U admin -c "SELECT count(*) FROM pg_stat_activity;"
 
-# Cleanup
+# Cleanup (VPS / Docker)
 docker compose down       # keeps volume
 docker compose down -v    # DESTROYS data
+docker volume prune -f    # backup first
+
+# Uninstall Mac (Homebrew)
+brew services stop postgresql@17
+brew uninstall postgresql@17
+rm -rf /opt/homebrew/var/postgresql@17 ~/.pgadmin ~/Library/Logs/PostgreSQL
+
+# Uninstall Linux (host)
+sudo apt purge -y postgresql postgresql-* && sudo apt autoremove -y
+sudo rm -rf /var/lib/postgresql /var/log/postgresql /etc/postgresql
 ```

@@ -78,17 +78,19 @@
 ### Cleanup And Uninstall
 
 47. [Remove Applications In Coolify](#47-remove-applications-in-coolify)
-48. [Stop And Remove Coolify Containers](#48-stop-and-remove-coolify-containers)
-49. [Uninstall Coolify On Linux](#49-uninstall-coolify-on-linux)
-50. [Cache And Leftover Files](#50-cache-and-leftover-files)
-51. [Verification After Removal](#51-verification-after-removal)
+48. [Stop And Remove Coolify Containers (Linux / VPS)](#48-stop-and-remove-coolify-containers-linux--vps)
+49. [Clean Up Coolify On Mac](#49-clean-up-coolify-on-mac)
+50. [Uninstall Coolify On Linux](#50-uninstall-coolify-on-linux)
+51. [Log Cleanup](#51-log-cleanup)
+52. [Cache And Leftover Files](#52-cache-and-leftover-files)
+53. [Verification After Removal](#53-verification-after-removal)
 
 ### Production Workflows
 
-52. [Recommended Production Workflow](#52-recommended-production-workflow)
-53. [Modern Workflow](#53-modern-workflow)
-54. [Real-World Workflow](#54-real-world-workflow)
-55. [Final Production Checklist](#55-final-production-checklist)
+54. [Recommended Production Workflow](#54-recommended-production-workflow)
+55. [Modern Workflow](#55-modern-workflow)
+56. [Real-World Workflow](#56-real-world-workflow)
+57. [Final Production Checklist](#57-final-production-checklist)
 
 ---
 
@@ -1600,11 +1602,14 @@ docker volume rm VOLUME_NAME
 
 ---
 
-# 48. Stop And Remove Coolify Containers
+# 48. Stop And Remove Coolify Containers (Linux / VPS)
+
+Coolify runs only on the Linux VPS — not on Mac.
 
 ## Stop All Coolify Containers
 
 ```bash
+ssh vps-prod
 docker ps --filter "name=coolify" -q | xargs docker stop
 ```
 
@@ -1614,19 +1619,85 @@ docker ps --filter "name=coolify" -q | xargs docker stop
 docker ps -a --filter "name=coolify" -q | xargs docker rm
 ```
 
-Warning: stopping Coolify stops all managed deployments.
+## Remove Traefik (If Installed By Coolify)
+
+```bash
+docker ps -a | grep traefik
+docker rm -f TRAEFIK_CONTAINER_NAME
+```
+
+Warning: stopping Coolify stops all managed application deployments.
 
 ---
 
-# 49. Uninstall Coolify On Linux
+# 49. Clean Up Coolify On Mac
+
+Coolify is accessed from Mac via browser only — nothing installs on Mac except local dev tools.
+
+## Remove Browser Data (Optional)
+
+```txt
+Chrome → Settings → Privacy → Clear browsing data
+→ Cookies for coolify.yourdomain.com
+```
+
+Or remove saved passwords for Coolify dashboard in your password manager if decommissioning.
+
+## Remove SSH Tunnel Config (If Used)
+
+Edit `~/.ssh/config` and remove Coolify-related entries:
+
+```bash
+nano ~/.ssh/config
+# Remove Host blocks used only for Coolify dashboard tunnel
+```
+
+## Stop Local Dev Containers (If Testing Coolify Locally)
+
+```bash
+cd ~/Projects/myapp
+docker compose -f docker-compose.dev.yml down -v
+docker ps -a | grep -E 'coolify|traefik'
+```
+
+## Remove Local Docker Images (Dev Only)
+
+```bash
+docker images | grep -E 'coolify|traefik'
+docker rmi IMAGE_ID
+docker image prune -f
+```
+
+## Clear Mac Docker Desktop Cache
+
+```bash
+# Docker Desktop → Troubleshoot → Clean / Purge data (GUI)
+# Or via CLI:
+docker system prune -a -f
+```
+
+## Verify (Mac)
+
+```bash
+docker ps -a | grep coolify
+docker volume ls | grep coolify
+# Browser: coolify.yourdomain.com should be unreachable or removed from DNS
+```
+
+Expected: no local coolify containers, no orphaned dev volumes.
+
+---
+
+# 50. Uninstall Coolify On Linux
 
 ## Stop Coolify
 
 ```bash
+ssh vps-prod
 docker ps --filter "name=coolify" -q | xargs docker stop
 ```
 
-## Remove Coolify Data
+## Remove Coolify Data Directory
 
 ```bash
 sudo rm -rf /data/coolify
@@ -1636,6 +1707,7 @@ sudo rm -rf /data/coolify
 
 ```bash
 sudo rm -f /usr/local/bin/coolify
+which coolify
 ```
 
 ## Remove Coolify Docker Resources
@@ -1643,22 +1715,101 @@ sudo rm -f /usr/local/bin/coolify
 ```bash
 docker ps -a --filter "name=coolify" -q | xargs docker rm -f
 docker volume ls | grep coolify
-docker volume rm $(docker volume ls -q | grep coolify)
+docker volume rm $(docker volume ls -q | grep coolify) 2>/dev/null
 docker network ls | grep coolify
+docker network prune -f
 ```
 
-## Remove Traefik (If Installed By Coolify)
+## Remove Traefik
 
 ```bash
 docker ps -a | grep traefik
-docker rm -f TRAEFIK_CONTAINER
+docker rm -f $(docker ps -a --filter "name=traefik" -q)
+```
+
+## Remove Coolify Docker Images
+
+```bash
+docker images | grep -i coolify
+docker images | grep traefik
+docker rmi IMAGE_ID
+docker image prune -a -f
+```
+
+## Verify (Linux)
+
+```bash
+ls /data/coolify 2>&1
+which coolify
+docker ps -a | grep coolify
+curl -I http://localhost:8000
+```
+
+Expected: data dir gone, CLI not found, no containers, port 8000 closed.
+
+---
+
+# 51. Log Cleanup
+
+## Coolify Platform Logs (Linux / VPS)
+
+```bash
+docker logs coolify --tail=100 > ~/logs/coolify-final.log 2>&1
+docker logs coolify -f
+
+# Truncate log file (container keeps running)
+truncate -s 0 $(docker inspect --format='{{.LogPath}}' coolify)
+```
+
+## All Coolify-Related Container Logs
+
+```bash
+docker ps --filter "name=coolify" --format "{{.Names}}" | while read c; do
+  docker logs "$c" > ~/logs/"$c"-$(date +%F).log 2>&1
+done
+```
+
+## Traefik / Proxy Logs
+
+```bash
+docker ps | grep traefik
+docker logs TRAEFIK_CONTAINER --tail=200 > ~/logs/traefik-final.log 2>&1
+```
+
+## Application Logs (Managed By Coolify)
+
+Export from Coolify dashboard before removal:
+
+```txt
+Application → Logs → Export / copy
+```
+
+Or via SSH:
+
+```bash
+docker logs APP_CONTAINER_NAME > ~/logs/app-final.log 2>&1
+```
+
+## Mac — Local Dev Logs
+
+```bash
+rm -f ~/logs/coolify-*.log
+rm -f ~/Projects/myapp/*.log
+docker compose logs > ~/logs/compose-final.log 2>&1
+```
+
+## System Logs (Linux — If Coolify Installer Used systemd)
+
+```bash
+sudo journalctl --vacuum-time=14d
+sudo journalctl --vacuum-size=500M
 ```
 
 ---
 
-# 50. Cache And Leftover Files
+# 52. Cache And Leftover Files
 
-## Docker Cache
+## Docker Cache (Linux / VPS)
 
 ```bash
 docker system prune -f
@@ -1666,45 +1817,96 @@ docker builder prune -f
 docker image prune -a -f
 ```
 
-## Coolify Leftover Volumes
+## Coolify Leftover Volumes (Backup First)
 
 ```bash
 docker volume ls
+docker volume ls | grep -E 'coolify|app'
+# Backup important app volumes before prune
 docker volume prune -f
 ```
 
-Warning: `volume prune` removes unused volumes — backup first.
+Warning: `volume prune` removes unused volumes permanently.
 
-## Leftover Networks
+## Coolify Leftover Networks
 
 ```bash
+docker network ls | grep coolify
 docker network prune -f
 ```
 
-## UFW Cleanup
+## Linux Host Leftovers
+
+```bash
+sudo rm -rf /data/coolify
+sudo rm -f /usr/local/bin/coolify
+sudo rm -rf /tmp/coolify-*
+sudo rm -rf ~/logs/coolify-*
+```
+
+## Mac Leftovers
+
+```bash
+rm -rf ~/logs/coolify-*
+rm -rf ~/Library/Caches/*coolify* 2>/dev/null
+docker system prune -f
+docker volume prune -f
+```
+
+## UFW Cleanup (Linux)
 
 ```bash
 sudo ufw delete allow 8000/tcp
 sudo ufw delete allow 6001:6002/tcp
 sudo ufw reload
+sudo ufw status
+```
+
+## DNS Cleanup (Cloudflare)
+
+Remove records if decommissioning Coolify dashboard:
+
+```txt
+Type: A  Name: coolify  → Delete
+```
+
+## Old Deployment Backups
+
+```bash
+ls ~/backups/
+rm -rf ~/backups/coolify-*
+rm -rf ~/backups/myapp-2025-*
 ```
 
 ---
 
-# 51. Verification After Removal
+# 53. Verification After Removal
 
-## Coolify Removed
+## Linux / VPS — Coolify Removed
 
 ```bash
-docker ps | grep coolify
-ls /data/coolify
+docker ps -a | grep coolify
+docker volume ls | grep coolify
+docker images | grep -i coolify
+ls /data/coolify 2>&1
 which coolify
 curl -I http://localhost:8000
+sudo ufw status | grep 8000
 ```
 
-Expected: no coolify containers, directory gone, command not found.
+Expected: no coolify containers/volumes/images, data dir gone, CLI missing, port 8000 closed.
 
-## Docker Still Working
+## Mac
+
+```bash
+docker ps -a | grep coolify
+docker volume ls | grep coolify
+ls ~/logs/coolify-* 2>&1
+```
+
+Expected: no local coolify containers, no leftover log dirs.
+
+## Docker Still Working (Linux)
 
 ```bash
 docker --version
@@ -1712,16 +1914,31 @@ docker ps
 sudo systemctl status docker
 ```
 
-## Manual Apps Still Running (If Any)
+## Manual Apps Still Running (If Keeping VPS)
 
 ```bash
 docker ps
 curl -I http://localhost
 ```
 
+## Cleanup Checklist
+
+✓ Good:
+
+* Coolify containers and `/data/coolify` removed
+* UFW rules for 8000/6001 removed
+* app volumes backed up before prune
+* DNS records updated if decommissioning
+* Mac browser credentials rotated/removed
+
+✗ Avoid:
+
+* `docker volume prune` without backing up databases
+* leaving port 8000 open after uninstall
+
 ---
 
-# 52. Recommended Production Workflow
+# 54. Recommended Production Workflow
 
 ```txt
 1. Harden VPS (SSH, UFW, Fail2Ban)
@@ -1738,7 +1955,7 @@ curl -I http://localhost
 
 ---
 
-# 53. Modern Workflow
+# 55. Modern Workflow
 
 ```txt
 Developer (Mac)
@@ -1768,7 +1985,7 @@ Choose Coolify for speed and multi-app management. Choose manual CI/CD for maxim
 
 ---
 
-# 54. Real-World Workflow
+# 56. Real-World Workflow
 
 Example: deploy a Node.js SaaS on Hetzner with Coolify.
 
@@ -1809,7 +2026,7 @@ docker stats --no-stream
 
 ---
 
-# 55. Final Production Checklist
+# 57. Final Production Checklist
 
 ## VPS
 
@@ -1883,10 +2100,15 @@ docker system df
 sudo ufw status
 sudo ufw allow 80/tcp && sudo ufw allow 443/tcp
 
-# Cleanup
-docker system prune -f
-docker builder prune -f
-
-# Uninstall data
+# Cleanup (VPS)
+docker ps --filter "name=coolify" -q | xargs docker stop
 sudo rm -rf /data/coolify
+sudo rm -f /usr/local/bin/coolify
+docker volume prune -f    # backup DBs first
+sudo ufw delete allow 8000/tcp
+
+# Cleanup (Mac — local dev)
+docker compose -f docker-compose.dev.yml down -v
+docker system prune -f
+rm -rf ~/logs/coolify-*
 ```
