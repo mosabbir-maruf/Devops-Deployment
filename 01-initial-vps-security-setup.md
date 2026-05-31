@@ -158,7 +158,7 @@ Connects to the VPS server using SSH.
 ## Update Packages
 
 ```bash
-apt update && apt upgrade -y
+sudo apt update && sudo apt upgrade -y
 ```
 
 Updates Ubuntu packages and installs security updates.
