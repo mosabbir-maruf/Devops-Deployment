@@ -1,18 +1,106 @@
 # DevOps Deployment
 
-Production-ready DevOps, VPS deployment, Docker, Coolify, Linux security and self-hosting documentation by **Mosabbir Maruf**.
+Production-ready DevOps documentation for VPS hosting, Docker, security, deployment, and self-hosted infrastructure by **Mosabbir Maruf**.
+
+**Stack:** Ubuntu VPS · Docker · Node.js / Go / Python · PostgreSQL / MongoDB / Redis · Nginx · Cloudflare · GitHub Actions
+
+**Platforms:** Mac (development) · Linux VPS (production)
+
+**Languages:** Node.js · Go · Python — auto-detected by the Makefile
 
 Designed for:
 
-- beginners learning DevOps
-- developers deploying real projects
-- production-level VPS hosting
-- production-grade deployments
-- self-hosted infrastructure
-- Docker-based workflows
-- full-stack application deployment
-- real-world production server management
-- scalable backend infrastructure
+- beginners learning DevOps hands-on
+- developers deploying real full-stack projects
+- production-grade VPS and Docker workflows
+- self-hosted infrastructure without vendor lock-in
+- CI/CD automation (GitHub Actions → Docker Hub → SSH deploy)
+
+Each guide includes a full **Table of Contents**, numbered sections, production commands, Mac/Linux/Docker coverage, cleanup/uninstall steps, and final checklists.
+
+---
+
+# Quick Start
+
+```bash
+git clone https://github.com/mosabbir-maruf/devops-deployment.git
+cd devops-deployment
+make help      # show all Makefile targets
+make info      # show detected project info
+make docs      # list guides in recommended order
+make serve     # browse docs at http://localhost:8080
+```
+
+Or if this is an **application project** (Node.js / Go / Python):
+```bash
+make dev       # run in dev mode (hot-reload)
+make prod      # build & run in production mode
+make test      # run tests
+make lint      # run linter
+```
+
+Start with [01-initial-vps-security-setup.md](./01-initial-vps-security-setup.md) on a fresh VPS, then follow the [Recommended Learning Path](#recommended-learning-path) below.
+
+---
+
+# Makefile
+
+The **Makefile** auto-detects your project type (Node.js, Go, Python, Docker) and adapts commands accordingly. No build step required for docs — all guides are plain Markdown.
+
+## Documentation targets
+
+| Command | Description |
+|---------|-------------|
+| `make help` | Show all available targets (default) |
+| `make info` | Show detected project info |
+| `make docs` | List all 17 guides in recommended reading order |
+| `make stats` | Line and word count per guide |
+| `make serve` | Serve the repo locally (`PORT=8080` by default) |
+| `make serve PORT=3000` | Serve on a custom port |
+| `make paths` | Print absolute paths to every guide |
+| `make check-links` | Verify all guide files exist |
+| `make security` | List guides 01–03 (VPS & security) |
+| `make docker` | List guides 04–05 (Docker & Coolify) |
+| `make runtime` | List guide 06 (Node.js) |
+| `make databases` | List guides 07–09 (PostgreSQL, MongoDB, Redis) |
+| `make deploy` | List guides 10–13 (deployment, Nginx, DNS, CI/CD) |
+| `make ops` | List guides 14–17 (monitoring, backup, troubleshooting, commands) |
+
+## Development targets (auto-adapts to project type)
+
+| Command | Description |
+|---------|-------------|
+| `make dev` | Run project in dev mode (hot-reload with Docker or native) |
+| `make build` | Build Docker image |
+| `make prod` | Build + run in production mode |
+| `make stop` | Stop dev & prod containers |
+| `make logs` | Follow production container logs |
+| `make install` | Install dependencies (npm / go mod / pip) |
+| `make lint` | Run linter (ESLint / golangci-lint / ruff) |
+| `make test` | Run tests (npm test / go test / pytest) |
+| `make shell` | Open a shell in a Node container |
+| `make clean` | Remove dangling Docker resources |
+| `make deep-clean` | Remove ALL unused Docker resources |
+
+## Overridable variables
+
+| Variable | Default | Example |
+|----------|---------|---------|
+| `PORT` | `3000` | `make dev PORT=5000` |
+| `DEV_PORT` | `$(PORT)` | `make dev DEV_PORT=3001` |
+| `PROD_PORT` | `$(PORT)` | `make prod PROD_PORT=80` |
+| `IMAGE_NAME` | directory name | `make build IMAGE_NAME=myapp:v1` |
+
+Example workflow:
+
+```bash
+make info          # see detected project type & settings
+make install       # install dependencies
+make dev           # start development server
+make lint && make test   # check quality
+make prod          # build & run for production
+make stop          # stop everything
+```
 
 ---
 
@@ -22,56 +110,48 @@ Designed for:
 
 ### [01-initial-vps-security-setup.md](./01-initial-vps-security-setup.md)
 
-Production-ready initial VPS setup guide.
+First guide — harden a fresh Ubuntu VPS before anything else.
 
 Includes:
 
-- Ubuntu VPS setup
-- system updates
-- sudo user creation
-- SSH hardening
-- custom SSH port
-- Fail2Ban
-- firewall configuration
-- automatic security updates
-- swap setup
-- VPS security best practices
+- separate GitHub and VPS SSH keys (Ed25519)
+- first root login, Ubuntu update, reboot
+- non-root admin user with sudo
+- UFW firewall setup
+- Fail2Ban installation
+- SSH hardening (disable root, disable passwords, custom port 1182)
+- Mac `~/.ssh/config` alias
+- final security checklist
 
 ---
 
 ### [02-ssh-guide.md](./02-ssh-guide.md)
 
-Complete SSH workflow and security guide.
+Complete SSH workflow and security reference.
 
 Includes:
 
-- SSH keys
-- Ed25519 keys
-- SSH agent
-- SSH config
-- SSH permissions
-- SCP
-- SSH debugging
+- SSH keys, Ed25519, SSH agent
+- SSH config, permissions, SCP, SFTP
+- SSH debugging and lockout recovery
 - GitHub SSH authentication
-- SSH security best practices
+- Mac and Linux workflows
+- cleanup and uninstall
 
 ---
 
 ### [03-linux-basics.md](./03-linux-basics.md)
 
-Essential Linux commands and server basics.
+Essential Linux commands for VPS management.
 
 Includes:
 
-- Linux navigation
-- file management
-- permissions
-- package management
-- monitoring commands
-- networking basics
-- services/logs
-- compression/archives
-- Linux security basics
+- navigation, files, permissions
+- package management (`apt`)
+- processes, services, logs
+- networking, compression, archives
+- Mac vs Linux differences
+- security basics and cleanup
 
 ---
 
@@ -79,38 +159,30 @@ Includes:
 
 ### [04-docker.md](./04-docker.md)
 
-Complete Docker production workflow.
+Docker-first production workflow.
 
 Includes:
 
-- Docker installation
-- containers
-- images
-- volumes
-- Docker Compose
-- Docker networking
-- Docker security
-- monitoring
-- cleanup
-- production workflows
+- Docker install (Mac + Linux VPS)
+- images, containers, volumes, networks
+- Dockerfile and `.dockerignore`
+- Docker Compose (dev + production)
+- Docker Hub, health checks, security
+- monitoring, cleanup, production checklists
 
 ---
 
 ### [05-coolify.md](./05-coolify.md)
 
-Self-hosted Coolify deployment platform guide.
+Self-hosted PaaS alternative to manual Docker deploys.
 
 Includes:
 
-- Coolify installation
-- GitHub integration
-- deployments
-- domains & SSL
-- environment variables
-- Docker integration
-- monitoring
-- backups
-- Coolify security best practices
+- Coolify installation on VPS
+- GitHub integration and deployments
+- domains, SSL, environment variables
+- Docker integration, monitoring, backups
+- Mac browser/SSH cleanup, security practices
 
 ---
 
@@ -118,74 +190,58 @@ Includes:
 
 ### [06-nodejs-npm.md](./06-nodejs-npm.md)
 
-Production Node.js and npm setup guide.
+Node.js and npm for development; Docker for production.
 
 Includes:
 
-- Node.js installation
-- npm / pnpm / yarn
-- package management
-- PM2
-- environment variables
-- npm security
-- production builds
-- monitoring
-- deployment workflows
+- Node.js install (Mac + Linux)
+- npm, pnpm, yarn
+- environment variables and production builds
+- PM2 (legacy — Docker preferred in production)
+- Mac/Linux cleanup, cache, log removal
 
 ---
 
-## Databases
+## Databases (Docker-First)
+
+All database guides use **Docker containers** on VPS — never expose DB ports publicly.
 
 ### [07-mongodb.md](./07-mongodb.md)
 
-Production MongoDB setup and security guide.
+MongoDB 8 in Docker.
 
 Includes:
 
-- MongoDB installation
-- authentication
-- bindIp security
-- backups & restore
-- Docker MongoDB
-- indexes
-- monitoring
-- MongoDB production practices
+- Docker Compose setup and authentication
+- backups, restore, indexes
+- monitoring, security, UFW rules
+- Mac/Linux/Docker cleanup and uninstall
 
 ---
 
 ### [08-postgresql.md](./08-postgresql.md)
 
-Production PostgreSQL setup guide.
+PostgreSQL 17 in Docker.
 
 Includes:
 
-- PostgreSQL installation
-- users/databases
-- SQL basics
-- authentication
-- pg_hba.conf
-- backups
-- Docker PostgreSQL
-- indexing
-- monitoring
-- PostgreSQL security
+- Docker Compose setup, users, databases
+- SQL basics, connection strings
+- backups, restore, indexing
+- monitoring, security, cleanup (Mac + Linux + Docker)
 
 ---
 
 ### [09-redis.md](./09-redis.md)
 
-Redis caching and queue system guide.
+Redis 8-alpine in Docker.
 
 Includes:
 
-- Redis installation
-- persistence
-- Redis security
-- password protection
-- Docker Redis
-- monitoring
-- caching workflows
-- Redis production practices
+- caching, persistence, password auth
+- Docker Compose setup
+- memory limits, monitoring
+- production practices and cleanup
 
 ---
 
@@ -193,54 +249,44 @@ Includes:
 
 ### [10-project-deployment.md](./10-project-deployment.md)
 
-Production deployment workflows.
+Primary deployment guide — Docker Compose + GitHub Actions.
 
 Includes:
 
-- VPS deployments
-- Docker deployments
-- Coolify deployments
-- PM2 workflows
-- environment variables
-- production builds
-- HTTPS setup
-- rollback basics
-- deployment monitoring
+- production stack architecture
+- VPS preparation and security checklist
+- Docker Compose deployment (recommended)
+- Docker Hub + GitHub Actions CI/CD
+- Coolify (alternative)
+- Nginx, Cloudflare, SSL, health checks
+- rollback, monitoring, cleanup
 
 ---
 
 ### [11-nginx-reverse-proxy.md](./11-nginx-reverse-proxy.md)
 
-Nginx reverse proxy and SSL guide.
+Nginx as reverse proxy in Docker or on host.
 
 Includes:
 
-- reverse proxy setup
-- multiple app routing
-- HTTPS/SSL
-- Let's Encrypt
-- WebSocket support
-- security headers
-- rate limiting
-- Nginx monitoring
-- production best practices
+- reverse proxy for multiple apps
+- HTTPS/SSL (Let's Encrypt + Cloudflare Origin)
+- WebSocket support, security headers, rate limiting
+- Docker Compose integration
+- Mac/Linux/Docker cleanup
 
 ---
 
 ### [12-domain-dns-cloudflare.md](./12-domain-dns-cloudflare.md)
 
-Domain, DNS and Cloudflare setup guide.
+Domain, DNS, and Cloudflare for production.
 
 Includes:
 
-- domain setup
-- DNS records
-- Cloudflare configuration
-- HTTPS/SSL
-- CDN & proxy
-- WAF basics
-- DNS troubleshooting
-- production security practices
+- DNS records (A, CNAME, MX)
+- Cloudflare proxy, SSL Full (strict)
+- Origin certificates
+- WAF, CDN, troubleshooting 522/525 errors
 
 ---
 
@@ -248,92 +294,151 @@ Includes:
 
 ### [13-git-github-ci-cd.md](./13-git-github-ci-cd.md)
 
-Git, GitHub and CI/CD workflow guide.
+Git, GitHub, and automated deployment pipelines.
 
 Includes:
 
-- Git basics
-- GitHub SSH authentication
-- Git workflows
-- GitHub Actions
-- automated deployments
-- CI/CD pipelines
-- GitHub secrets
-- verified commits
-- SSH signing
-- production deployment automation
+- Git workflows and branching
+- GitHub SSH keys and secrets
+- GitHub Actions → Docker Hub → SSH → `docker compose`
+- verified commits, SSH signing
+- rollback and production automation
 
 ---
 
-## Monitoring & Maintenance
+## Monitoring & Operations
 
 ### [14-server-monitoring.md](./14-server-monitoring.md)
 
-Server monitoring and resource tracking guide.
+Monitor VPS, Docker, and application health.
 
 Includes:
 
-- CPU/RAM monitoring
-- disk monitoring
-- Docker monitoring
-- PM2 monitoring
-- database monitoring
-- logs
-- uptime monitoring
-- monitoring tools
-- security monitoring
+- CPU, RAM, disk, inode monitoring
+- Docker stats and compose logs
+- PostgreSQL, Redis, MongoDB monitoring
+- Fail2Ban and auth log review
+- automated `monitor.sh` cron, Uptime Kuma
+- Netdata (SSH tunnel), cleanup
 
 ---
 
 ### [15-backup-snapshots.md](./15-backup-snapshots.md)
 
-Production backup and recovery guide.
+Production backup and disaster recovery.
 
 Includes:
 
-- VPS snapshots
-- MongoDB backups
-- PostgreSQL backups
-- Redis backups
-- Docker volume backups
-- cron automation
-- disaster recovery workflows
-- backup security practices
+- 3-layer strategy (snapshot + daily dump + offsite)
+- VPS provider snapshots
+- PostgreSQL, MongoDB, Redis backups via Docker
+- Docker volume tar backups
+- `backup.sh` + cron + rclone offsite (R2/S3)
+- restore testing, encryption, retention
 
 ---
 
 ### [16-troubleshooting.md](./16-troubleshooting.md)
 
-Common VPS and deployment troubleshooting guide.
+Systematic production debugging guide.
 
 Includes:
 
-- SSH issues
-- Docker issues
-- PM2 issues
-- Nginx issues
-- DNS problems
-- SSL problems
-- database troubleshooting
-- deployment recovery workflows
+- standard debug workflow (logs → services → ports → DNS)
+- Docker Compose, Nginx 502/504, Cloudflare errors
+- database connection issues
+- CI/CD deploy failures
+- emergency 60-second diagnosis
+- rollback and restore from backup
 
 ---
 
 ### [17-useful-commands.md](./17-useful-commands.md)
 
-Quick reusable DevOps command reference.
+One-page production command reference.
 
 Includes:
 
-- Linux commands
-- Docker commands
-- Git commands
-- PM2 commands
-- MongoDB commands
-- PostgreSQL commands
-- Redis commands
-- monitoring commands
-- deployment commands
+- SSH, Linux, UFW, Fail2Ban
+- Docker and Docker Compose
+- Git, Node.js/npm (dev)
+- PostgreSQL, MongoDB, Redis (Docker)
+- Nginx, DNS, SSL, Cloudflare
+- daily VPS check, deploy, emergency fix commands
+- port and file path reference tables
+
+---
+
+# Recommended Learning Path
+
+Follow this order for a complete production setup:
+
+| # | Guide | Purpose |
+|---|-------|---------|
+| 01 | [initial-vps-security-setup](./01-initial-vps-security-setup.md) | Secure fresh VPS |
+| 02 | [ssh-guide](./02-ssh-guide.md) | SSH mastery |
+| 03 | [linux-basics](./03-linux-basics.md) | Linux fundamentals |
+| 04 | [docker](./04-docker.md) | Docker foundation |
+| 05 | [coolify](./05-coolify.md) | Optional PaaS |
+| 06 | [nodejs-npm](./06-nodejs-npm.md) | Node.js dev setup |
+| 07 | [mongodb](./07-mongodb.md) | MongoDB in Docker |
+| 08 | [postgresql](./08-postgresql.md) | PostgreSQL in Docker |
+| 09 | [redis](./09-redis.md) | Redis in Docker |
+| 10 | [project-deployment](./10-project-deployment.md) | Deploy to production |
+| 11 | [nginx-reverse-proxy](./11-nginx-reverse-proxy.md) | Reverse proxy + SSL |
+| 12 | [domain-dns-cloudflare](./12-domain-dns-cloudflare.md) | Domain + CDN |
+| 13 | [git-github-ci-cd](./13-git-github-ci-cd.md) | CI/CD automation |
+| 14 | [server-monitoring](./14-server-monitoring.md) | Monitor everything |
+| 15 | [backup-snapshots](./15-backup-snapshots.md) | Backup strategy |
+| 16 | [troubleshooting](./16-troubleshooting.md) | Debug production |
+| 17 | [useful-commands](./17-useful-commands.md) | Quick reference |
+
+Or run:
+
+```bash
+make docs
+```
+
+---
+
+# Production Stack Overview
+
+```txt
+User
+↓
+Cloudflare (DNS, SSL Full strict, WAF, CDN)
+↓
+Nginx (reverse proxy, HTTPS)
+↓
+Docker Compose
+├── backend (Node.js / Go / Python app)
+├── postgres (PostgreSQL 17)
+├── redis (Redis 8-alpine)
+└── mongodb (MongoDB 8, if needed)
+↓
+GitHub Actions → Docker Hub → SSH → docker compose up -d
+```
+
+---
+
+# Production Rules
+
+✓ Good:
+
+- SSH key authentication only (custom port)
+- UFW: allow 80, 443, SSH port only
+- databases on Docker internal network — never public
+- HTTPS everywhere (Cloudflare Full strict)
+- `.env` for secrets — never in git
+- backup before every deploy
+- health check endpoints monitored daily
+
+✗ Avoid:
+
+- exposing PostgreSQL (5432), Redis (6379), MongoDB (27017) publicly
+- PM2 or git-pull deploys in production (use Docker Compose)
+- password SSH login or root SSH login
+- skipping backup restore tests
 
 ---
 
@@ -341,72 +446,13 @@ Includes:
 
 This repository focuses on:
 
-- secure VPS setup
-- production-ready deployments
-- Docker-based workflows
+- secure VPS setup from day one
+- Docker-first production deployments
+- practical, command-heavy DevOps learning
 - self-hosted infrastructure
-- Coolify hosting
-- practical DevOps learning
-- deployment automation
-- Linux server management
-- backend infrastructure
-- real-world production workflows
-
----
-
-# Recommended Learning Path
-
-Suggested order:
-
-- [01-initial-vps-security-setup.md](./01-initial-vps-security-setup.md)
-- [02-ssh-guide.md](./02-ssh-guide.md)
-- [03-linux-basics.md](./03-linux-basics.md)
-- [04-docker.md](./04-docker.md)
-- [05-coolify.md](./05-coolify.md)
-- [06-nodejs-npm.md](./06-nodejs-npm.md)
-- [07-mongodb.md](./07-mongodb.md)
-- [08-postgresql.md](./08-postgresql.md)
-- [09-redis.md](./09-redis.md)
-- [10-project-deployment.md](./10-project-deployment.md)
-- [11-nginx-reverse-proxy.md](./11-nginx-reverse-proxy.md)
-- [12-domain-dns-cloudflare.md](./12-domain-dns-cloudflare.md)
-- [13-git-github-ci-cd.md](./13-git-github-ci-cd.md)
-- [14-server-monitoring.md](./14-server-monitoring.md)
-- [15-backup-snapshots.md](./15-backup-snapshots.md)
-- [16-troubleshooting.md](./16-troubleshooting.md)
-- [17-useful-commands.md](./17-useful-commands.md)
-
----
-
-# Production Notes
-
-Recommended for production use:
-
-- keep servers updated
-- use SSH keys only
-- use HTTPS everywhere
-- monitor logs/resources regularly
-- backup databases frequently
-- avoid exposing databases publicly
-- use environment variables for secrets
-- monitor Docker resource usage
-- configure firewall properly
-
----
-
-# Repository Goals
-
-This repository is designed so developers can:
-
-- learn DevOps practically
-- deploy production applications
-- understand VPS workflows
-- manage Linux servers
-- self-host applications
-- secure infrastructure properly
-- automate deployments
-- monitor production systems
-- troubleshoot real-world issues
+- CI/CD automation with GitHub Actions
+- real-world monitoring, backup, and troubleshooting
+- Mac dev workstation + Linux VPS production workflows
 
 ---
 
@@ -414,11 +460,7 @@ This repository is designed so developers can:
 
 Created and maintained by **Mosabbir Maruf**
 
-GitHub:
-
-```txt
-https://github.com/mosabbir-maruf
-```
+GitHub: [https://github.com/mosabbir-maruf](https://github.com/mosabbir-maruf)
 
 ---
 
