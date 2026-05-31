@@ -170,7 +170,7 @@ Updates Ubuntu packages and installs security updates.
 ## Restart Server
 
 ```bash
-reboot
+sudo reboot
 ```
 
 Restarts the server with updated kernel/system.
