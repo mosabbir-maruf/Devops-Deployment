@@ -2147,9 +2147,9 @@ No Nginx container or image should exist.
 
 ---
 
-# 41. Recommended Production Workflow
+# Recommended Production Workflow
 
-## Standard Architecture
+## Production Architecture
 
 ```txt
 User
@@ -2165,23 +2165,315 @@ Backend
 Database
 ```
 
----
+Only Nginx should be exposed publicly.
 
-## Deployment Workflow
-
-1. Configure DNS
-2. Install Nginx
-3. Configure Reverse Proxy
-4. Configure SSL
-5. Test Configuration
-6. Enable Security Headers
-7. Enable Rate Limiting
-8. Enable HTTP/2
-9. Enable Gzip
-10. Monitor Logs
-11. Configure Backups
+Backend services should remain private.
 
 ---
+
+## Recommended Project Structure
+
+```txt
+project/
+├── docker-compose.yml
+├── .env
+├── frontend/
+├── backend/
+└── nginx/
+    ├── default.conf
+    └── ssl/
+        ├── cert.pem
+        └── key.pem
+```
+
+Recommended production structure.
+
+---
+
+## Create Nginx Directory
+
+```bash
+mkdir -p nginx/ssl
+```
+
+Creates:
+
+```txt
+nginx/
+└── ssl/
+```
+
+---
+
+## SSL Certificates
+
+Store:
+
+```txt
+cert.pem
+key.pem
+```
+
+inside:
+
+```txt
+nginx/ssl/
+```
+
+Never commit:
+
+```txt
+.env
+cert.pem
+key.pem
+```
+
+to Git.
+
+---
+
+## Git Ignore
+
+```gitignore
+.env
+nginx/ssl/
+```
+
+---
+
+## Docker Compose Example
+
+```yaml
+services:
+  frontend:
+    image: frontend-image
+    restart: unless-stopped
+    expose:
+      - "3000"
+
+  backend:
+    image: backend-image
+    restart: unless-stopped
+    expose:
+      - "5000"
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+
+    restart: unless-stopped
+
+    depends_on:
+      - frontend
+      - backend
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+```
+
+Production reverse proxy setup.
+
+---
+
+## Production Nginx Configuration
+
+```nginx
+# Block direct IP access
+server {
+    listen 80 default_server;
+
+    server_name _;
+
+    return 444;
+}
+
+server {
+    listen 443 ssl default_server;
+
+    server_name _;
+
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+    return 444;
+}
+
+# Frontend
+server {
+    listen 80;
+
+    server_name example.com www.example.com;
+
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+
+    server_name example.com www.example.com;
+
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+    server_tokens off;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    location / {
+
+        proxy_pass http://frontend:3000;
+
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+
+        proxy_set_header X-Real-IP $remote_addr;
+
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# API
+server {
+    listen 443 ssl;
+    http2 on;
+
+    server_name api.example.com;
+
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+    server_tokens off;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    location / {
+
+        proxy_pass http://backend:5000;
+
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+
+        proxy_set_header X-Real-IP $remote_addr;
+
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Production-ready reverse proxy example.
+
+---
+
+## Deploy Workflow
+
+### Pull Latest Code
+
+```bash
+git pull origin main
+```
+
+---
+
+### Build Images
+
+```bash
+docker compose build
+```
+
+---
+
+### Start Services
+
+```bash
+docker compose up -d
+```
+
+---
+
+### Verify Containers
+
+```bash
+docker ps
+```
+
+---
+
+### Verify Nginx
+
+```bash
+docker exec nginx nginx -t
+```
+
+---
+
+### View Logs
+
+```bash
+docker compose logs -f
+```
+
+---
+
+## Production Rules
+
+Always:
+
+```txt
+✓ Use Cloudflare
+
+✓ Use HTTPS
+
+✓ Use HTTP → HTTPS Redirect
+
+✓ Use Security Headers
+
+✓ Hide Backend Ports
+
+✓ Keep SSL Files Outside Git
+
+✓ Use Docker Volumes As Read Only
+
+✓ Use restart: unless-stopped
+
+✓ Use Domain Routing Instead Of IP Access
+
+✓ Block Direct IP Access
+
+✓ Monitor Logs
+```
+
+Never:
+
+```txt
+✗ Commit SSL Certificates
+
+✗ Commit .env Files
+
+✗ Expose Backend Ports Publicly
+
+✗ Access Backend Directly
+
+✗ Disable HTTPS
+
+✗ Run Production Without Reverse Proxy
+```
+
 
 # 42. Production Deployment Checklist
 
