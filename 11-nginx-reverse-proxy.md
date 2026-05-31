@@ -2380,6 +2380,176 @@ Production-ready reverse proxy example.
 
 ---
 
+## Production Docker Compose (Best Practices)
+
+```yaml
+services:
+  frontend:
+    image: frontend-image
+    restart: unless-stopped
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  backend:
+    image: backend-image
+    restart: unless-stopped
+    expose:
+      - "5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+```
+
+Notes:
+
+* Health checks allow Docker to detect unhealthy services.
+* Resource limits prevent one service from consuming all resources.
+* Log rotation prevents log files from filling disk.
+
+---
+
+## Production Nginx Config (Best Practices)
+
+```nginx
+# Rate limiting zone (inside http context via conf.d)
+limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name example.com www.example.com api.example.com;
+    return 301 https://$host$request_uri;
+}
+
+# Block direct IP access
+server {
+    listen 80 default_server;
+    listen 443 ssl default_server;
+    server_name _;
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+    return 444;
+}
+
+# Frontend
+server {
+    listen 443 ssl http2;
+    server_name example.com www.example.com;
+
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+    server_tokens off;
+    client_max_body_size 100M;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 5;
+    gzip_types text/plain text/css application/json application/javascript application/xml text/javascript;
+
+    location / {
+        proxy_pass http://frontend:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+}
+
+# API
+server {
+    listen 443 ssl http2;
+    server_name api.example.com;
+
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+
+    server_tokens off;
+    limit_req zone=api burst=20 nodelay;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    location / {
+        proxy_pass http://backend:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+---
+
+## Step-by-Step Production Deploy (Docker + Nginx)
+
+1. Create `nginx/ssl/` and place `cert.pem` + `key.pem`.
+2. Add `nginx/ssl/` and `.env` to `.gitignore`.
+3. Add `nginx/default.conf` with SSL, headers, and reverse proxy rules.
+4. Configure `docker-compose.yml` with internal `expose` only for apps.
+5. Build and start: `docker compose build` then `docker compose up -d`.
+6. Verify Nginx config: `docker exec nginx nginx -t`.
+7. Confirm public access on `https://example.com`.
+8. Monitor logs: `docker compose logs -f nginx`.
+9. Add backups for `/nginx/` and SSL files.
+
+---
+
 ## Deploy Workflow
 
 ### Pull Latest Code
