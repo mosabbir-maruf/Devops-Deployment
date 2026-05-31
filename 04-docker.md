@@ -96,7 +96,7 @@
 54. [Common Docker Issues](#common-docker-issues)
 55. [Real World Docker Learning Path](#real-world-docker-learning-path)
 
-# What Is Docker?
+# What Is Docker
 
 Docker is a container platform used to package, distribute and run applications in isolated environments called containers.
 
