@@ -2,68 +2,80 @@
 
 ## Table Of Contents
 
-* [1. What Is Nginx](#1-what-is-nginx)
-* [2. What Is A Reverse Proxy](#2-what-is-a-reverse-proxy)
+### Fundamentals
+
+1. [What Is Nginx](#what-is-nginx)
+2. [What Is A Reverse Proxy](#what-is-a-reverse-proxy)
 
 ### Installation
 
-* [3. Install Nginx On Linux](#3-install-nginx-on-linux)
-* [4. Install Nginx On Mac](#4-install-nginx-on-mac)
-* [5. Run Nginx With Docker](#5-run-nginx-with-docker)
+3. [Install Nginx On Linux](#install-nginx-on-linux)
+4. [Install Nginx On Mac](#install-nginx-on-mac)
+5. [Run Nginx With Docker](#run-nginx-with-docker)
 
 ### Management
 
-* [6. Start Stop Restart Reload](#6-start-stop-restart-reload)
-* [7. Verify Installation](#7-verify-installation)
-* [8. Nginx File Locations](#8-nginx-file-locations)
+6. [Verify Installation](#verify-installation)
+7. [Start Stop Restart Reload](#start-stop-restart-reload)
+8. [Nginx File Locations](#nginx-file-locations)
 
 ### Reverse Proxy
 
-* [9. Create Reverse Proxy](#9-create-reverse-proxy)
-* [10. Enable Site](#10-enable-site)
-* [11. Multiple Apps](#11-multiple-apps)
-* [12. API Reverse Proxy](#12-api-reverse-proxy)
-* [13. WebSocket Support](#13-websocket-support)
+9. [Create Reverse Proxy](#create-reverse-proxy)
+10. [Basic Reverse Proxy](#basic-reverse-proxy)
+11. [Enable Site](#enable-site)
+12. [Reverse Proxy Multiple Apps](#reverse-proxy-multiple-apps)
+13. [API Reverse Proxy](#api-reverse-proxy)
+14. [WebSocket Support](#websocket-support)
+15. [Docker Compose Reverse Proxy](#docker-compose-reverse-proxy)
 
 ### SSL
 
-* [14. SSL With Certbot](#14-ssl-with-certbot)
-* [15. Cloudflare Origin SSL](#15-cloudflare-origin-ssl)
-* [16. Force HTTPS](#16-force-https)
+16. [SSL HTTPS](#ssl--https)
+17. [Force HTTPS Redirect](#force-https-redirect)
+18. [Cloudflare Origin SSL](#cloudflare-origin-ssl)
 
 ### Security
 
-* [17. Security Headers](#17-security-headers)
-* [18. Block Direct IP Access](#18-block-direct-ip-access)
-* [19. Hide Backend Ports](#19-hide-backend-ports)
-* [20. Rate Limiting](#20-rate-limiting)
-* [21. Upload Limits](#21-upload-limits)
+19. [Security Headers](#security-headers)
+20. [Block Direct IP Access](#block-direct-ip-access)
+21. [Hide Backend Ports](#hide-backend-ports)
+22. [Rate Limiting](#rate-limiting)
+23. [Upload Limits](#upload-limits)
+24. [Static File Hosting](#static-file-hosting)
+25. [Protect Hidden Files](#protect-hidden-files)
+26. [HTTP2](#http2)
+27. [Gzip Compression](#gzip-compression)
+28. [Hide Nginx Version](#hide-nginx-version)
+29. [Production Security Example](#production-security-example)
+30. [Security Checklist](#security-checklist)
 
-### Performance
+### Monitoring & Debugging
 
-* [22. HTTP2](#22-http2)
-* [23. Gzip Compression](#23-gzip-compression)
-
-### Monitoring
-
-* [24. Logs](#24-logs)
-* [25. Monitor Logs](#25-monitor-logs)
-* [26. Docker Logs](#26-docker-logs)
-
-### Troubleshooting
-
-* [27. Common Issues](#27-common-issues)
+31. [Nginx Logs](#nginx-logs)
+32. [Monitor Logs](#monitor-logs)
+33. [Docker Logs](#docker-logs)
+34. [Nginx Debugging](#nginx-debugging)
+35. [Common Nginx Issues](#common-nginx-issues)
 
 ### Cleanup
 
-* [28. Uninstall Nginx On Linux](#28-uninstall-nginx-on-linux)
-* [29. Uninstall Nginx On Mac](#29-uninstall-nginx-on-mac)
-* [30. Remove Docker Nginx](#30-remove-docker-nginx)
+36. [Uninstall Nginx On Linux](#uninstall-nginx-on-linux)
+37. [Uninstall Nginx On Mac](#uninstall-nginx-on-mac)
+38. [Remove Docker Nginx](#remove-docker-nginx)
+39. [Docker Cleanup](#docker-cleanup)
+40. [Full Cleanup Verification](#full-cleanup-verification)
 
 ### Production
 
-* [31. Recommended Production Workflow](#31-recommended-production-workflow)
-* [32. Production Hardening Checklist](#32-production-hardening-checklist)
+41. [Recommended Production Workflow](#recommended-production-workflow)
+42. [Production Deployment Checklist](#production-deployment-checklist)
+
+### Backup & Migration
+
+43. [Nginx Backup Restore](#nginx-backup--restore)
+44. [Nginx Migration](#nginx-migration)
+45. [Nginx Quick Commands Cheat Sheet](#nginx-quick-commands-cheat-sheet)
 
 # 1. What Is Nginx
 
