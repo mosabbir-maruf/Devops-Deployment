@@ -4,106 +4,130 @@
 
 ### Fundamentals
 
-1. [What Is Deployment](#what-is-deployment)
-2. [Deployment Types](#deployment-types)
-3. [Recommended Production Stack](#recommended-production-stack)
-4. [Deployment Architectures](#deployment-architectures)
-5. [Basic Deployment Workflow](#basic-deployment-workflow)
+1. [What Is Deployment](#1-what-is-deployment)
+2. [Recommended Production Stack](#2-recommended-production-stack)
+3. [Production Architecture](#3-production-architecture)
+4. [Production Folder Structure](#4-production-folder-structure)
+5. [Docker-First Deployment Philosophy](#5-docker-first-deployment-philosophy)
+6. [Development vs Production Deployment](#6-development-vs-production-deployment)
 
 ### Project Preparation
 
-6. [Project Preparation](#project-preparation)
-7. [Project Structure](#project-structure)
-8. [GitHub Preparation](#github-preparation)
-9. [Environment Variables](#environment-variables)
-10. [Environment Variable Security](#environment-variable-security)
+7. [Project Readiness Checklist](#7-project-readiness-checklist)
+8. [Project Structure](#8-project-structure)
+9. [GitHub Preparation](#9-github-preparation)
+10. [Environment Variables](#10-environment-variables)
+11. [Dockerfile And Compose Preparation](#11-dockerfile-and-compose-preparation)
+12. [Domain Preparation](#12-domain-preparation)
+13. [Project Preparation Checklist](#13-project-preparation-checklist)
 
 ### VPS Preparation
 
-11. [VPS Preparation](#vps-preparation)
-12. [VPS Security Checklist](#vps-security-checklist)
-13. [Firewall Configuration](#firewall-configuration)
-14. [Docker Installation Verification](#docker-installation-verification)
+14. [VPS Requirements](#14-vps-requirements)
+15. [Initial VPS Setup](#15-initial-vps-setup)
+16. [VPS Security Checklist](#16-vps-security-checklist)
+17. [Firewall Configuration](#17-firewall-configuration)
+18. [Docker Installation Verification](#18-docker-installation-verification)
+19. [VPS Readiness Checklist](#19-vps-readiness-checklist)
+
+### Installation
+
+20. [Install Docker On Linux VPS](#20-install-docker-on-linux-vps)
+21. [Docker On Mac (Development)](#21-docker-on-mac-development)
+22. [Verify Docker For Deployment](#22-verify-docker-for-deployment)
+23. [Prepare Deployment Directory](#23-prepare-deployment-directory)
 
 ### Deployment Methods
 
-15. [Source Code Deployment](#source-code-deployment)
-16. [Docker Deployment](#docker-deployment)
-17. [Docker Compose Deployment](#docker-compose-deployment)
-18. [Docker Hub Deployment](#docker-hub-deployment)
-19. [Coolify Deployment](#coolify-deployment)
+24. [Docker Compose Deployment (Recommended)](#24-docker-compose-deployment-recommended)
+25. [Docker Hub Deployment](#25-docker-hub-deployment)
+26. [GitHub Actions CI/CD Deployment](#26-github-actions-cicd-deployment)
+27. [Coolify Deployment (Alternative)](#27-coolify-deployment-alternative)
+28. [Legacy Source Deployment (Avoid)](#28-legacy-source-deployment-avoid)
+29. [Deployment Method Comparison](#29-deployment-method-comparison)
 
 ### Production Infrastructure
 
-20. [Production Architecture](#production-architecture)
-21. [Production Project Structure](#production-project-structure)
-22. [Nginx Integration](#nginx-integration)
-23. [Cloudflare Integration](#cloudflare-integration)
-24. [Domain Configuration](#domain-configuration)
-25. [DNS Configuration](#dns-configuration)
-26. [SSL HTTPS Configuration](#ssl-https-configuration)
+30. [Production Docker Compose Stack](#30-production-docker-compose-stack)
+31. [Nginx Integration](#31-nginx-integration)
+32. [Cloudflare Integration](#32-cloudflare-integration)
+33. [DNS Configuration](#33-dns-configuration)
+34. [SSL HTTPS Configuration](#34-ssl-https-configuration)
+35. [Health Checks](#35-health-checks)
+36. [Production Infrastructure Checklist](#36-production-infrastructure-checklist)
 
 ### Monitoring
 
-27. [Deployment Monitoring](#deployment-monitoring)
-28. [Docker Monitoring](#docker-monitoring)
-29. [Server Monitoring](#server-monitoring)
-30. [Log Monitoring](#log-monitoring)
+37. [Deployment Monitoring](#37-deployment-monitoring)
+38. [Docker Monitoring](#38-docker-monitoring)
+39. [Server Monitoring](#39-server-monitoring)
+40. [Log Monitoring](#40-log-monitoring)
+41. [Monitoring Checklist](#41-monitoring-checklist)
 
-### Updates
+### Updates And Rollbacks
 
-31. [Deployment Updates](#deployment-updates)
-32. [Source Deployment Updates](#source-deployment-updates)
-33. [Docker Deployment Updates](#docker-deployment-updates)
-34. [Coolify Deployment Updates](#coolify-deployment-updates)
-
-### Rollbacks
-
-35. [Rollback Workflow](#rollback-workflow)
-36. [Source Rollback](#source-rollback)
-37. [Docker Rollback](#docker-rollback)
-38. [Database Rollback](#database-rollback)
-
-### CI/CD
-
-39. [GitHub Actions Deployment](#github-actions-deployment)
-40. [Docker Hub CI/CD Workflow](#docker-hub-cicd-workflow)
-41. [Production CI/CD Workflow](#production-cicd-workflow)
+42. [Deployment Updates Workflow](#42-deployment-updates-workflow)
+43. [Docker Image Updates](#43-docker-image-updates)
+44. [Rollback Workflow](#44-rollback-workflow)
+45. [Database Rollback](#45-database-rollback)
+46. [Update Checklist](#46-update-checklist)
 
 ### Security
 
-42. [Deployment Security](#deployment-security)
-43. [Production Security Rules](#production-security-rules)
-44. [Deployment Checklist](#deployment-checklist)
+47. [Deployment Security Rules](#47-deployment-security-rules)
+48. [Secrets Management](#48-secrets-management)
+49. [Network Security](#49-network-security)
+50. [Security Checklist](#50-security-checklist)
 
-### Backups
+### Backup
 
-45. [Backup Strategy](#backup-strategy)
-46. [Database Backups](#database-backups)
-47. [Volume Backups](#volume-backups)
-48. [Configuration Backups](#configuration-backups)
+51. [Backup Strategy](#51-backup-strategy)
+52. [Database Backups](#52-database-backups)
+53. [Volume And Config Backups](#53-volume-and-config-backups)
+54. [Backup Verification](#54-backup-verification)
 
 ### Troubleshooting
 
-49. [Common Deployment Issues](#common-deployment-issues)
-50. [Deployment Debug Workflow](#deployment-debug-workflow)
+55. [Deployment Failed](#55-deployment-failed)
+56. [Container Not Starting](#56-container-not-starting)
+57. [SSL And DNS Issues](#57-ssl-and-dns-issues)
+58. [Nginx 502 Bad Gateway](#58-nginx-502-bad-gateway)
+59. [Database And Redis Connectivity](#59-database-and-redis-connectivity)
+60. [High Resource Usage](#60-high-resource-usage)
+61. [Debug Workflow](#61-debug-workflow)
 
-### Production Workflow
+### Cleanup And Uninstall
 
-51. [Recommended Production Workflow](#recommended-production-workflow)
-52. [Modern Deployment Workflow](#modern-deployment-workflow)
-# What Is Deployment?
+62. [Tear Down Deployment (Linux / VPS)](#62-tear-down-deployment-linux--vps)
+63. [Remove Docker Stack And Volumes](#63-remove-docker-stack-and-volumes)
+64. [Clean Up Deployment On Mac](#64-clean-up-deployment-on-mac)
+65. [Remove Docker Images And Cache](#65-remove-docker-images-and-cache)
+66. [DNS And Cloudflare Cleanup](#66-dns-and-cloudflare-cleanup)
+67. [Log Cleanup](#67-log-cleanup)
+68. [Cache And Leftover Files](#68-cache-and-leftover-files)
+69. [Verification After Removal](#69-verification-after-removal)
 
-Deployment is the process of making an application available to users.
+### Production Workflows
 
-A deployment typically includes:
+70. [Recommended Production Workflow](#70-recommended-production-workflow)
+71. [Modern Workflow](#71-modern-workflow)
+72. [Real-World Workflow](#72-real-world-workflow)
+73. [Final Production Checklist](#73-final-production-checklist)
 
-* application code
-* infrastructure
-* database
-* domain
-* SSL
-* monitoring
+---
+
+# 1. What Is Deployment
+
+Deployment is the process of making an application available to users reliably and securely.
+
+A production deployment includes:
+
+* application code (Docker images)
+* VPS infrastructure
+* database and cache
+* domain and DNS
+* SSL/HTTPS
+* monitoring and backups
 
 Goal:
 
@@ -117,4821 +141,1876 @@ Reliably And Securely
 
 ---
 
-# Deployment Types
+# 2. Recommended Production Stack
 
-There are multiple deployment approaches.
+```txt
+Ubuntu 24.04 LTS VPS
+↓
+Docker + Docker Compose
+↓
+Nginx (reverse proxy)
+↓
+Cloudflare (DNS + SSL + WAF)
+↓
+Frontend + Backend + PostgreSQL + Redis
+```
+
+Components:
+
+| Layer | Tool |
+|-------|------|
+| OS | Ubuntu LTS |
+| Containers | Docker Compose |
+| Proxy | Nginx |
+| CDN/DNS | Cloudflare |
+| Database | PostgreSQL 17 (Docker) |
+| Cache | Redis 8 (Docker) |
+| CI/CD | GitHub Actions |
+| Registry | Docker Hub |
+
+Alternative PaaS: **Coolify** on same VPS — see `05-coolify.md`.
 
 ---
 
-## Traditional VPS Deployment
-
-Application runs directly on the server.
-
-Example:
+# 3. Production Architecture
 
 ```txt
-Ubuntu VPS
-↓
-Node.js
-↓
-Application
-```
-
-Usually managed with:
-
-```txt
-PM2
-Systemd
-```
-
----
-
-## Docker Deployment
-
-Application runs inside containers.
-
-Example:
-
-```txt
-Ubuntu VPS
-↓
-Docker
-↓
-Application Container
-```
-
----
-
-## Docker Compose Deployment
-
-Multiple services managed together.
-
-Example:
-
-```txt
-Frontend
-
-Backend
-
-Database
-
-Redis
-
-Nginx
-```
-
-Managed by:
-
-```txt
-docker compose
-```
-
----
-
-## Docker Hub Deployment
-
-Images are built once and deployed anywhere.
-
-Workflow:
-
-```txt
-Build Image
-↓
-Push Docker Hub
-↓
-Pull On VPS
-↓
-Deploy
-```
-
----
-
-## Coolify Deployment
-
-Platform-as-a-Service on your VPS.
-
-Provides:
-
-* GitHub integration
-* automatic deployments
-* SSL management
-* environment management
-
----
-
-## Kubernetes Deployment
-
-Used for:
-
-```txt
-Large Scale Applications
-
-Multi Server Clusters
-
-Advanced Orchestration
-```
-
-Not required for most personal projects.
-
----
-
-# Recommended Production Stack
-
-Recommended stack for modern projects:
-
-```txt
-Ubuntu VPS
-↓
-Docker
-↓
-Docker Compose
-↓
-Nginx
-↓
-Cloudflare
-```
-
-Application stack:
-
-```txt
-Frontend
-Backend
-PostgreSQL
-Redis
-```
-
----
-
-## Recommended Tools
-
-Infrastructure:
-
-```txt
-Ubuntu 24.04 LTS
-Docker
-Docker Compose
-Nginx
-Cloudflare
-```
-
----
-
-Application:
-
-```txt
-Node.js
-
-Next.js
-
-PostgreSQL
-
-Redis
-```
-
----
-
-Version Control:
-
-```txt
-Git
-GitHub
-```
-
----
-
-# Deployment Architectures
-
-## Basic Single App
-
-```txt
-Users
-↓
-Domain
-↓
-Application
-```
-
----
-
-## Reverse Proxy Architecture
-
-```txt
-Users
-↓
-Nginx
-↓
-Application
-```
-
----
-
-## Modern Production Architecture
-
-```txt
-Users
+User
 ↓
 Cloudflare
 ↓
-Nginx
+Nginx (:443)
 ↓
-Frontend
+Frontend Container (:3000 internal)
 ↓
-Backend
+Backend Container (:5000 internal)
+↓
+PostgreSQL Container (internal)
+↓
+Redis Container (internal)
 ```
 
----
-
-## Full Production Architecture
+Deploy flow:
 
 ```txt
-Users
+Developer (Mac)
 ↓
-Cloudflare
-↓
-Nginx
-↓
-Frontend
-↓
-Backend
-↓
-PostgreSQL
-↓
-Redis
-```
-
----
-
-## Recommended Architecture
-
-For personal projects:
-
-```txt
-Cloudflare
-↓
-Nginx
-↓
-Frontend
-↓
-Backend
-↓
-Database
-```
-
-This provides:
-
-* HTTPS
-* DDoS protection
-* caching
-* reverse proxy
-* database isolation
-* production security
-
----
-
-# Basic Deployment Workflow
-
-## Source Deployment Workflow
-
-```txt
-Write Code
-↓
-Git Commit
-↓
-Git Push
-↓
-SSH VPS
-↓
-Git Pull
-↓
-Deploy
-```
-
----
-
-## Docker Deployment Workflow
-
-```txt
-Write Code
-↓
-Git Push
-↓
-SSH VPS
-↓
-docker compose build
-↓
-docker compose up -d
-```
-
----
-
-## Docker Hub Deployment Workflow
-
-```txt
-Write Code
-↓
-Build Image
-↓
-Push Docker Hub
-↓
-VPS Pull Image
-↓
-Deploy
-```
-
----
-
-## CI/CD Deployment Workflow
-
-```txt
-Git Push
+GitHub Push
 ↓
 GitHub Actions
 ↓
-Build Docker Image
+Docker Hub (build + push)
 ↓
-Push Registry
+SSH → VPS
 ↓
-Deploy VPS
-```
-
----
-
-# Production Deployment Philosophy
-
-Production deployments should be:
-
-```txt
-Predictable
-
-Repeatable
-
-Automated
-
-Secure
-```
-
----
-
-## Production Rule
-
-Never:
-
-```txt
-SSH VPS
-↓
-Manually Edit Application Files
-```
-
----
-
-Always:
-
-```txt
-Change Source Code
-↓
-Commit
-↓
-Deploy New Version
-```
-
----
-
-# Development vs Deployment
-
-## Development
-
-```txt
-Build Features
-Fix Bugs
-Test Locally
-```
-
----
-
-## Deployment
-
-```txt
-Build
-Deploy
-Monitor
-Maintain
-```
-
----
-
-# Production Goals
-
-Every deployment should provide:
-
-```txt
-✓ Availability
-
-✓ Security
-
-✓ Reliability
-
-✓ Monitoring
-
-✓ Backups
-
-✓ Rollback Capability
-```
-
----
-
-# Deployment Overview
-
-Recommended workflow:
-
-```txt
-Mac
-↓
-GitHub
-↓
-VPS
-↓
-Docker Compose
-↓
-Nginx
-↓
-Cloudflare
+docker compose pull && up -d
 ↓
 Users
 ```
 
-This will be the deployment workflow used throughout the rest of this guide.
+Admin access:
 
-# Project Preparation
-
-Before deploying any application, ensure the project is production-ready.
-
----
-
-## Project Readiness Checklist
-
-Verify:
-
-```txt id="2a4f8g"
-✓ Application Working Locally
-
-✓ No Development Errors
-
-✓ Environment Variables Ready
-
-✓ Database Ready
-
-✓ Dockerfile Ready
-
-✓ Docker Compose Ready
-
-✓ GitHub Repository Ready
-
-✓ Domain Ready
+```txt
+Developer → SSH → VPS → docker compose commands
 ```
 
----
-
-## Production Readiness Checklist
-
-Verify:
-
-```txt id="8c9v1k"
-✓ Production Build Works
-
-✓ Docker Build Works
-
-✓ No Hardcoded Secrets
-
-✓ HTTPS Planned
-
-✓ Database Backups Planned
-
-✓ Logging Configured
-
-✓ Error Handling Configured
-```
+Never expose backend, PostgreSQL, or Redis ports publicly.
 
 ---
 
-# Project Structure
+# 4. Production Folder Structure
 
-A clean project structure simplifies deployments.
+## GitHub Repository
 
----
-
-## Recommended Structure
-
-```txt id="6h3w9q"
-project/
-├── frontend/
-├── backend/
-│
-├── docker-compose.yml
-├── .env
-├── .gitignore
-│
+```txt
+myapp/
+├── apps/
+│   ├── frontend/
+│   │   ├── Dockerfile
+│   │   ├── .dockerignore
+│   │   ├── package.json
+│   │   └── src/
+│   └── backend/
+│       ├── Dockerfile
+│       ├── .dockerignore
+│       ├── package.json
+│       └── src/
 ├── nginx/
-│   ├── default.conf
-│   └── ssl/
-│
-├── backups/
-│
-└── docs/
+│   └── default.conf
+├── docker-compose.yml
+├── docker-compose.prod.yml
+├── docker-compose.dev.yml
+├── .env.example
+├── .gitignore
+└── .github/
+    └── workflows/
+        └── deploy.yml
+```
+
+## VPS Deployment Path
+
+```txt
+/var/www/myapp/
+├── docker-compose.prod.yml
+├── .env                    # chmod 600 — never in Git
+├── nginx/
+│   └── default.conf
+└── backups/
+    ├── postgres/
+    ├── config/
+    └── volumes/
+```
+
+## Mac (Development)
+
+```txt
+~/Projects/myapp/           # same repo as GitHub
+├── .env                    # local dev secrets
+└── docker-compose.dev.yml
 ```
 
 ---
 
-## Frontend Structure
+# 5. Docker-First Deployment Philosophy
 
-Example:
+Production deployments must be:
 
-```txt id="5j7n2r"
-frontend/
+```txt
+Predictable   → same result every deploy
+Repeatable    → docker compose up -d from any VPS
+Automated     → GitHub Actions, not manual SSH edits
+Immutable     → new image, not edited containers
+Secure        → secrets in .env, databases internal
+```
+
+Production rule:
+
+```txt
+✓ Change code → commit → CI builds image → deploy
+✗ SSH into VPS → edit files → restart manually
+✗ SSH into container → modify running app
+```
+
+---
+
+# 6. Development vs Production Deployment
+
+| | Development (Mac) | Production (VPS) |
+|--|-------------------|------------------|
+| Compose file | `docker-compose.dev.yml` | `docker-compose.prod.yml` |
+| Code | bind mounts, hot reload | immutable Docker images |
+| Database | local Docker, disposable | persistent volumes, backed up |
+| Secrets | local `.env` | server `.env` chmod 600 |
+| Domain | localhost | Cloudflare + real domain |
+| Deploy | `docker compose up` | CI/CD → SSH → compose pull |
+
+---
+
+# 7. Project Readiness Checklist
+
+Before deploying:
+
+```txt
+✓ App works locally with Docker Compose
+✓ Production build succeeds (npm run build)
+✓ Docker build succeeds (docker compose build)
+✓ .env.example documents all required vars
+✓ No hardcoded secrets in code
+✓ Health endpoint exists (/health)
+✓ Database migrations ready
+✓ .gitignore excludes .env and node_modules
+✓ GitHub repo created (private if needed)
+```
+
+---
+
+# 8. Project Structure
+
+## Monorepo Example
+
+```txt
+myapp/
+├── apps/frontend/     → Next.js / React
+├── apps/backend/      → Node.js API
+├── nginx/default.conf → reverse proxy config
+├── docker-compose.prod.yml
+└── .github/workflows/deploy.yml
+```
+
+## Single App Example
+
+```txt
+api/
 ├── src/
-├── public/
-├── package.json
 ├── Dockerfile
-└── .dockerignore
+├── docker-compose.prod.yml
+└── nginx/default.conf
 ```
 
----
-
-## Backend Structure
-
-Example:
-
-```txt id="3m8k6x"
-backend/
-├── src/
-├── package.json
-├── Dockerfile
-├── .dockerignore
-└── uploads/
-```
+Each service that runs in production needs its own **Dockerfile**.
 
 ---
 
-## Nginx Structure
+# 9. GitHub Preparation
 
-Example:
+## Initialize And Push
 
-```txt id="1w4v9p"
-nginx/
-├── default.conf
-└── ssl/
-    ├── cert.pem
-    └── key.pem
-```
-
----
-
-# GitHub Preparation
-
-GitHub should be the source of truth.
-
----
-
-## Initialize Git
-
-```bash id="9r5x2m"
+```bash
+cd ~/Projects/myapp
 git init
-```
-
----
-
-## Add Remote Repository
-
-```bash id="7q8n4v"
-git remote add origin REPOSITORY_URL
-```
-
----
-
-## Verify Remote
-
-```bash id="4k6m1t"
-git remote -v
-```
-
----
-
-# Create .gitignore
-
-## Create File
-
-```bash id="8v2p7n"
-nano .gitignore
-```
-
----
-
-## Recommended .gitignore
-
-```gitignore id="6n9w4x"
-.env
-.env.*
-
-node_modules
-
-.next
-
-dist
-
-coverage
-
-Dockerfile.local
-
-*.log
-
-uploads
-
-.vscode
-
-.idea
-```
-
----
-
-# Git Workflow
-
-## Check Status
-
-```bash id="3p7v9m"
-git status
-```
-
----
-
-## Add Files
-
-```bash id="2x8k6n"
 git add .
+git commit -m "initial production setup"
+git branch -M main
+git remote add origin git@github.com:username/myapp.git
+git push -u origin main
 ```
 
----
+## .gitignore Essentials
 
-## Commit
-
-```bash id="5m1v4q"
-git commit -m "initial commit"
-```
-
----
-
-## Push
-
-```bash id="7n3x8p"
-git push origin main
-```
-
----
-
-# Environment Variables
-
-Environment variables should contain all secrets and configuration.
-
----
-
-## Create Environment File
-
-```bash id="4v7m2x"
-nano .env
-```
-
----
-
-## Example
-
-```env id="1p8k5w"
-NODE_ENV=production
-
-PORT=3000
-
-DATABASE_URL=postgres://user:password@postgres:5432/app
-
-REDIS_URL=redis://redis:6379
-
-JWT_SECRET=your-secret
-
-API_KEY=your-api-key
-```
-
----
-
-## Production Rule
-
-Store:
-
-```txt id="9x3m7k"
-Database URLs
-
-JWT Secrets
-
-API Keys
-
-SMTP Credentials
-
-OAuth Credentials
-
-Third Party Tokens
-```
-
-inside:
-
-```txt id="6v2n8q"
+```txt
 .env
-```
-
----
-
-# Environment Variable Security
-
-## Never Commit
-
-Never upload:
-
-```txt id="5w7p2m"
-.env
-
 .env.local
-
 .env.production
+node_modules/
+dist/
+.next/
+build/
+*.log
+.DS_Store
 ```
 
-to GitHub.
+## Branch Strategy
+
+```txt
+main        → production deploys
+staging     → pre-production testing (optional)
+feature/*   → development branches
+```
+
+Never commit `.env` — use GitHub Secrets for CI/CD.
 
 ---
 
-## Verify Before Push
+# 10. Environment Variables
 
-Check:
+## .env.example (Commit To Git)
 
-```bash id="2k8v6n"
-git status
-```
-
-Ensure:
-
-```txt id="8m4x1q"
-.env
-```
-
-does not appear.
-
----
-
-## Good Practice
-
-```txt id="4n9v7k"
-.env
-↓
-Server Only
-```
-
----
-
-## Bad Practice
-
-```txt id="7p2m8x"
-.env
-↓
-GitHub
-```
-
----
-
-# Environment Example Structure
-
-## Development
-
-```env id="3v8k5q"
-NODE_ENV=development
-```
-
----
-
-## Production
-
-```env id="9m2x6w"
+```env
 NODE_ENV=production
+PORT=5000
+DATABASE_URL=
+REDIS_URL=
+JWT_SECRET=
+DOMAIN=yourdomain.com
 ```
 
----
+## .env (Server Only — Never Commit)
 
-## Separate Environments
-
-```txt id="6k7v4p"
-.env.local
-
-.env.staging
-
-.env.production
+```env
+NODE_ENV=production
+PORT=5000
+DATABASE_URL=postgresql://user:pass@postgres:5432/myapp
+REDIS_URL=redis://:pass@redis:6379
+JWT_SECRET=long-random-secret
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=long-random-secret
+POSTGRES_DB=myapp
+REDIS_PASSWORD=long-random-secret
+TAG=latest
 ```
 
----
+## On VPS
 
-# Docker Environment Variables
+```bash
+chmod 600 /var/www/myapp/.env
+```
 
-## Compose Example
+## In docker-compose.prod.yml
 
-```yaml id="1x9m7q"
+```yaml
 services:
-
   backend:
-
     env_file:
       - .env
 ```
 
 ---
 
-## Access In Application
+# 11. Dockerfile And Compose Preparation
 
-Node.js:
+## Production Backend Dockerfile
 
-```javascript id="5p8v2m"
-process.env.JWT_SECRET
-```
-
----
-
-# Secrets Checklist
-
-Before deployment verify:
-
-```txt id="8q4n7v"
-✓ No Secrets In Source Code
-
-✓ No Secrets In GitHub
-
-✓ .env Added To .gitignore
-
-✓ Production Secrets Configured
-
-✓ Database Credentials Configured
-
-✓ API Keys Configured
-```
-
----
-
-# Project Preparation Checklist
-
-Before moving to VPS setup:
-
-```txt id="2m7x5k"
-✓ Project Structure Ready
-
-✓ Git Repository Ready
-
-✓ GitHub Repository Ready
-
-✓ Dockerfile Ready
-
-✓ Docker Compose Ready
-
-✓ .gitignore Ready
-
-✓ Environment Variables Ready
-
-✓ Production Build Tested
-```
-
-At this point the project is ready to move to VPS preparation and deployment.
-
-# VPS Preparation
-
-Before deploying applications, prepare the VPS properly.
-
-A production VPS should be:
-
-```txt id="p2k8mx"
-Secure
-
-Updated
-
-Monitored
-
-Deployment Ready
-```
-
----
-
-# VPS Requirements
-
-## Minimum Personal Project VPS
-
-```txt id="v7n4qw"
-1 vCPU
-
-1 GB RAM
-
-20 GB SSD
-```
-
-Recommended:
-
-```txt id="x3m9kr"
-2 vCPU
-
-2 GB RAM
-
-40+ GB SSD
-```
-
----
-
-## Recommended Operating System
-
-Use:
-
-```txt id="m5q7vx"
-Ubuntu 24.04 LTS
-```
-
-Avoid old unsupported releases.
-
----
-
-# Initial VPS Setup
-
-## Connect To VPS
-
-```bash id="n4v8kt"
-ssh username@SERVER_IP
-```
-
----
-
-## Verify Current User
-
-```bash id="r8m2qw"
-whoami
-```
-
----
-
-## Verify Sudo Access
-
-```bash id="p6v4kx"
-sudo -l
-```
-
----
-
-# Update Server
-
-## Update Package Index
-
-```bash id="w2m7qr"
-sudo apt update
-```
-
----
-
-## Upgrade Packages
-
-```bash id="x8v4kn"
-sudo apt upgrade -y
-```
-
----
-
-## Reboot If Required
-
-```bash id="m4q8vx"
-sudo reboot
-```
-
----
-
-# Server Information
-
-## Check Memory
-
-```bash id="r2v7kw"
-free -h
-```
-
----
-
-## Check CPU
-
-```bash id="y4m9qx"
-nproc
-```
-
----
-
-## Check Disk Space
-
-```bash id="k7v3mw"
-df -h
-```
-
----
-
-## Check OS Version
-
-```bash id="n5q8vx"
-lsb_release -a
-```
-
----
-
-# Configure Swap
-
-Recommended for:
-
-```txt id="p3m7kr"
-1 GB VPS
-
-2 GB VPS
-```
-
----
-
-## Create Swap File
-
-```bash id="x6v2qw"
-sudo fallocate -l 2G /swapfile
-```
-
----
-
-## Secure Swap File
-
-```bash id="r9m4vx"
-sudo chmod 600 /swapfile
-```
-
----
-
-## Create Swap
-
-```bash id="w7q2kr"
-sudo mkswap /swapfile
-```
-
----
-
-## Enable Swap
-
-```bash id="m8v5qx"
-sudo swapon /swapfile
-```
-
----
-
-## Verify Swap
-
-```bash id="k2q9vw"
-free -h
-```
-
----
-
-## Persist After Reboot
-
-```bash id="x4m7kr"
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-```
-
----
-
-## Verify
-
-```bash id="v8q3mx"
-swapon --show
-```
-
----
-
-# VPS Security Checklist
-
-Production servers should have:
-
-```txt id="q5m8vx"
-✓ SSH Working
-
-✓ Root Login Disabled
-
-✓ Firewall Enabled
-
-✓ Docker Installed
-
-✓ Swap Configured
-
-✓ Security Updates Installed
-
-✓ Domain Ready
-```
-
----
-
-# SSH Security
-
-## Check Current User
-
-```bash id="p8v4qw"
-id
-```
-
----
-
-## Check SSH Port
-
-```bash id="r4m9kx"
-sudo ss -tulpn
-```
-
----
-
-## Verify SSH Configuration
-
-```bash id="x7q2mv"
-sudo cat /etc/ssh/sshd_config
-```
-
----
-
-# Root Login
-
-## Recommended Setting
-
-```txt id="m2v8kr"
-PermitRootLogin no
-```
-
----
-
-## Verify Current Setting
-
-```bash id="n8q4vx"
-sudo grep PermitRootLogin /etc/ssh/sshd_config
-```
-
----
-
-## Restart SSH
-
-```bash id="p5m7qw"
-sudo systemctl restart ssh
-```
-
----
-
-# Firewall Configuration
-
-Use UFW.
-
----
-
-## Enable Firewall
-
-```bash id="r7v2kx"
-sudo ufw enable
-```
-
----
-
-## Check Status
-
-```bash id="x3m8qv"
-sudo ufw status
-```
-
----
-
-# Allow SSH
-
-Default:
-
-```bash id="k6v4mr"
-sudo ufw allow 22/tcp
-```
-
----
-
-Custom Port Example:
-
-```bash id="m9q2vx"
-sudo ufw allow 1182/tcp
-```
-
----
-
-# Allow HTTP
-
-```bash id="p2v7kw"
-sudo ufw allow 80/tcp
-```
-
----
-
-# Allow HTTPS
-
-```bash id="r8m5qx"
-sudo ufw allow 443/tcp
-```
-
----
-
-# Recommended UFW Rules
-
-```txt id="x4q9kv"
-SSH
-
-80
-
-443
-```
-
-Only.
-
----
-
-## Verify Rules
-
-```bash id="m7v3qw"
-sudo ufw status
-```
-
-Example:
-
-```txt id="k3q8mx"
-1182/tcp ALLOW
-
-80/tcp ALLOW
-
-443/tcp ALLOW
-```
-
----
-
-# Docker Installation Verification
-
-## Verify Docker
-
-```bash id="r5v8kw"
-docker --version
-```
-
----
-
-## Verify Compose
-
-```bash id="p8m4qx"
-docker compose version
-```
-
----
-
-## Verify Docker Service
-
-```bash id="x2q7mv"
-sudo systemctl status docker
-```
-
-Expected:
-
-```txt id="m4v9kr"
-active (running)
-```
-
----
-
-## Verify Docker Group
-
-```bash id="r7m2qx"
-groups
-```
-
-Expected:
-
-```txt id="p3v8kw"
-docker
-```
-
----
-
-## Verify Docker Access
-
-```bash id="x5m4qv"
-docker ps
-```
-
-Should work without:
-
-```txt id="n8q2kr"
-sudo
-```
-
----
-
-# Verify Open Ports
-
-## Check Listening Ports
-
-```bash id="r4v7mw"
-sudo ss -tulpn
-```
-
----
-
-Recommended output:
-
-```txt id="m7q9vx"
-SSH
-
-80
-
-443
-```
-
-Only required services should be exposed.
-
----
-
-# Docker Deployment Readiness
-
-Before deployment verify:
-
-```txt id="p8v4mx"
-✓ Docker Running
-
-✓ Compose Working
-
-✓ Firewall Configured
-
-✓ SSH Working
-
-✓ Domain Ready
-
-✓ Environment Variables Ready
-
-✓ GitHub Repository Ready
-```
-
----
-
-# Server Monitoring Tools
-
-## Install htop
-
-```bash id="x3m8kr"
-sudo apt install htop -y
-```
-
----
-
-## Monitor Resources
-
-```bash id="n5q7vx"
-htop
-```
-
----
-
-## Monitor Disk Usage
-
-```bash id="p7v2qw"
-df -h
-```
-
----
-
-## Monitor Memory
-
-```bash id="r2m8kx"
-free -h
-```
-
----
-
-# VPS Readiness Checklist
-
-Before deploying applications:
-
-```txt id="w9q4mv"
-✓ Ubuntu Updated
-
-✓ SSH Configured
-
-✓ Root Login Disabled
-
-✓ Firewall Enabled
-
-✓ HTTP Allowed
-
-✓ HTTPS Allowed
-
-✓ Docker Installed
-
-✓ Docker Compose Installed
-
-✓ Swap Configured
-
-✓ Monitoring Installed
-
-✓ Domain Ready
-
-✓ GitHub Ready
-```
-
-At this point the VPS is production-ready and deployment can begin.
-
-# Source Code Deployment
-
-Source deployment means deploying application source code directly from GitHub to a VPS.
-
-Workflow:
-
-```txt id="w7n2mk"
-GitHub
-↓
-VPS
-↓
-Git Pull
-↓
-Build
-↓
-Deploy
-```
-
----
-
-## Connect To VPS
-
-```bash id="p4v8qx"
-ssh username@SERVER_IP
-```
-
----
-
-## Clone Repository
-
-```bash id="x8m3kv"
-git clone REPOSITORY_URL
-```
-
----
-
-## Enter Project
-
-```bash id="r5q7mw"
-cd project
-```
-
----
-
-## Verify Repository
-
-```bash id="m9v2qx"
-git status
-```
-
----
-
-## Configure Environment Variables
-
-```bash id="k3m8vr"
-nano .env
-```
-
----
-
-## Verify Files
-
-```bash id="p8q4mx"
-ls -la
-```
-
-Expected:
-
-```txt id="v2m7kw"
-docker-compose.yml
-
-.env
-
-frontend/
-
-backend/
-```
-
----
-
-# Source Code Deployment Workflow
-
-## Pull Latest Changes
-
-```bash id="x7q3mv"
-git pull origin main
-```
-
----
-
-## Build Images
-
-```bash id="n5v8kr"
-docker compose build
-```
-
----
-
-## Deploy Containers
-
-```bash id="r2q7wx"
-docker compose up -d
-```
-
----
-
-## Verify Deployment
-
-```bash id="m7v4qx"
-docker ps
-```
-
----
-
-## Verify Logs
-
-```bash id="p3m9kv"
-docker compose logs -f
-```
-
----
-
-# Docker Deployment
-
-Docker deployment packages the application inside images.
-
-Workflow:
-
-```txt id="k8v2mr"
-Source Code
-↓
-Docker Image
-↓
-Container
-↓
-Application
-```
-
----
-
-# Production Dockerfile Example
-
-## Backend Dockerfile
-
-```dockerfile id="x4q7mw"
-FROM node:24-slim
-
+```dockerfile
+FROM node:24-slim AS builder
 WORKDIR /app
-
 COPY package*.json ./
-
-RUN npm ci --omit=dev
-
+RUN npm ci
 COPY . .
-
 RUN npm run build
 
-EXPOSE 3000
-
+FROM node:24-slim
+WORKDIR /app
+ENV NODE_ENV=production
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+COPY --from=builder /app/dist ./dist
+USER node
+EXPOSE 5000
+HEALTHCHECK CMD node -e "fetch('http://localhost:5000/health').then(r=>process.exit(r.ok?0:1))"
 CMD ["node", "dist/index.js"]
 ```
 
+## Verify Build Locally
+
+```bash
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
+curl -f http://localhost:5000/health
+docker compose down
+```
+
+See `04-docker.md` and `06-nodejs-npm.md` for full Dockerfile guides.
+
 ---
 
-## Build Image
+# 12. Domain Preparation
 
-```bash id="m2v8qx"
-docker build -t backend .
+Before deployment:
+
+```txt
+✓ Domain purchased (Namecheap, Cloudflare, etc.)
+✓ DNS managed by Cloudflare
+✓ A records planned:
+   yourdomain.com      → VPS IP
+   api.yourdomain.com  → VPS IP
+   www.yourdomain.com  → VPS IP (or CNAME)
+```
+
+See `12-domain-dns-cloudflare.md` for full DNS setup.
+
+---
+
+# 13. Project Preparation Checklist
+
+✓ Good:
+
+* Docker builds locally
+* `.env.example` complete
+* health endpoint working
+* GitHub repo pushed
+* domain ready
+
+✗ Avoid:
+
+* deploying without local Docker test
+* secrets in GitHub repo
+* missing `.dockerignore`
+
+---
+
+# 14. VPS Requirements
+
+Minimum specs:
+
+```txt
+OS:       Ubuntu 22.04 / 24.04 LTS
+RAM:      2 GB (4 GB recommended for full stack)
+CPU:      2 vCPU
+Disk:     40 GB SSD
+Network:  Public IPv4
+```
+
+Providers: Hetzner, DigitalOcean, Vultr, Linode.
+
+---
+
+# 15. Initial VPS Setup
+
+See `01-initial-vps-security-setup.md` and `03-linux-basics.md` for full steps.
+
+```bash
+ssh root@YOUR_PUBLIC_IP
+apt update && apt upgrade -y
+adduser mosabbir && usermod -aG sudo,docker mosabbir
+# SSH hardening — see 02-ssh-guide.md
+curl -fsSL https://get.docker.com | sh
+mkdir -p /var/www/myapp && chown mosabbir:mosabbir /var/www/myapp
 ```
 
 ---
 
-## Verify Image
+# 16. VPS Security Checklist
 
-```bash id="r8q3mv"
-docker images
+✓ Good:
+
+* non-root admin user (mosabbir)
+* SSH key-only, custom port
+* UFW enabled
+* Fail2Ban active
+* automatic security updates
+
+✗ Avoid:
+
+* root SSH login
+* password authentication
+* all ports open
+
+See `02-ssh-guide.md` for SSH hardening.
+
+---
+
+# 17. Firewall Configuration
+
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 1182/tcp    # SSH custom port
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+sudo ufw status verbose
+```
+
+## Do Not Open
+
+```txt
+5432   PostgreSQL
+6379   Redis
+27017  MongoDB
+5000   Backend (Nginx proxies instead)
 ```
 
 ---
 
-## Run Image
+# 18. Docker Installation Verification
 
-```bash id="p7m4kw"
-docker run -d \
---name backend \
--p 3000:3000 \
---env-file .env \
-backend
-```
-
----
-
-## Verify Container
-
-```bash id="x3v9qr"
+```bash
+docker --version
+docker compose version
+sudo systemctl status docker
+docker run --rm hello-world
 docker ps
+groups mosabbir    # should include docker
+```
+
+Expected:
+
+```txt
+Docker version 27+
+Docker Compose version 2.x
 ```
 
 ---
 
-# Docker Compose Deployment
+# 19. VPS Readiness Checklist
 
-Production deployments should use Docker Compose.
-
----
-
-## Why Docker Compose?
-
-Benefits:
-
-```txt id="m6q2vx"
-Frontend
-
-Backend
-
-Database
-
-Redis
-
-Nginx
-```
-
-managed together.
-
----
-
-# Production Compose Example
-
-## docker-compose.yml
-
-```yaml id="p8v5kw"
-services:
-
-  frontend:
-    build: ./frontend
-
-    restart: unless-stopped
-
-    expose:
-      - "3000"
-
-  backend:
-    build: ./backend
-
-    restart: unless-stopped
-
-    expose:
-      - "5000"
-
-    env_file:
-      - .env
-
-  postgres:
-    image: postgres:17
-
-    restart: unless-stopped
-
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:8
-
-    restart: unless-stopped
-
-    volumes:
-      - redis-data:/data
-
-  nginx:
-    image: nginx:alpine
-
-    restart: unless-stopped
-
-    depends_on:
-      - frontend
-      - backend
-
-    ports:
-      - "80:80"
-      - "443:443"
-
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-
-volumes:
-  postgres-data:
-  redis-data:
+```txt
+✓ Ubuntu LTS updated
+✓ Admin user created
+✓ SSH hardened
+✓ UFW enabled (80, 443, SSH only)
+✓ Fail2Ban running
+✓ Docker installed and running
+✓ /var/www/myapp created
+✓ Out-of-band console access verified
 ```
 
 ---
 
-## Start Stack
+# 20. Install Docker On Linux VPS
 
-```bash id="r3m7qx"
-docker compose up -d
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker mosabbir
+sudo systemctl enable docker
+sudo systemctl start docker
 ```
+
+Log out and back in, then verify:
+
+```bash
+docker ps
+docker compose version
+```
+
+See `04-docker.md` for full install/uninstall.
 
 ---
 
-## Stop Stack
+# 21. Docker On Mac (Development)
 
-```bash id="x7v2kw"
+Install Docker Desktop for local development and testing before VPS deploy.
+
+```bash
+brew install --cask docker
+docker --version
+docker compose version
+```
+
+Local workflow:
+
+```bash
+cd ~/Projects/myapp
+docker compose -f docker-compose.dev.yml up -d
+docker compose logs -f
+curl -f http://localhost:5000/health
+```
+
+Mac is **not** the production server — VPS is.
+
+---
+
+# 22. Verify Docker For Deployment
+
+## On VPS
+
+```bash
+ssh vps-prod
+docker info
+docker compose version
+df -h
+free -h
+docker run --rm alpine ping -c 2 google.com
+```
+
+## Local Before Push
+
+```bash
+docker compose -f docker-compose.prod.yml config --quiet
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
+docker compose ps
+curl -f http://localhost/health
 docker compose down
 ```
 
 ---
 
-## Restart Stack
+# 23. Prepare Deployment Directory
 
-```bash id="m9q4vr"
-docker compose restart
+```bash
+ssh vps-prod
+sudo mkdir -p /var/www/myapp/{nginx,backups}
+sudo chown -R mosabbir:mosabbir /var/www/myapp
+chmod 700 /var/www/myapp
 ```
+
+Copy files to VPS:
+
+```bash
+scp docker-compose.prod.yml vps-prod:/var/www/myapp/
+scp .env vps-prod:/var/www/myapp/
+scp -r nginx/ vps-prod:/var/www/myapp/
+ssh vps-prod "chmod 600 /var/www/myapp/.env"
+```
+
+Or deploy via CI/CD — preferred for production.
 
 ---
 
-## Rebuild Stack
+# 24. Docker Compose Deployment (Recommended)
 
-```bash id="p2v8mx"
-docker compose up -d --build
-```
+Primary production method.
 
----
+## docker-compose.prod.yml
 
-## Verify Services
-
-```bash id="k5m7qw"
-docker compose ps
-```
-
----
-
-## View Logs
-
-```bash id="r8v3qx"
-docker compose logs -f
-```
-
----
-
-# Docker Hub Deployment
-
-Docker Hub deployment is recommended when:
-
-```txt id="x4m9kv"
-Multiple VPS
-
-CI/CD
-
-Team Projects
-
-Production Environments
-```
-
----
-
-# Docker Hub Workflow
-
-```txt id="n7q2mw"
-Build Image
-↓
-Push Docker Hub
-↓
-Pull On VPS
-↓
-Deploy
-```
-
----
-
-## Login
-
-```bash id="p8v4qr"
-docker login
-```
-
----
-
-## Build Image
-
-```bash id="m3q7vx"
-docker build -t backend:v1.0.0 .
-```
-
----
-
-## Tag Image
-
-```bash id="r2v9kw"
-docker tag backend:v1.0.0 username/backend:v1.0.0
-```
-
----
-
-## Push Image
-
-```bash id="x5m8qr"
-docker push username/backend:v1.0.0
-```
-
----
-
-# VPS Deployment Using Docker Hub
-
-## Pull Image
-
-```bash id="k8q3mv"
-docker pull username/backend:v1.0.0
-```
-
----
-
-## Compose Example
-
-```yaml id="m4v7qx"
+```yaml
 services:
+  frontend:
+    image: youruser/myapp-frontend:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - app-network
 
   backend:
-    image: username/backend:v1.0.0
-```
+    image: youruser/myapp-backend:${TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:5000/health').then(r=>process.exit(r.ok?0:1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      retries: 5
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 30s
+      retries: 5
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
----
-
-## Deploy
-
-```bash id="p9q2kw"
-docker compose up -d
-```
-
----
-
-## Update Version
-
-Old:
-
-```yaml id="r5v8mx"
-image: username/backend:v1.0.0
-```
-
----
-
-New:
-
-```yaml id="x2m7qr"
-image: username/backend:v1.1.0
-```
-
----
-
-Deploy:
-
-```bash id="k7v4qw"
-docker compose pull
-
-docker compose up -d
-```
-
----
-
-# Deployment Verification
-
-## Verify Containers
-
-```bash id="m8q2vx"
-docker ps
-```
-
----
-
-## Verify Logs
-
-```bash id="r4v9kw"
-docker compose logs -f
-```
-
----
-
-## Verify Resources
-
-```bash id="x8m3qr"
-docker stats
-```
-
----
-
-## Verify Domain
-
-```bash id="p3v7mx"
-curl DOMAIN_NAME
-```
-
----
-
-# Deployment Checklist
-
-Before continuing:
-
-```txt id="k5q8vw"
-✓ GitHub Repository Connected
-
-✓ Environment Variables Added
-
-✓ Dockerfile Working
-
-✓ Docker Compose Working
-
-✓ Images Built
-
-✓ Containers Running
-
-✓ Logs Verified
-
-✓ Domain Ready
-
-✓ Nginx Ready
-
-✓ Cloudflare Ready
-```
-
-At this point the application is deployed and ready for production infrastructure configuration.
-
-# Coolify Deployment
-
-Coolify is a self-hosted deployment platform that runs on your own VPS.
-
-It provides:
-
-* GitHub integration
-* automatic deployments
-* SSL management
-* environment management
-* Docker orchestration
-
----
-
-## Coolify Workflow
-
-```txt id="j3k8wp"
-GitHub
-↓
-Coolify
-↓
-Docker
-↓
-Application
-```
-
----
-
-## Recommended Use Cases
-
-Good for:
-
-```txt id="x7m4qv"
-Personal Projects
-
-Client Projects
-
-SaaS Projects
-
-Multi-App VPS
-```
-
----
-
-## Requirements
-
-Before installing Coolify:
-
-```txt id="m2v8kr"
-Ubuntu VPS
-
-Docker Installed
-
-Domain Ready
-
-Firewall Configured
-```
-
----
-
-## Install Coolify
-
-Official installer:
-
-```bash id="p8q3mv"
-curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
-```
-
----
-
-## Access Coolify
-
-```txt id="k4v9qx"
-http://SERVER_IP:8000
-```
-
-After setup:
-
-```txt id="r7m2kw"
-https://coolify.domain.com
-```
-
----
-
-# Connect GitHub Repository
-
-## Create Resource
-
-Inside Coolify:
-
-```txt id="x3q8mv"
-New Resource
-↓
-Application
-```
-
----
-
-## Connect GitHub
-
-```txt id="m9v4kw"
-GitHub
-↓
-Repository
-↓
-Branch
-```
-
----
-
-## Configure Build Settings
-
-Verify:
-
-```txt id="k2q7vx"
-Dockerfile
-
-Port
-
-Environment Variables
-```
-
----
-
-## Deploy
-
-```txt id="p5v8mr"
-Deploy
-```
-
-Coolify automatically:
-
-```txt id="r8q4kw"
-Builds Image
-
-Creates Container
-
-Starts Application
-```
-
----
-
-# Environment Variables
-
-Inside Coolify:
-
-```txt id="x7m3qv"
-Settings
-↓
-Environment Variables
-```
-
----
-
-## Example
-
-```env id="m4v8kw"
-NODE_ENV=production
-
-DATABASE_URL=...
-
-JWT_SECRET=...
-```
-
----
-
-## Production Rule
-
-Never commit:
-
-```txt id="k8q2mx"
-.env
-```
-
-to GitHub.
-
----
-
-# Production Architecture
-
-Recommended architecture:
-
-```txt id="v3m7qw"
-Users
-↓
-Cloudflare
-↓
-Nginx
-↓
-Frontend
-↓
-Backend
-↓
-PostgreSQL
-↓
-Redis
-```
-
----
-
-## Public Layer
-
-Accessible from the internet:
-
-```txt id="p9q4kv"
-Cloudflare
-
-Nginx
-
-Frontend
-```
-
----
-
-## Private Layer
-
-Internal only:
-
-```txt id="r5v8mx"
-Backend
-
-PostgreSQL
-
-Redis
-```
-
----
-
-# Production Project Structure
-
-## Recommended Structure
-
-```txt id="x2m7qw"
-project/
-│
-├── frontend/
-│
-├── backend/
-│
-├── docker-compose.yml
-│
-├── .env
-│
-├── nginx/
-│   ├── default.conf
-│   └── ssl/
-│       ├── cert.pem
-│       └── key.pem
-│
-├── backups/
-│
-└── docs/
-```
-
----
-
-## Frontend
-
-```txt id="m7q3vx"
-frontend/
-├── src/
-├── public/
-├── package.json
-├── Dockerfile
-└── .dockerignore
-```
-
----
-
-## Backend
-
-```txt id="p4v9kw"
-backend/
-├── src/
-├── package.json
-├── Dockerfile
-├── .dockerignore
-└── uploads/
-```
-
----
-
-# Nginx Integration
-
-Nginx should be the only public entry point.
-
----
-
-## Traffic Flow
-
-```txt id="r8m2qx"
-Users
-↓
-Cloudflare
-↓
-Nginx
-↓
-Frontend
-↓
-Backend
-```
-
----
-
-## Benefits
-
-```txt id="k5v7mw"
-HTTPS
-
-Reverse Proxy
-
-Routing
-
-Security Headers
-
-Cloudflare Integration
-```
-
----
-
-## Recommended Nginx Structure
-
-```txt id="x8q4mv"
-nginx/
-├── default.conf
-└── ssl/
-    ├── cert.pem
-    └── key.pem
-```
-
----
-
-## Nginx Docker Mounts
-
-```yaml id="m2v8kr"
 volumes:
-  - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-  - ./nginx/ssl:/etc/nginx/ssl:ro
+  postgres_data:
+  redis_data:
 ```
 
----
-
-## Production Rule
-
-Expose:
-
-```txt id="p7q3vx"
-80
-
-443
-```
-
-Only.
-
----
-
-Keep private:
-
-```txt id="r4v8kw"
-3000
-
-5000
-
-5432
-
-6379
-```
-
----
-
-# Cloudflare Integration
-
-Cloudflare should sit in front of Nginx.
-
----
-
-## Traffic Flow
-
-```txt id="x9m2qr"
-Users
-↓
-Cloudflare
-↓
-Nginx
-↓
-Application
-```
-
----
-
-## Benefits
-
-```txt id="k3v7mw"
-HTTPS
-
-DDoS Protection
-
-Caching
-
-WAF
-
-Bot Protection
-
-Origin IP Protection
-```
-
----
-
-# DNS Configuration
-
-## Root Domain
-
-```txt id="m8q4vx"
-Type: A
-
-Name: @
-
-Value: SERVER_IP
-```
-
----
-
-## API Subdomain
-
-```txt id="p2v9kw"
-Type: A
-
-Name: api
-
-Value: SERVER_IP
-```
-
----
-
-## Enable Proxy
-
-Recommended:
-
-```txt id="r7q3mx"
-Orange Cloud
-```
-
-Enabled.
-
----
-
-# SSL Configuration
-
-## Cloudflare SSL Mode
-
-Recommended:
-
-```txt id="x4v8kr"
-Full (Strict)
-```
-
----
-
-Avoid:
-
-```txt id="m9q2vw"
-Flexible
-```
-
----
-
-# Production Infrastructure Checklist
-
-Verify:
-
-```txt id="k6v4qx"
-✓ Cloudflare Configured
-
-✓ DNS Configured
-
-✓ Nginx Configured
-
-✓ HTTPS Enabled
-
-✓ Docker Running
-
-✓ Containers Running
-
-✓ Environment Variables Added
-
-✓ Database Private
-
-✓ Redis Private
-```
-
----
-
-# Production Rules
-
-Always:
-
-```txt id="p3q8mv"
-✓ Use Docker Compose
-
-✓ Use Nginx
-
-✓ Use Cloudflare
-
-✓ Use HTTPS
-
-✓ Keep Databases Private
-
-✓ Use Environment Variables
-
-✓ Use Backups
-
-✓ Monitor Logs
-```
-
----
-
-Avoid:
-
-```txt id="r8v2kw"
-✗ Public PostgreSQL
-
-✗ Public Redis
-
-✗ Secrets In GitHub
-
-✗ Open Unnecessary Ports
-
-✗ Disable HTTPS
-
-✗ Expose Internal Services
-```
-
----
-
-# Infrastructure Overview
-
-Recommended deployment architecture:
-
-```txt id="x5m7qr"
-Cloudflare
-↓
-Nginx
-↓
-Frontend
-↓
-Backend
-↓
-PostgreSQL
-↓
-Redis
-```
-
-This architecture will be used throughout the remainder of this deployment guide.
-# Domain Configuration
-
-A domain allows users to access your application using a human-readable address.
-
-Example:
-
-```txt id="v7m4qx"
-animewarp.app
-```
-
-instead of:
-
-```txt id="k2q8mv"
-104.21.x.x
-```
-
----
-
-# Domain Requirements
-
-Before configuring a domain:
-
-```txt id="r5v9kw"
-✓ VPS Running
-
-✓ Application Running
-
-✓ Public IP Available
-
-✓ Cloudflare Account Ready
-```
-
----
-
-# Domain Strategy
-
-## Root Domain
-
-Example:
-
-```txt id="x8m3qr"
-animewarp.app
-```
-
-Usually points to:
-
-```txt id="m4q7vx"
-Frontend
-```
-
----
-
-## API Subdomain
-
-Example:
-
-```txt id="p9v2kw"
-api.animewarp.app
-```
-
-Usually points to:
-
-```txt id="r3q8mx"
-Backend API
-```
-
----
-
-## Admin Subdomain
-
-Example:
-
-```txt id="x7v4kr"
-admin.animewarp.app
-```
-
-Usually points to:
-
-```txt id="m2q9vw"
-Admin Panel
-```
-
----
-
-# DNS Configuration
-
-DNS connects domain names to servers.
-
----
-
-## Root Domain Record
-
-Example:
-
-```txt id="k5v8qx"
-Type: A
-
-Name: @
-
-Value: SERVER_IP
-```
-
----
-
-## API Record
-
-Example:
-
-```txt id="r8q3mv"
-Type: A
-
-Name: api
-
-Value: SERVER_IP
-```
-
----
-
-## Admin Record
-
-Example:
-
-```txt id="x3m7qw"
-Type: A
-
-Name: admin
-
-Value: SERVER_IP
-```
-
----
-
-# Cloudflare DNS
-
-Recommended provider:
-
-```txt id="m7v2kx"
-Cloudflare
-```
-
----
-
-## Enable Proxy
-
-Enable:
-
-```txt id="p4q9vw"
-Orange Cloud
-```
-
----
-
-Benefits:
-
-```txt id="r7v3mx"
-DDoS Protection
-
-Caching
-
-WAF
-
-Hide Origin IP
-```
-
----
-
-## Verify DNS
-
-Check:
-
-```bash id="x9m4kr"
-nslookup DOMAIN_NAME
-```
-
-Example:
-
-```bash id="k3q8vx"
-nslookup animewarp.app
-```
-
----
-
-## Verify Public Resolution
-
-```bash id="m8v2qw"
-dig animewarp.app
-```
-
----
-
-# SSL HTTPS Configuration
-
-All production applications should use HTTPS.
-
----
-
-# SSL Options
-
-## Cloudflare SSL
-
-Recommended:
-
-```txt id="r4q7mx"
-Cloudflare
-+
-Nginx
-```
-
----
-
-## Let's Encrypt SSL
-
-Alternative:
-
-```txt id="x8v3kw"
-Nginx
-+
-Certbot
-```
-
----
-
-## Coolify SSL
-
-Alternative:
-
-```txt id="m5q9vx"
-Coolify Automatic SSL
-```
-
----
-
-# Recommended SSL Mode
-
-Inside Cloudflare:
-
-```txt id="p8v4kr"
-SSL/TLS
-↓
-Full (Strict)
-```
-
----
-
-Avoid:
-
-```txt id="r2q7vw"
-Flexible
-```
-
----
-
-# SSL Verification
-
-## Verify HTTPS
-
-```bash id="x6m8qx"
-curl -I https://DOMAIN_NAME
-```
-
----
-
-Example:
-
-```bash id="k9v3mw"
-curl -I https://animewarp.app
-```
-
----
-
-Expected:
-
-```txt id="m3q7vx"
-HTTP/2 200
-```
-
-or
-
-```txt id="p7v2kw"
-HTTP/2 301
-```
-
----
-
-# Nginx HTTPS Flow
-
-```txt id="r8m4qx"
-Users
-↓
-Cloudflare
-↓
-HTTPS
-↓
-Nginx
-↓
-Application
-```
-
----
-
-# Deployment Monitoring
-
-Monitoring should begin immediately after deployment.
-
----
-
-## Monitoring Goals
-
-Verify:
-
-```txt id="x5q8vw"
-Application Healthy
-
-Containers Running
-
-Resources Available
-
-Domain Working
-
-HTTPS Working
-```
-
----
-
-# Docker Monitoring
-
-## Running Containers
-
-```bash id="m2v7kr"
-docker ps
-```
-
----
-
-## Container Resource Usage
-
-```bash id="p9q3mx"
-docker stats
-```
-
----
-
-## Compose Status
-
-```bash id="r4v8kw"
+## Deploy Commands
+
+```bash
+ssh vps-prod
+cd /var/www/myapp
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
 docker compose ps
+curl -f https://yourdomain.com/health
 ```
 
 ---
 
-## Compose Logs
+# 25. Docker Hub Deployment
 
-```bash id="x7m2qw"
-docker compose logs -f
-```
+Build once, deploy anywhere.
 
----
+## Workflow
 
-## Specific Service Logs
-
-```bash id="k5q9vx"
-docker compose logs -f backend
-```
-
----
-
-# Server Monitoring
-
-## CPU And Memory
-
-```bash id="m8v4kr"
-htop
-```
-
----
-
-## Disk Usage
-
-```bash id="p3q7mx"
-df -h
-```
-
----
-
-## Memory Usage
-
-```bash id="r9v2kw"
-free -h
-```
-
----
-
-## Open Ports
-
-```bash id="x4m8qx"
-sudo ss -tulpn
-```
-
----
-
-# Log Monitoring
-
-Logs are the first place to check when troubleshooting.
-
----
-
-## Container Logs
-
-```bash id="k8q4vw"
-docker logs CONTAINER_ID
-```
-
----
-
-## Live Logs
-
-```bash id="m5v7kr"
-docker logs -f CONTAINER_ID
-```
-
----
-
-## Compose Logs
-
-```bash id="p8q2mx"
-docker compose logs -f
-```
-
----
-
-## Last 100 Lines
-
-```bash id="r3v9kw"
-docker compose logs --tail=100
-```
-
----
-
-# Health Verification
-
-## Verify Frontend
-
-```bash id="x7q4mv"
-curl DOMAIN_NAME
-```
-
----
-
-## Verify API
-
-```bash id="k2v8qw"
-curl https://api.DOMAIN_NAME
-```
-
----
-
-## Verify Containers
-
-```bash id="m9q3kr"
-docker ps
-```
-
----
-
-## Verify HTTPS
-
-```bash id="p4v7mx"
-curl -I https://DOMAIN_NAME
-```
-
----
-
-# Monitoring Checklist
-
-Verify:
-
-```txt id="r8q2vw"
-✓ Frontend Reachable
-
-✓ Backend Reachable
-
-✓ HTTPS Working
-
-✓ Containers Running
-
-✓ Domain Resolving
-
-✓ DNS Working
-
-✓ Resources Available
-
-✓ Logs Accessible
-```
-
----
-
-# Production Monitoring Rules
-
-Always monitor:
-
-```txt id="x5m9kr"
-CPU
-
-RAM
-
-Disk
-
-Container Health
-
-Application Logs
-
-SSL Status
-```
-
----
-
-Never ignore:
-
-```txt id="k3q7vx"
-Restart Loops
-
-High Memory Usage
-
-Disk Full Warnings
-
-SSL Errors
-
-Database Errors
-```
-
----
-
-# Domain And SSL Checklist
-
-Before continuing:
-
-```txt id="m7v4qw"
-✓ Domain Added
-
-✓ DNS Configured
-
-✓ Cloudflare Proxy Enabled
-
-✓ SSL Configured
-
-✓ Full (Strict) Enabled
-
-✓ HTTPS Working
-
-✓ Frontend Reachable
-
-✓ API Reachable
-```
-
-At this point the application is publicly accessible and production monitoring is in place.
-
-# Deployment Updates
-
-Applications require regular updates.
-
-Updates may include:
-
-* new features
-* bug fixes
-* security fixes
-* dependency updates
-* infrastructure updates
-
----
-
-# Production Update Principles
-
-Updates should be:
-
-```txt id="p7v4mx"
-Predictable
-
-Repeatable
-
-Fast
-
-Rollback Safe
-```
-
----
-
-## Production Rule
-
-Never:
-
-```txt id="x4m8qw"
-SSH VPS
+```txt
+Local/CI builds image
 ↓
-Edit Files Directly
+Push to Docker Hub
 ↓
-Save
-```
-
----
-
-Always:
-
-```txt id="m8q2vx"
-Change Source Code
+VPS pulls image
 ↓
-Commit
-↓
-Push
-↓
-Deploy New Version
-```
-
----
-
-# Source Deployment Updates
-
-Used when deploying directly from GitHub source code.
-
----
-
-## Connect To VPS
-
-```bash id="r3v7kw"
-ssh username@SERVER_IP
-```
-
----
-
-## Enter Project
-
-```bash id="p8q2mx"
-cd project
-```
-
----
-
-## Pull Latest Changes
-
-```bash id="k5v8qw"
-git pull origin main
-```
-
----
-
-## Rebuild Containers
-
-```bash id="m2v7kr"
-docker compose build
-```
-
----
-
-## Deploy
-
-```bash id="x7q4mv"
 docker compose up -d
 ```
 
----
+## Push From Local
 
-## Verify
-
-```bash id="r9v3kw"
-docker ps
+```bash
+docker login
+docker build -t youruser/myapp-backend:v1.0.0 apps/backend
+docker push youruser/myapp-backend:v1.0.0
 ```
 
----
+## Pull On VPS
 
-## Verify Logs
-
-```bash id="p4q8mx"
-docker compose logs -f
+```bash
+ssh vps-prod
+cd /var/www/myapp
+export TAG=v1.0.0
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
 ```
 
----
-
-# Source Deployment Workflow
-
-```txt id="m7v2qx"
-Code Change
-↓
-Git Commit
-↓
-Git Push
-↓
-SSH VPS
-↓
-Git Pull
-↓
-Build
-↓
-Deploy
-```
+Use explicit image tags in production — not `latest` alone.
 
 ---
 
-# Docker Deployment Updates
+# 26. GitHub Actions CI/CD Deployment
 
-Used when deploying local Docker builds.
+Recommended automated deploy.
 
----
+## .github/workflows/deploy.yml
 
-## Rebuild Image
-
-```bash id="k8q4vw"
-docker compose build
-```
-
----
-
-## Deploy Updated Containers
-
-```bash id="x5m9kr"
-docker compose up -d
-```
-
----
-
-## Force Recreate
-
-```bash id="p3v7mx"
-docker compose up -d --force-recreate
-```
-
----
-
-## Verify Running Containers
-
-```bash id="r7q2vw"
-docker ps
-```
-
----
-
-# Docker Hub Deployment Updates
-
-Recommended production workflow.
-
----
-
-## Update Image Version
-
-Old:
-
-```yaml id="m4v8qx"
-image: username/backend:v1.0.0
-```
-
----
-
-New:
-
-```yaml id="p8q3mw"
-image: username/backend:v1.1.0
-```
-
----
-
-## Pull New Images
-
-```bash id="x2m7kv"
-docker compose pull
-```
-
----
-
-## Deploy
-
-```bash id="r5v9qw"
-docker compose up -d
-```
-
----
-
-## Verify
-
-```bash id="k7q4mx"
-docker ps
-```
-
----
-
-# Docker Hub Update Workflow
-
-```txt id="m9v2kw"
-Code Change
-↓
-Build Image
-↓
-Push Docker Hub
-↓
-VPS Pull
-↓
-Deploy
-```
-
----
-
-# Coolify Deployment Updates
-
-Coolify automates deployments.
-
----
-
-## Automatic Deployment
-
-Workflow:
-
-```txt id="p5v8qx"
-Git Push
-↓
-Coolify Detects Change
-↓
-Build
-↓
-Deploy
-```
-
----
-
-## Manual Deployment
-
-Inside Coolify:
-
-```txt id="r8q2mv"
-Application
-↓
-Deploy
-```
-
----
-
-## Verify Deployment
-
-Inside Coolify:
-
-```txt id="x4m7kw"
-Logs
-
-Deployments
-
-Containers
-```
-
----
-
-# Rollback Workflow
-
-Every production deployment should have a rollback strategy.
-
----
-
-## Why Rollback?
-
-Possible issues:
-
-```txt id="m2q9vx"
-Application Errors
-
-Broken Features
-
-Bad Releases
-
-Database Issues
-```
-
----
-
-## Rollback Goal
-
-```txt id="p7v3kw"
-Restore Stable Version
-↓
-Quickly
-```
-
----
-
-# Source Rollback
-
-## View Commit History
-
-```bash id="r4q8mx"
-git log --oneline
-```
-
----
-
-## Checkout Previous Commit
-
-```bash id="x8m3qw"
-git checkout COMMIT_ID
-```
-
----
-
-## Rebuild
-
-```bash id="k5v7mx"
-docker compose build
-```
-
----
-
-## Redeploy
-
-```bash id="m8q2vw"
-docker compose up -d
-```
-
----
-
-# Git Rollback Workflow
-
-```txt id="p2v9kr"
-Current Commit
-↓
-Issue Found
-↓
-Previous Commit
-↓
-Build
-↓
-Deploy
-```
-
----
-
-# Docker Rollback
-
-Recommended for production.
-
----
-
-## Previous Version
-
-Current:
-
-```txt id="r7q4mx"
-backend:v1.1.0
-```
-
----
-
-Rollback:
-
-```txt id="x3m8qw"
-backend:v1.0.0
-```
-
----
-
-## Update Compose
-
-```yaml id="k8v2mw"
-image: username/backend:v1.0.0
-```
-
----
-
-## Pull Previous Version
-
-```bash id="m5q7vx"
-docker compose pull
-```
-
----
-
-## Deploy
-
-```bash id="p9v3kr"
-docker compose up -d
-```
-
----
-
-# Docker Rollback Workflow
-
-```txt id="r2q8mw"
-Current Version
-↓
-Issue Found
-↓
-Previous Image Tag
-↓
-Deploy
-```
-
----
-
-# Database Rollback
-
-Database rollbacks require backups.
-
----
-
-## Production Rule
-
-Never deploy without:
-
-```txt id="x7m4kr"
-Database Backup
-```
-
----
-
-# Backup Before Migration
-
-Example:
-
-```txt id="m3q8vw"
-Backup
-↓
-Migration
-↓
-Deploy
-```
-
----
-
-# Restore Workflow
-
-```txt id="p6v2qx"
-Backup
-↓
-Restore
-↓
-Verify
-```
-
----
-
-# Safe Deployment Strategy
-
-Recommended workflow:
-
-```txt id="r8v5kw"
-Backup
-↓
-Deploy
-↓
-Verify
-↓
-Monitor
-```
-
----
-
-# Deployment Verification
-
-After every update verify:
-
----
-
-## Containers
-
-```bash id="x4q9mv"
-docker ps
-```
-
----
-
-## Logs
-
-```bash id="k7v3qw"
-docker compose logs -f
-```
-
----
-
-## Resource Usage
-
-```bash id="m2q8vx"
-docker stats
-```
-
----
-
-## Frontend
-
-```bash id="p8v4kr"
-curl DOMAIN_NAME
-```
-
----
-
-## API
-
-```bash id="r5q7mx"
-curl https://api.DOMAIN_NAME
-```
-
----
-
-## HTTPS
-
-```bash id="x8m2qw"
-curl -I https://DOMAIN_NAME
-```
-
----
-
-# Update Checklist
-
-Before deploying:
-
-```txt id="m4v9kw"
-✓ Code Tested
-
-✓ Git Commit Created
-
-✓ Backup Available
-
-✓ Environment Variables Verified
-
-✓ Docker Compose Valid
-```
-
----
-
-After deploying:
-
-```txt id="p7q2vx"
-✓ Containers Running
-
-✓ Logs Clean
-
-✓ Domain Working
-
-✓ HTTPS Working
-
-✓ Database Working
-
-✓ No Restart Loops
-```
-
----
-
-# Rollback Checklist
-
-Verify:
-
-```txt id="r3v8kw"
-✓ Previous Version Available
-
-✓ Database Backup Available
-
-✓ Rollback Procedure Tested
-
-✓ Monitoring Available
-
-✓ Logs Accessible
-```
-
----
-
-# Production Update Strategy
-
-Recommended workflow:
-
-```txt id="x5m7qr"
-Backup
-↓
-Deploy
-↓
-Verify
-↓
-Monitor
-↓
-Keep Running
-```
-
-If issues occur:
-
-```txt id="m9q3vx"
-Rollback
-↓
-Investigate
-↓
-Fix
-↓
-Redeploy
-```
-
-A deployment is only successful after verification and monitoring, not immediately after running the deploy command.
-
-# GitHub Actions Deployment
-
-GitHub Actions enables automatic deployments.
-
-Workflow:
-
-```txt id="r7m3qx"
-Git Push
-↓
-GitHub Actions
-↓
-Build
-↓
-Deploy
-```
-
----
-
-# Benefits
-
-```txt id="p4v8kw"
-Automation
-
-Consistency
-
-Faster Deployments
-
-Reduced Human Error
-
-Versioned Workflows
-```
-
----
-
-# GitHub Actions Requirements
-
-Before using CI/CD:
-
-```txt id="x8q2mv"
-GitHub Repository
-
-VPS
-
-SSH Access
-
-Docker Installed
-
-Docker Compose Installed
-```
-
----
-
-# GitHub Secrets
-
-Store sensitive values inside GitHub Secrets.
-
----
-
-## Required Secrets
-
-```txt id="m5v7kr"
-SERVER_IP
-
-SERVER_USER
-
-SERVER_SSH_KEY
-```
-
----
-
-## Add Secrets
-
-GitHub:
-
-```txt id="k3q9vx"
-Repository
-↓
-Settings
-↓
-Secrets And Variables
-↓
-Actions
-```
-
----
-
-# Basic GitHub Actions Workflow
-
-## Create Workflow Directory
-
-```bash id="p8v4mx"
-mkdir -p .github/workflows
-```
-
----
-
-## Create Deploy Workflow
-
-```bash id="r2q8kw"
-nano .github/workflows/deploy.yml
-```
-
----
-
-## Example Workflow
-
-```yaml id="x5m7vr"
-name: Deploy
+```yaml
+name: Deploy Production
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/backend/package-lock.json
+      - run: npm ci
+        working-directory: apps/backend
+      - run: npm test
+        working-directory: apps/backend
+
+  build-push:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: apps/backend
+          push: true
+          tags: youruser/myapp-backend:${{ github.sha }},youruser/myapp-backend:latest
 
   deploy:
-
+    needs: build-push
     runs-on: ubuntu-latest
-
     steps:
-
-      - name: Deploy To VPS
-        uses: appleboy/ssh-action@v1
-
+      - uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-
+          port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
-            cd project
-            git pull origin main
-            docker compose build
-            docker compose up -d
+            cd /var/www/myapp
+            export TAG=${{ github.sha }}
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            docker compose -f docker-compose.prod.yml exec -T backend npx prisma migrate deploy
+            docker compose ps
+            docker image prune -f
 ```
+
+## GitHub Secrets Required
+
+```txt
+DOCKERHUB_USERNAME
+DOCKERHUB_TOKEN
+SERVER_IP
+SERVER_USER
+SERVER_SSH_KEY
+SERVER_SSH_PORT
+```
+
+See `13-git-github-ci-cd.md` for full CI/CD guide.
 
 ---
 
-# Workflow Verification
+# 27. Coolify Deployment (Alternative)
 
-After pushing:
+Self-hosted PaaS — good for multi-app VPS without manual compose management.
 
-```txt id="m9q2kw"
-GitHub
+```txt
+GitHub Push
 ↓
-Actions
+Coolify Webhook
 ↓
-Deploy Workflow
-```
-
----
-
-Expected:
-
-```txt id="r4v8mx"
-Green Checkmark
-```
-
----
-
-# Docker Hub CI/CD Workflow
-
-Recommended for production deployments.
-
----
-
-# Workflow
-
-```txt id="x7m3qw"
-Git Push
+Docker Build on VPS
 ↓
-GitHub Actions
+Traefik + SSL
 ↓
-Build Image
-↓
-Push Docker Hub
-↓
-VPS Pull Image
-↓
-Deploy
+Users
+```
+
+Setup: see `05-coolify.md`.
+
+Use Coolify when:
+
+* managing multiple apps on one VPS
+* prefer GUI over SSH deploy scripts
+* want automatic SSL without manual Nginx config
+
+Use Docker Compose + CI/CD when:
+
+* full control over pipeline
+* custom Nginx configuration
+* team prefers infrastructure as code
+
+---
+
+# 28. Legacy Source Deployment (Avoid)
+
+```txt
+SSH → git pull → npm install → pm2 restart
+```
+
+✗ Avoid for new projects:
+
+* not reproducible
+* Node version tied to host
+* no container isolation
+* hard to rollback
+
+If maintaining legacy PM2 deployment, migrate to Docker Compose incrementally.
+
+---
+
+# 29. Deployment Method Comparison
+
+| Method | Best For | Production Ready |
+|--------|----------|------------------|
+| Docker Compose + CI/CD | Full control, SaaS | ✓ Recommended |
+| Docker Hub + SSH | Multi-VPS, teams | ✓ Recommended |
+| Coolify | Multi-app, fast setup | ✓ Good |
+| Source + PM2 | Legacy only | ✗ Avoid |
+| Manual SSH edits | Never | ✗ Never |
+
+---
+
+# 30. Production Docker Compose Stack
+
+Full stack reference — see section 24 for complete YAML.
+
+Key rules:
+
+```txt
+✓ restart: unless-stopped on all services
+✓ healthcheck on backend, postgres, redis
+✓ env_file: .env (not hardcoded secrets)
+✓ volumes for postgres and redis only
+✓ nginx is only service with ports 80/443
+✓ explicit image tags in production
 ```
 
 ---
 
-# Benefits
+# 31. Nginx Integration
 
-```txt id="k6q8vx"
-Smaller VPS
+```txt
+User → Cloudflare → Nginx :443 → frontend:3000 / backend:5000
+```
 
-Faster Deployments
+## nginx/default.conf
 
-Versioned Releases
+```nginx
+upstream backend {
+    server backend:5000;
+}
 
-Easier Rollbacks
+upstream frontend {
+    server frontend:3000;
+}
+
+server {
+    listen 80;
+    server_name yourdomain.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name yourdomain.com;
+
+    ssl_certificate     /etc/nginx/certs/cert.pem;
+    ssl_certificate_key /etc/nginx/certs/key.pem;
+
+    location /api/ {
+        proxy_pass http://backend/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        proxy_pass http://frontend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+}
+```
+
+See `11-nginx-reverse-proxy.md` for full Nginx setup.
+
+---
+
+# 32. Cloudflare Integration
+
+```txt
+User → Cloudflare (DNS + WAF + SSL) → Nginx → App
+```
+
+## Cloudflare Settings
+
+```txt
+SSL/TLS mode:     Full (strict)
+Always HTTPS:     On
+Auto Minify:      JS, CSS, HTML
+Brotli:           On
+WAF:              On (free tier)
+```
+
+## Origin Certificate (Optional)
+
+Generate in Cloudflare → SSL → Origin Server → install on Nginx.
+
+See `12-domain-dns-cloudflare.md`.
+
+---
+
+# 33. DNS Configuration
+
+## Cloudflare A Records
+
+```txt
+Type: A   Name: @      Content: YOUR_VPS_IP   Proxy: Proxied
+Type: A   Name: api    Content: YOUR_VPS_IP   Proxy: Proxied
+Type: A   Name: www     Content: YOUR_VPS_IP   Proxy: Proxied
+```
+
+## Verify DNS
+
+```bash
+dig yourdomain.com +short
+dig api.yourdomain.com +short
+```
+
+Allow propagation (usually minutes, up to 24 hours).
+
+---
+
+# 34. SSL HTTPS Configuration
+
+## Option 1 — Cloudflare Proxy (Simplest)
+
+Cloudflare handles SSL between user and Cloudflare. Nginx uses Cloudflare Origin Certificate or Let's Encrypt.
+
+## Option 2 — Let's Encrypt On Nginx
+
+```bash
+sudo apt install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d yourdomain.com -d api.yourdomain.com
+```
+
+## Option 3 — Cloudflare Origin Certificate
+
+```txt
+Cloudflare → SSL → Origin Server → Create Certificate
+→ Install on Nginx
+→ SSL mode: Full (strict)
+```
+
+## Verify HTTPS
+
+```bash
+curl -I https://yourdomain.com
+curl -I https://api.yourdomain.com/health
 ```
 
 ---
 
-# Docker Hub Secrets
+# 35. Health Checks
 
-Add:
+## Backend Health Endpoint
 
-```txt id="m2v9kr"
-DOCKER_USERNAME
-
-DOCKER_PASSWORD
+```javascript
+app.get("/health", async (req, res) => {
+  await pool.query("SELECT 1");
+  await redis.ping();
+  res.json({ status: "ok", uptime: process.uptime() });
+});
 ```
 
-or:
+## Verify After Deploy
 
-```txt id="p5q7mx"
-DOCKER_TOKEN
+```bash
+curl -f http://localhost:5000/health
+curl -f https://yourdomain.com/health
+curl -f https://api.yourdomain.com/health
+docker compose ps
+```
+
+All services should show `healthy` or `Up`.
+
+---
+
+# 36. Production Infrastructure Checklist
+
+```txt
+✓ Domain DNS pointing to VPS
+✓ Cloudflare SSL Full (strict)
+✓ Nginx reverse proxy configured
+✓ HTTPS redirect working
+✓ Backend health check passing
+✓ PostgreSQL internal only
+✓ Redis internal only
+✓ UFW blocks DB/cache ports
+✓ .env chmod 600 on server
 ```
 
 ---
 
-# Build And Push Example
+# 37. Deployment Monitoring
 
-```yaml id="r8v3kw"
-- name: Login Docker Hub
+After every deploy:
 
-  uses: docker/login-action@v3
+```bash
+ssh vps-prod
+cd /var/www/myapp
+docker compose ps
+curl -f https://yourdomain.com/health
+docker compose logs backend --tail=30
+```
 
-  with:
-    username: ${{ secrets.DOCKER_USERNAME }}
-    password: ${{ secrets.DOCKER_PASSWORD }}
+Monitor for 10–15 minutes after deploy for errors.
 
-- name: Build And Push
+---
 
-  uses: docker/build-push-action@v6
+# 38. Docker Monitoring
 
-  with:
-    push: true
-    tags: username/backend:v1.0.0
+```bash
+docker compose ps
+docker stats --no-stream
+docker system df
+docker compose logs -f --tail=50
+```
+
+Set up weekly cron or manual check:
+
+```bash
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+docker system df
 ```
 
 ---
 
-# VPS Deployment
+# 39. Server Monitoring
 
-Pull:
+```bash
+df -h
+free -h
+uptime
+sudo ufw status
+sudo fail2ban-client status
+```
 
-```bash id="x3m8qw"
-docker compose pull
+Alert thresholds:
+
+```txt
+Disk > 85%  → prune images, expand disk
+RAM  > 90%  → upgrade VPS or reduce services
+```
+
+See `14-server-monitoring.md`.
+
+---
+
+# 40. Log Monitoring
+
+```bash
+docker compose logs -f
+docker compose logs backend --tail=100 --since 1h
+docker compose logs nginx --tail=50
+sudo tail -f /var/log/auth.log
+```
+
+Export before major changes:
+
+```bash
+docker compose logs > ~/logs/deploy-$(date +%F).log 2>&1
 ```
 
 ---
 
-Deploy:
+# 41. Monitoring Checklist
 
-```bash id="k7q4mv"
+```txt
+✓ docker compose ps — all Up/healthy
+✓ curl health endpoints
+✓ docker stats — no OOM
+✓ df -h — disk under 85%
+✓ auth.log — no brute-force spikes
+✓ Cloudflare analytics — no error spike
+```
+
+---
+
+# 42. Deployment Updates Workflow
+
+```txt
+1. Develop and test locally (Docker Compose dev)
+2. Commit and push to GitHub
+3. GitHub Actions: test → build → push image
+4. SSH deploy: pull + up -d
+5. Run migrations if needed
+6. Verify health checks
+7. Monitor logs for 15 minutes
+```
+
+Manual update (emergency):
+
+```bash
+ssh vps-prod
+cd /var/www/myapp
+export TAG=new-version
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+docker compose ps
+```
+
+---
+
+# 43. Docker Image Updates
+
+## Pull Latest
+
+```bash
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
+
+## Pin Specific Version
+
+```bash
+export TAG=v1.2.3
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+```
+
+## Prune Old Images
+
+```bash
+docker image prune -f
+```
+
+Always backup database before updates with schema changes.
+
+---
+
+# 44. Rollback Workflow
+
+## Rollback Via Image Tag
+
+```bash
+ssh vps-prod
+cd /var/www/myapp
+export TAG=previous-stable-sha
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+docker compose ps
+curl -f https://yourdomain.com/health
+```
+
+## Rollback Via Git
+
+```bash
+git revert BAD_COMMIT
+git push origin main
+# CI/CD redeploys previous working version
+```
+
+## Before Every Deploy — Tag Current
+
+```bash
+docker tag youruser/myapp-backend:latest youruser/myapp-backend:rollback
+```
+
+Keep last 3–5 known-good image tags in Docker Hub.
+
+---
+
+# 45. Database Rollback
+
+## Before Migration
+
+```bash
+docker exec postgres pg_dump -U admin myapp > ~/backups/pre-migrate-$(date +%F).sql
+```
+
+## Rollback Migration (Prisma)
+
+```bash
+docker compose exec backend npx prisma migrate resolve --rolled-back MIGRATION_NAME
+```
+
+## Restore Database
+
+```bash
+docker compose stop backend
+cat ~/backups/pre-migrate-YYYY-MM-DD.sql | docker exec -i postgres psql -U admin myapp
+docker compose start backend
+```
+
+See `08-postgresql.md` for full backup/restore.
+
+---
+
+# 46. Update Checklist
+
+```txt
+✓ Database backed up before migration
+✓ Previous image tag available for rollback
+✓ Health checks passing after update
+✓ Logs monitored post-deploy
+✓ Cloudflare/DNS unchanged (unless intentional)
+```
+
+---
+
+# 47. Deployment Security Rules
+
+✓ Good:
+
+* SSH key-only, custom port
+* UFW minimal ports
+* databases internal only
+* secrets in .env (chmod 600)
+* HTTPS everywhere
+* Cloudflare WAF enabled
+* non-root container users
+* explicit image tags
+
+✗ Avoid:
+
+* `.env` in GitHub
+* public database/cache ports
+* editing running containers
+* deploying without health checks
+* `latest` tag without rollback plan
+
+---
+
+# 48. Secrets Management
+
+## Server Secrets
+
+```bash
+/var/www/myapp/.env    # chmod 600
+```
+
+## CI/CD Secrets
+
+```txt
+GitHub → Settings → Secrets and variables → Actions
+```
+
+## Rotate Secrets
+
+```txt
+1. Generate new secret
+2. Update .env on VPS
+3. Redeploy: docker compose up -d
+4. Verify app works
+5. Revoke old secret
+```
+
+Never log secrets in GitHub Actions output.
+
+---
+
+# 49. Network Security
+
+```txt
+Public:   80, 443 (Nginx), SSH custom port
+Internal: backend:5000, postgres:5432, redis:6379
+Blocked:  all other ports via UFW
+```
+
+Verify:
+
+```bash
+sudo ufw status verbose
+nc -zv YOUR_PUBLIC_IP 5432    # should fail
+nc -zv YOUR_PUBLIC_IP 6379    # should fail
+curl -I https://yourdomain.com  # should succeed
+```
+
+---
+
+# 50. Security Checklist
+
+```txt
+✓ VPS hardened (SSH, UFW, Fail2Ban)
+✓ .env not in Git
+✓ databases not public
+✓ HTTPS enforced
+✓ Cloudflare proxy enabled
+✓ containers run as non-root
+✓ secrets rotated on schedule
+```
+
+---
+
+# 51. Backup Strategy
+
+```txt
+Layer 1: Database pg_dump daily
+Layer 2: Docker volume tar weekly
+Layer 3: .env + compose config before every change
+Layer 4: VPS snapshot monthly
+Layer 5: GitHub repo (source of truth)
+Layer 6: Docker Hub image tags
+```
+
+See `15-backup-snapshots.md` for full guide.
+
+---
+
+# 52. Database Backups
+
+```bash
+# Daily cron on VPS
+0 2 * * * docker exec postgres pg_dump -U admin myapp | gzip > /home/mosabbir/backups/myapp-$(date +\%F).sql.gz
+```
+
+## MongoDB (If Used)
+
+```bash
+0 2 * * * docker exec mongodb mongodump --uri="mongodb://admin:PASS@localhost:27017" --out=/tmp/b && docker cp mongodb:/tmp/b /home/mosabbir/backups/mongo-$(date +\%F)
+```
+
+## Copy To Mac
+
+```bash
+scp vps-prod:~/backups/*.sql.gz ./backups/
+```
+
+---
+
+# 53. Volume And Config Backups
+
+## Config Backup
+
+```bash
+tar -czvf ~/backups/config-$(date +%F).tar.gz \
+  /var/www/myapp/.env \
+  /var/www/myapp/docker-compose.prod.yml \
+  /var/www/myapp/nginx/
+```
+
+## Volume Backup
+
+```bash
+docker compose stop postgres
+docker run --rm \
+  -v myapp_postgres_data:/data \
+  -v ~/backups:/backup \
+  alpine tar -czvf /backup/postgres-vol-$(date +%F).tar.gz /data
+docker compose start postgres
+```
+
+## VPS Snapshot
+
+Use Hetzner/DigitalOcean panel before major upgrades.
+
+---
+
+# 54. Backup Verification
+
+Monthly restore test:
+
+```bash
+# Restore to test database
+cat ~/backups/myapp-YYYY-MM-DD.sql.gz | gunzip | docker exec -i postgres psql -U admin myapp_test
+docker exec postgres psql -U admin myapp_test -c "SELECT count(*) FROM users;"
+```
+
+Verify backup files exist:
+
+```bash
+ls -lah ~/backups/
+```
+
+---
+
+# 55. Deployment Failed
+
+## Diagnose
+
+```bash
+docker compose ps -a
+docker compose logs backend --tail=50
+docker compose logs nginx --tail=30
+```
+
+## Common Causes
+
+```txt
+Missing .env variable
+Docker image pull failed
+Migration failed
+Port conflict
+Out of disk space
+Health check failing
+```
+
+## Fix
+
+```bash
+df -h
+docker compose -f docker-compose.prod.yml config
+docker compose logs backend 2>&1 | tail -30
+export TAG=rollback-tag
 docker compose up -d
 ```
 
 ---
 
-# Production CI/CD Workflow
+# 56. Container Not Starting
 
-Recommended workflow:
+```bash
+docker compose ps -a
+docker compose logs SERVICE --tail=50
+docker inspect CONTAINER | grep -A10 State
+```
 
-```txt id="m4v8kr"
-Code Change
-↓
-Git Commit
-↓
-Git Push
-↓
-GitHub Actions
-↓
-Build Docker Image
-↓
-Push Docker Hub
-↓
-VPS Pull
-↓
-Deploy
+Common causes:
+
+* missing env var
+* database not ready
+* OOM killed
+* bad Dockerfile CMD
+
+```bash
+docker compose up -d SERVICE
+docker compose logs SERVICE -f
 ```
 
 ---
 
-# Modern Production Workflow
+# 57. SSL And DNS Issues
 
-```txt id="p8q2vw"
-Developer
-↓
-GitHub
-↓
-GitHub Actions
-↓
-Docker Hub
-↓
-VPS
-↓
-Docker Compose
-↓
-Nginx
-↓
-Cloudflare
-↓
-Users
+```bash
+dig yourdomain.com +short
+curl -I http://yourdomain.com
+curl -I https://yourdomain.com
+curl -vI https://yourdomain.com 2>&1 | grep -i ssl
+```
+
+Fixes:
+
+```txt
+DNS not resolving   → check Cloudflare A record
+SSL error           → Cloudflare Full (strict), check origin cert
+Mixed content       → ensure all assets use HTTPS
 ```
 
 ---
 
-# Deployment Security
+# 58. Nginx 502 Bad Gateway
 
-Deployment security is critical.
-
----
-
-# Environment Security
-
-Always:
-
-```txt id="r5v7mx"
-Use Environment Variables
-
-Use GitHub Secrets
-
-Keep Secrets Off GitHub
+```txt
+Nginx running but backend unreachable
 ```
 
----
-
-Never:
-
-```txt id="x8m4qw"
-Commit .env
-
-Hardcode API Keys
-
-Store Secrets In Source Code
+```bash
+docker compose ps backend
+docker compose logs backend --tail=30
+docker compose exec nginx curl -I http://backend:5000/health
+docker compose exec nginx nginx -t
 ```
 
+Fixes:
+
+* backend container down → `docker compose up -d backend`
+* wrong upstream port in nginx config
+* backend listening on 127.0.0.1 instead of 0.0.0.0
+
 ---
 
-# SSH Security
+# 59. Database And Redis Connectivity
 
-Always:
-
-```txt id="m3q9vx"
-Use SSH Keys
-
-Use Non-Root Users
-
-Use Firewall Rules
+```bash
+docker compose exec backend nc -zv postgres 5432
+docker compose exec backend nc -zv redis 6379
+docker compose exec backend env | grep -E 'DATABASE|REDIS'
+docker compose ps postgres redis
 ```
 
----
+Fix connection strings:
 
-Avoid:
-
-```txt id="p6v2kw"
-Password Authentication
-
-Root SSH Access
+```env
+DATABASE_URL=postgresql://user:pass@postgres:5432/myapp
+REDIS_URL=redis://:pass@redis:6379
 ```
 
----
-
-# VPS Security
-
-Verify:
-
-```txt id="r9q4mx"
-Firewall Enabled
-
-SSH Secured
-
-Docker Updated
-
-System Updated
-```
+Use service names — not `localhost` inside containers.
 
 ---
 
-# Docker Security
+# 60. High Resource Usage
 
-Always:
-
-```txt id="x4m8kr"
-Use Official Images
-
-Use Explicit Versions
-
-Use Private Networks
-
-Use Read-Only Mounts
-```
-
----
-
-Avoid:
-
-```txt id="k8q3vw"
-latest Everywhere
-
-Public Databases
-
-Public Redis
-```
-
----
-
-# Database Security
-
-Keep private:
-
-```txt id="m5v7qx"
-PostgreSQL
-
-MongoDB
-
-Redis
-```
-
----
-
-Expose only:
-
-```txt id="p2q9kr"
-80
-
-443
-```
-
----
-
-# Cloudflare Security
-
-Recommended:
-
-```txt id="r7v4mx"
-Proxy Enabled
-
-WAF Enabled
-
-DDoS Protection Enabled
-```
-
----
-
-# Production Security Rules
-
-Always:
-
-```txt id="x9m2qw"
-✓ Use HTTPS
-
-✓ Use Cloudflare
-
-✓ Use Nginx
-
-✓ Use Docker Compose
-
-✓ Use Environment Variables
-
-✓ Use GitHub Secrets
-
-✓ Use Backups
-
-✓ Monitor Logs
-
-✓ Keep Dependencies Updated
-```
-
----
-
-Avoid:
-
-```txt id="k4q8vx"
-✗ Commit .env
-
-✗ Expose Databases
-
-✗ Disable Firewall
-
-✗ Use Root Containers
-
-✗ Open Unnecessary Ports
-
-✗ Disable HTTPS
-```
-
----
-
-# Deployment Checklist
-
-Before Deployment:
-
-```txt id="m8v3kw"
-✓ VPS Ready
-
-✓ Docker Ready
-
-✓ Compose Ready
-
-✓ Domain Ready
-
-✓ Cloudflare Ready
-
-✓ Environment Variables Ready
-
-✓ Repository Ready
-```
-
----
-
-During Deployment:
-
-```txt id="p4q7mx"
-✓ Build Successful
-
-✓ Containers Started
-
-✓ Logs Verified
-
-✓ HTTPS Verified
-```
-
----
-
-After Deployment:
-
-```txt id="r8v2kw"
-✓ Domain Reachable
-
-✓ API Reachable
-
-✓ SSL Working
-
-✓ Monitoring Active
-
-✓ Backups Ready
-
-✓ No Restart Loops
-```
-
----
-
-# CI/CD Readiness Checklist
-
-Verify:
-
-```txt id="x5m9qr"
-✓ GitHub Actions Configured
-
-✓ GitHub Secrets Added
-
-✓ Docker Hub Ready
-
-✓ VPS Access Ready
-
-✓ Rollback Strategy Ready
-```
-
-A deployment pipeline is considered production-ready only when security, monitoring, backups, and rollback procedures are in place.
-# Backup Strategy
-
-Backups are mandatory in production.
-
-Never deploy critical applications without backups.
-
----
-
-# Why Backups Matter
-
-Backups protect against:
-
-```txt id="m7q2vx"
-Server Failure
-
-Accidental Deletion
-
-Database Corruption
-
-Bad Deployments
-
-Security Incidents
-```
-
----
-
-# Production Backup Rule
-
-Always backup before:
-
-```txt id="p4v8kw"
-Major Deployments
-
-Database Migrations
-
-Infrastructure Changes
-
-Server Maintenance
-```
-
----
-
-# Backup Priority
-
-Highest priority:
-
-```txt id="x8q3mv"
-Database
-
-Environment Variables
-
-Docker Volumes
-
-SSL Certificates
-
-Nginx Configuration
-```
-
----
-
-# Database Backups
-
-Databases are usually the most important data.
-
----
-
-## PostgreSQL Backup
-
-```bash id="m5v7kr"
-docker exec postgres \
-pg_dump -U postgres DATABASE_NAME \
-> backup.sql
-```
-
----
-
-## PostgreSQL Restore
-
-```bash id="k3q8vx"
-cat backup.sql | docker exec -i postgres \
-psql -U postgres DATABASE_NAME
-```
-
----
-
-## MongoDB Backup
-
-```bash id="p8v4mx"
-docker exec mongodb \
-mongodump --out /backup
-```
-
----
-
-## MongoDB Restore
-
-```bash id="r2q7kw"
-docker exec mongodb \
-mongorestore /backup
-```
-
----
-
-# Database Backup Workflow
-
-```txt id="x5m9vr"
-Database
-↓
-Backup
-↓
-Store Safely
-↓
-Verify
-```
-
----
-
-# Volume Backups
-
-Docker volumes often contain:
-
-```txt id="m4v8kr"
-Uploads
-
-Database Files
-
-Application Data
-
-Persistent Storage
-```
-
----
-
-## List Volumes
-
-```bash id="p8q2vw"
-docker volume ls
-```
-
----
-
-## Inspect Volume
-
-```bash id="r5v7mx"
-docker volume inspect VOLUME_NAME
-```
-
----
-
-## Backup Volume
-
-```bash id="x8m4qw"
-docker run --rm \
--v VOLUME_NAME:/source \
--v $(pwd):/backup \
-ubuntu \
-tar czf /backup/volume-backup.tar.gz /source
-```
-
----
-
-## Restore Volume
-
-```bash id="k4q8vx"
-docker run --rm \
--v VOLUME_NAME:/target \
--v $(pwd):/backup \
-ubuntu \
-bash -c "cd /target && tar xzf /backup/volume-backup.tar.gz --strip 1"
-```
-
----
-
-# Configuration Backups
-
-Always backup:
-
-```txt id="m8v3kw"
-docker-compose.yml
-
-.env
-
-Nginx Configs
-
-SSL Certificates
-```
-
----
-
-# Backup Environment Variables
-
-```bash id="p4q7mx"
-cp .env .env.backup
-```
-
----
-
-# Backup Docker Compose
-
-```bash id="r8v2kw"
-cp docker-compose.yml docker-compose.yml.backup
-```
-
----
-
-# Backup Nginx
-
-```bash id="x5m9qr"
-cp -r nginx nginx-backup
-```
-
----
-
-# Backup SSL Certificates
-
-```bash id="k8q4vx"
-cp -r nginx/ssl ssl-backup
-```
-
----
-
-# VPS Snapshot Backups
-
-Recommended for production.
-
----
-
-## Example Workflow
-
-```txt id="m2v8kw"
-VPS
-↓
-Snapshot
-↓
-Store
-↓
-Restore If Needed
-```
-
----
-
-## Recommended Providers
-
-```txt id="p7q3mx"
-DigitalOcean
-
-Hetzner
-
-Azure
-
-AWS
-
-Google Cloud
-```
-
----
-
-# Backup Schedule
-
-Recommended:
-
-```txt id="r4v8kw"
-Daily Database Backups
-
-Weekly Volume Backups
-
-Weekly VPS Snapshots
-
-Before Every Major Deployment
-```
-
----
-
-# Common Deployment Issues
-
----
-
-## Port Already In Use
-
-Check:
-
-```bash id="x7m2qw"
-sudo ss -tulpn
-```
-
----
-
-Fix:
-
-```txt id="k5q9vx"
-Stop Conflicting Service
-
-Or
-
-Change Port
-```
-
----
-
-## Container Not Starting
-
-Check:
-
-```bash id="m8v4kr"
-docker logs CONTAINER_ID
-```
-
----
-
-## Container Restart Loop
-
-Check:
-
-```bash id="p3q7mx"
-docker ps
-```
-
-Look for:
-
-```txt id="r9v2kw"
-Restarting
-```
-
----
-
-Then:
-
-```bash id="x4m8qx"
-docker logs CONTAINER_ID
-```
-
----
-
-## Cannot Connect To Docker
-
-Check:
-
-```bash id="k8q4vw"
-docker ps
-```
-
----
-
-Linux:
-
-```bash id="m5v7kr"
-sudo systemctl status docker
-```
-
----
-
-## Permission Denied
-
-Fix:
-
-```bash id="p8q2mx"
-sudo usermod -aG docker $USER
-```
-
----
-
-Apply:
-
-```bash id="r3v9kw"
-newgrp docker
-```
-
----
-
-## Domain Not Working
-
-Verify:
-
-```txt id="x5m9kr"
-DNS Records
-
-Cloudflare
-
-Server IP
-```
-
----
-
-Check:
-
-```bash id="k3q7vx"
-nslookup DOMAIN_NAME
-```
-
----
-
-## SSL Not Working
-
-Verify:
-
-```txt id="m7v4qw"
-Cloudflare SSL Mode
-
-Nginx SSL
-
-Certificate Paths
-```
-
----
-
-## 522 Cloudflare Error
-
-Usually means:
-
-```txt id="p2q8mx"
-Server Unreachable
-
-Port Blocked
-
-Firewall Blocking
-
-Nginx Not Running
-```
-
----
-
-Verify:
-
-```bash id="r8v3kw"
-sudo ufw status
-
-docker ps
-
-curl localhost
-```
-
----
-
-## 502 Bad Gateway
-
-Usually means:
-
-```txt id="x4q9mv"
-Backend Down
-
-Wrong Proxy Port
-
-Backend Crash
-```
-
----
-
-Verify:
-
-```bash id="k7v3qw"
-docker logs backend
-```
-
----
-
-## High Memory Usage
-
-Check:
-
-```bash id="m2q8vx"
+```bash
 free -h
+df -h
+docker stats --no-stream
+docker system df
+```
+
+Fixes:
+
+```bash
+docker system prune -f
+docker image prune -a -f
+# Add swap — see 03-linux-basics.md
+# Upgrade VPS RAM
 ```
 
 ---
 
-For low RAM VPS:
-
-```txt id="p8v4kr"
-Configure Swap
-
-Monitor Containers
-
-Limit Resources
-```
-
----
-
-# Deployment Debug Workflow
+# 61. Debug Workflow
 
 When something breaks:
 
-```txt id="r5q7mx"
-Check Domain
-↓
-Check DNS
-↓
-Check Cloudflare
-↓
-Check Nginx
-↓
-Check Containers
-↓
-Check Logs
-↓
-Check Resources
+```txt
+1. curl https://yourdomain.com/health
+2. dig yourdomain.com
+3. Check Cloudflare SSL/DNS
+4. docker compose ps
+5. docker compose logs -f
+6. docker stats
+7. df -h && free -h
+8. sudo ufw status
+9. sudo ss -tulpn
+```
+
+Quick debug script:
+
+```bash
+#!/bin/bash
+cd /var/www/myapp
+echo "=== Containers ===" && docker compose ps
+echo "=== Health ===" && curl -sf http://localhost:5000/health || echo "FAIL"
+echo "=== Disk ===" && df -h /
+echo "=== Memory ===" && free -h
+echo "=== Recent Logs ===" && docker compose logs backend --tail=10
 ```
 
 ---
 
-## Debug Checklist
+# 62. Tear Down Deployment (Linux / VPS)
 
-```txt id="x8m2qw"
-docker ps
+Stop all services without deleting data:
 
-docker compose logs -f
+```bash
+ssh vps-prod
+cd /var/www/myapp
+docker compose -f docker-compose.prod.yml down
+docker compose ps -a
+```
 
-docker stats
+Stop Nginx only:
 
-free -h
+```bash
+docker compose stop nginx
+```
 
-df -h
+Full stack stop:
 
-sudo ss -tulpn
+```bash
+docker compose -f docker-compose.prod.yml stop
 ```
 
 ---
 
-# Recommended Production Workflow
+# 63. Remove Docker Stack And Volumes
 
-## Source Deployment Workflow
+Warning: destroys all database data.
 
-```txt id="m4v9kw"
-Code
-↓
-GitHub
-↓
-SSH VPS
-↓
-Git Pull
-↓
-Docker Compose Build
-↓
-Deploy
+## Backup First
+
+```bash
+docker exec postgres pg_dump -U admin myapp > ~/backups/final-myapp.sql
+tar -czvf ~/backups/final-config.tar.gz .env docker-compose.prod.yml nginx/
+```
+
+## Remove Stack
+
+```bash
+docker compose -f docker-compose.prod.yml down     # keeps volumes
+docker compose -f docker-compose.prod.yml down -v  # DESTROYS volumes
+```
+
+## Remove Specific Volumes
+
+```bash
+docker volume ls | grep myapp
+docker volume rm myapp_postgres_data myapp_redis_data
 ```
 
 ---
 
-## Docker Hub Workflow
+# 64. Clean Up Deployment On Mac
 
-Recommended:
+Mac holds local dev environment — not production deployment.
 
-```txt id="p7q2vx"
-Code
+## Stop Local Dev Stack
+
+```bash
+cd ~/Projects/myapp
+docker compose -f docker-compose.dev.yml down -v
+```
+
+## Remove Local Images
+
+```bash
+docker rmi youruser/myapp-backend:dev
+docker rmi youruser/myapp-frontend:dev
+docker image prune -f
+```
+
+## Remove Local Secrets (If Decommissioning)
+
+```bash
+rm -f ~/Projects/myapp/.env
+rm -rf ~/Projects/myapp/node_modules
+```
+
+## Clear SSH Deploy Keys From Agent (Optional)
+
+```bash
+ssh-add -d ~/.ssh/vps_ed25519
+```
+
+## Verify (Mac)
+
+```bash
+docker ps -a | grep myapp
+docker volume ls | grep myapp
+docker images | grep myapp
+```
+
+---
+
+# 65. Remove Docker Images And Cache
+
+## VPS
+
+```bash
+ssh vps-prod
+docker compose -f docker-compose.prod.yml down --rmi all
+docker image prune -a -f
+docker builder prune -a -f
+docker system prune -f
+```
+
+## Mac
+
+```bash
+docker system prune -a -f
+docker builder prune -a -f
+docker volume prune -f
+```
+
+Warning: `volume prune` and `down -v` destroy database data permanently.
+
+---
+
+# 66. DNS And Cloudflare Cleanup
+
+When decommissioning a deployment:
+
+## Remove DNS Records
+
+```txt
+Cloudflare → DNS → Delete:
+  A record: @
+  A record: api
+  A record: www
+  A record: coolify (if used)
+```
+
+## Remove Cloudflare Origin Certificate
+
+```txt
+Cloudflare → SSL → Origin Server → Revoke certificate
+```
+
+## Update Domain (Optional)
+
+Point domain elsewhere or let expire.
+
+---
+
+# 67. Log Cleanup
+
+## VPS Docker Logs
+
+```bash
+docker compose logs > ~/logs/final-deploy.log 2>&1
+truncate -s 0 $(docker inspect --format='{{.LogPath}}' CONTAINER) 2>/dev/null
+docker compose down
+```
+
+## VPS System Logs
+
+```bash
+sudo journalctl --vacuum-time=14d
+sudo journalctl --vacuum-size=500M
+rm -f ~/logs/deploy-*.log
+```
+
+## Mac Logs
+
+```bash
+rm -f ~/Projects/myapp/*.log
+rm -rf ~/Projects/myapp/logs/
+docker compose logs > ~/logs/local-final.log 2>&1
+```
+
+## Nginx Logs (If Host-Installed)
+
+```bash
+sudo truncate -s 0 /var/log/nginx/access.log
+sudo truncate -s 0 /var/log/nginx/error.log
+```
+
+---
+
+# 68. Cache And Leftover Files
+
+## VPS Leftovers
+
+```bash
+rm -rf /var/www/myapp
+rm -rf ~/backups/myapp-2025-*
+rm -rf ~/logs/deploy-*
+docker network prune -f
+docker volume prune -f    # after backup
+sudo apt autoremove -y && sudo apt autoclean
+```
+
+## Mac Leftovers
+
+```bash
+cd ~/Projects/myapp
+rm -rf node_modules dist .next build
+rm -rf ~/.npm/_cacache
+npm cache clean --force
+docker system prune -a -f
+brew cleanup
+```
+
+## Docker Leftovers (Both)
+
+```bash
+docker system df
+docker image ls
+docker volume ls
+docker network ls
+docker system prune -a -f
+```
+
+## Config Leftovers
+
+```bash
+# Remove deploy script if created
+rm -f /var/www/myapp/deploy.sh
+# Remove cron backup jobs
+crontab -e   # remove pg_dump lines
+```
+
+---
+
+# 69. Verification After Removal
+
+## VPS
+
+```bash
+docker ps -a | grep myapp
+docker volume ls | grep myapp
+docker images | grep myapp
+ls /var/www/myapp 2>&1
+curl -I https://yourdomain.com 2>&1
+sudo ufw status
+```
+
+Expected: no containers/volumes/images, directory gone or empty, domain unreachable.
+
+## Mac
+
+```bash
+docker ps -a | grep myapp
+docker volume ls | grep myapp
+docker images | grep myapp
+ls ~/Projects/myapp/node_modules 2>&1
+```
+
+## DNS
+
+```bash
+dig yourdomain.com +short
+# Should not point to decommissioned VPS IP (or domain removed)
+```
+
+## Cleanup Checklist
+
+✓ Good:
+
+* database backed up before volume removal
+* docker compose down -v only after backup
+* DNS updated or domain removed
+* Cloudflare records cleaned up
+* Mac local dev containers removed
+* cron backup jobs removed
+
+✗ Avoid:
+
+* `docker volume prune` without database backup
+* leaving DNS pointing to deleted VPS
+
+---
+
+# 70. Recommended Production Workflow
+
+```txt
+1. Develop locally (Mac + Docker Compose dev)
+2. Push to GitHub main
+3. GitHub Actions: test → build → push Docker Hub
+4. SSH to VPS: docker compose pull && up -d
+5. Run database migrations
+6. Verify health checks
+7. Monitor logs 15 minutes
+8. Confirm Cloudflare SSL active
+```
+
+---
+
+# 71. Modern Workflow
+
+```txt
+Developer (Mac)
 ↓
-GitHub
+Local Docker Compose (dev)
+↓
+GitHub Push
 ↓
 GitHub Actions
 ↓
 Docker Hub
 ↓
-VPS Pull
+SSH → VPS
 ↓
-Deploy
-```
-
----
-
-# Modern Deployment Workflow
-
-Recommended architecture:
-
-```txt id="r3v8kw"
-Developer
-↓
-GitHub
-↓
-GitHub Actions
-↓
-Docker Hub
-↓
-VPS
-↓
-Docker Compose
+docker compose pull && up -d
 ↓
 Nginx
 ↓
@@ -4940,95 +2019,86 @@ Cloudflare
 Users
 ```
 
----
+Alternative:
 
-# Final Production Checklist
-
-Before going live verify:
-
-```txt id="x5m7qr"
-✓ VPS Secured
-
-✓ Firewall Enabled
-
-✓ Docker Installed
-
-✓ Docker Compose Installed
-
-✓ Domain Configured
-
-✓ Cloudflare Configured
-
-✓ HTTPS Enabled
-
-✓ Nginx Configured
-
-✓ Environment Variables Added
-
-✓ Database Private
-
-✓ Redis Private
-
-✓ Backups Configured
-
-✓ Monitoring Configured
-
-✓ Rollback Strategy Ready
-
-✓ CI/CD Ready
+```txt
+Developer → GitHub Push → Coolify → Docker → Traefik → Cloudflare → Users
 ```
 
 ---
 
-# Production Rules
+# 72. Real-World Workflow
 
-Always:
+Example: deploy SaaS to Hetzner VPS.
 
-```txt id="m9q3vx"
-✓ Use Docker Compose
+## Day 1 — VPS Setup
 
-✓ Use Nginx
+```bash
+ssh root@YOUR_IP
+apt update && apt upgrade -y
+adduser mosabbir && usermod -aG sudo,docker mosabbir
+# SSH harden, UFW, Fail2Ban — see 01-initial-vps-security-setup.md
+curl -fsSL https://get.docker.com | sh
+mkdir -p /var/www/myapp && chown mosabbir:mosabbir /var/www/myapp
+```
 
-✓ Use Cloudflare
+## Day 2 — First Deploy
 
-✓ Use HTTPS
+```bash
+scp docker-compose.prod.yml .env nginx/ vps-prod:/var/www/myapp/
+ssh vps-prod "chmod 600 /var/www/myapp/.env"
+ssh vps-prod "cd /var/www/myapp && docker compose -f docker-compose.prod.yml up -d"
+curl -f https://yourdomain.com/health
+```
 
-✓ Use Environment Variables
+## Day 3 — CI/CD
 
-✓ Use Backups
+Push to GitHub → Actions builds and deploys automatically on every `main` push.
 
-✓ Monitor Logs
+## Ongoing
 
-✓ Keep Images Updated
-
-✓ Use Explicit Image Versions
+```bash
+# Weekly
+ssh vps-prod "df -h && free -h && docker system df"
+# Daily (automated)
+pg_dump cron → ~/backups/
 ```
 
 ---
 
-Avoid:
+# 73. Final Production Checklist
 
-```txt id="p6v2kw"
-✗ Commit .env
+## VPS
 
-✗ Public Databases
+✓ Ubuntu LTS, 2 GB+ RAM
+✓ SSH hardened, UFW enabled, Fail2Ban active
+✓ Docker + Compose installed
 
-✗ Public Redis
+## Application
 
-✗ Edit Production Containers
+✓ Docker Compose manages all services
+✓ explicit image tags with rollback plan
+✓ health endpoints responding
+✓ migrations applied
+✓ `.env` chmod 600, not in Git
 
-✗ Disable HTTPS
+## Infrastructure
 
-✗ Open Unnecessary Ports
+✓ Cloudflare DNS configured
+✓ SSL Full (strict)
+✓ Nginx reverse proxy working
+✓ PostgreSQL and Redis internal only
 
-✗ Deploy Without Backups
-```
+## Operations
 
----
+✓ daily database backups
+✓ CI/CD pipeline working
+✓ monitoring checklist run post-deploy
+✓ rollback procedure documented and tested
 
-# Final Architecture
+## Full Stack
 
-```txt id="r9v4mx"
+```txt
 Developer
 ↓
 GitHub
@@ -5037,9 +2107,7 @@ GitHub Actions
 ↓
 Docker Hub
 ↓
-VPS
-↓
-Docker Compose
+VPS (Docker Compose)
 ↓
 Nginx
 ↓
@@ -5048,4 +2116,61 @@ Cloudflare
 Users
 ```
 
-This is the recommended modern production deployment workflow for personal projects, SaaS applications, client projects, and scalable web applications.
+✓ Good:
+
+* Docker Compose + CI/CD
+* immutable images
+* automated backups
+* health checks
+
+✗ Avoid:
+
+* PM2 on host for new projects
+* manual SSH file edits in production
+* public databases
+* `.env` in GitHub
+* deploy without rollback plan
+
+---
+
+## Deployment Quick Commands Cheat Sheet
+
+```bash
+# Local test
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
+curl -f http://localhost:5000/health
+docker compose down
+
+# Deploy (VPS)
+ssh vps-prod
+cd /var/www/myapp
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
+docker compose ps
+curl -f https://yourdomain.com/health
+
+# Monitor
+docker compose logs -f backend
+docker stats --no-stream
+df -h && free -h
+
+# Rollback
+export TAG=previous-sha
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+
+# Backup
+docker exec postgres pg_dump -U admin myapp | gzip > ~/backups/myapp-$(date +%F).sql.gz
+
+# Cleanup (VPS — backup first!)
+docker compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.prod.yml down -v
+docker system prune -a -f
+rm -rf /var/www/myapp
+
+# Cleanup (Mac)
+docker compose -f docker-compose.dev.yml down -v
+docker system prune -a -f
+rm -rf node_modules
+```
