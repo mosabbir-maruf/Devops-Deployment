@@ -2241,45 +2241,6 @@ nginx/ssl/
 
 ---
 
-## Docker Compose Example
-
-```yaml
-services:
-  frontend:
-    image: frontend-image
-    restart: unless-stopped
-    expose:
-      - "3000"
-
-  backend:
-    image: backend-image
-    restart: unless-stopped
-    expose:
-      - "5000"
-
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-
-    restart: unless-stopped
-
-    depends_on:
-      - frontend
-      - backend
-
-    ports:
-      - "80:80"
-      - "443:443"
-
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-```
-
-Production reverse proxy setup.
-
----
-
 ## Production Docker Compose (Best Practices)
 
 ```yaml
