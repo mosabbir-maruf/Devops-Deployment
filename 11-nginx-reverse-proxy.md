@@ -2297,14 +2297,6 @@ services:
         max-file: "3"
 ```
 
-Notes:
-
-* Health checks allow Docker to detect unhealthy services.
-* Resource limits prevent one service from consuming all resources.
-* Log rotation prevents log files from filling disk.
-
----
-
 ## Production Nginx Config (Best Practices)
 
 ```nginx
@@ -2411,56 +2403,6 @@ server {
 
 ---
 
-## Deploy Workflow
-
-### Pull Latest Code
-
-```bash
-git pull origin main
-```
-
----
-
-### Build Images
-
-```bash
-docker compose build
-```
-
----
-
-### Start Services
-
-```bash
-docker compose up -d
-```
-
----
-
-### Verify Containers
-
-```bash
-docker ps
-```
-
----
-
-### Verify Nginx
-
-```bash
-docker exec nginx nginx -t
-```
-
----
-
-### View Logs
-
-```bash
-docker compose logs -f
-```
-
----
-
 ## Production Rules
 
 Always:
@@ -2487,6 +2429,18 @@ Always:
 ✓ Block Direct IP Access
 
 ✓ Monitor Logs
+```
+
+Recommended:
+
+```txt
+✓ Enable HSTS after HTTPS is stable
+
+✓ Add CSP for frontends
+
+✓ Use a private Docker network
+
+✓ Keep Nginx image updated
 ```
 
 Never:
