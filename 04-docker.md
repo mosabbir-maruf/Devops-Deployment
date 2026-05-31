@@ -86,7 +86,7 @@
 ### VPS Deployment
 
 49. [VPS Docker Workflow](#49-vps-docker-workflow)
-50. [Deployment Commands](#50-deployment-commands)
+50. [Deployment Commands](#50-deployment-commands-legacy)
 51. [Rollback Workflow](#51-rollback-workflow)
 
 ### Reference
