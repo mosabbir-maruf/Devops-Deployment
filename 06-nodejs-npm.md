@@ -1606,151 +1606,481 @@ app.listen(port, "0.0.0.0", () => console.log(`Port ${port}`));
 
 ---
 
-# 47. Remove node_modules And Cache (Mac)
+# 47. Remove node_modules And Project Cache (Mac)
+
+## Remove Project Dependencies
 
 ```bash
+cd ~/Projects/myapp
 rm -rf node_modules
-rm -rf ~/.npm/_cacache
+rm -rf apps/*/node_modules
+rm -f package-lock.json   # only if regenerating — usually keep
+```
+
+## Clear npm Cache
+
+```bash
 npm cache clean --force
 npm cache verify
+rm -rf ~/.npm/_cacache
+rm -rf ~/.npm/_logs
+```
+
+## Remove Build Output
+
+```bash
+rm -rf dist
+rm -rf .next
+rm -rf build
+rm -rf coverage
 ```
 
 ## Remove Global Packages
 
 ```bash
 npm list -g --depth=0
-npm uninstall -g pm2
+npm uninstall -g pm2 nodemon ts-node
+```
+
+## Remove PM2 Data (If Used)
+
+```bash
+pm2 kill
+rm -rf ~/.pm2
 ```
 
 ---
 
-# 48. Remove node_modules And Cache (Linux)
+# 48. Remove node_modules And Project Cache (Linux)
+
+## Remove Project Dependencies
 
 ```bash
+cd /var/www/myapp
 rm -rf node_modules
-rm -rf ~/.npm
+rm -rf dist build .next coverage
+```
+
+## Clear npm Cache
+
+```bash
 npm cache clean --force
+rm -rf ~/.npm
+rm -rf ~/.npm/_cacache
+rm -rf ~/.npm/_logs
 sudo chown -R $(whoami) ~/.npm
 ```
 
+## Remove PM2 Data (Legacy Host Install)
+
+```bash
+pm2 kill
+npm uninstall -g pm2
+rm -rf ~/.pm2
+```
+
+## Remove Global Node Modules
+
+```bash
+sudo rm -rf /usr/local/lib/node_modules
+sudo rm -rf ~/.npm-global
+```
+
 ---
 
-# 49. Uninstall Node.js On Mac
+# 49. Remove Node.js Dev Container (Mac / Docker Desktop)
 
-## fnm
+## Stop Dev Stack
+
+```bash
+cd ~/Projects/myapp
+docker compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml down -v
+```
+
+## Remove Dev Containers And Images
+
+```bash
+docker ps -a | grep -E 'backend|frontend|node'
+docker rm -f CONTAINER_NAME
+docker rmi node:24-slim
+docker rmi youruser/myapp-backend:dev
+docker image prune -f
+```
+
+## Verify (Mac)
+
+```bash
+docker ps -a | grep node
+docker volume ls | grep myapp
+nc -zv localhost 5000
+```
+
+Expected: no dev containers, app port closed.
+
+---
+
+# 50. Uninstall Node.js On Mac
+
+## Stop Version Manager Services
+
+```bash
+# fnm — no service to stop
+# nvm — no service to stop
+brew services stop node 2>/dev/null
+```
+
+## Uninstall fnm
 
 ```bash
 fnm uninstall 24
 brew uninstall fnm
+# Remove from ~/.zshrc:
+# eval "$(fnm env)"
 ```
 
-## nvm
+## Uninstall nvm
 
 ```bash
+nvm deactivate
 nvm uninstall 24
 rm -rf ~/.nvm
+# Remove nvm lines from ~/.zshrc
 ```
 
-## Homebrew Node
+## Uninstall Homebrew Node
 
 ```bash
 brew uninstall node
+brew uninstall node@24 2>/dev/null
 brew cleanup
+brew autoremove
 ```
 
-## Verify
+## Remove Mac Data Directories
+
+```bash
+rm -rf ~/.npm
+rm -rf ~/.npm-global
+rm -rf ~/.node-gyp
+rm -rf ~/.node_repl_history
+rm -rf ~/node_modules
+rm -rf ~/.pm2
+rm -rf ~/.yarn
+rm -rf ~/.pnpm-store
+rm -rf ~/Library/Caches/node-gyp
+rm -rf ~/Library/Caches/Yarn
+```
+
+## Verify (Mac)
 
 ```bash
 which node
-node -v
+which npm
+which nvm
+which fnm
+node -v 2>&1
+brew list | grep node
+ls ~/.nvm 2>&1
 ```
 
-Expected: command not found.
+Expected: commands not found, no node packages in brew.
 
 ---
 
-# 50. Uninstall Node.js On Linux
+# 51. Uninstall Node.js On Linux
 
 ## NodeSource Install
 
 ```bash
-sudo apt purge nodejs -y
+sudo systemctl stop pm2-root 2>/dev/null
+sudo apt purge -y nodejs
 sudo apt autoremove -y
-sudo rm -rf /usr/local/lib/node_modules
-sudo rm -rf ~/.npm
+sudo apt autoclean
 ```
 
-## Remove PM2 (If Installed)
+## Remove Global Modules And Cache
+
+```bash
+sudo rm -rf /usr/local/lib/node_modules
+sudo rm -rf /usr/local/bin/npm
+sudo rm -rf /usr/local/bin/npx
+sudo rm -rf /usr/local/bin/node
+sudo rm -rf ~/.npm
+sudo rm -rf ~/.npm-global
+sudo rm -rf ~/.node-gyp
+```
+
+## Remove PM2 (Legacy)
 
 ```bash
 pm2 kill
 npm uninstall -g pm2
 sudo rm -rf ~/.pm2
+sudo rm -rf /root/.pm2
 ```
 
-## Verify
+## Remove NodeSource Repository
+
+```bash
+sudo rm -f /etc/apt/sources.list.d/nodesource.list
+sudo rm -f /etc/apt/keyrings/nodesource.gpg
+```
+
+## Verify (Linux)
 
 ```bash
 which node
-node -v
-pm2 -v
+which npm
+which pm2
+node -v 2>&1
+dpkg -l | grep nodejs
 ```
+
+Expected: commands not found, package not installed.
 
 ---
 
-# 51. Remove Node.js Docker Images
+# 52. Remove Node.js Docker Images
 
-## Remove App Containers
+## Remove App Containers (Linux / VPS)
 
 ```bash
+cd /var/www/myapp
 docker compose down
 docker compose down --rmi all
+docker compose down -v    # DESTROYS volumes — backup first
 ```
 
 ## Remove Node Images
 
 ```bash
 docker rmi node:24-slim
+docker rmi node:24-alpine
 docker rmi youruser/myapp-backend:latest
+docker rmi youruser/myapp-frontend:latest
 docker image prune -a -f
+```
+
+## Remove Build Cache
+
+```bash
+docker builder prune -a -f
 ```
 
 ## Verify
 
 ```bash
-docker images | grep node
-docker ps -a
+docker images | grep -E 'node|myapp'
+docker ps -a | grep -E 'backend|frontend'
 ```
 
 ---
 
-# 52. Verification After Removal
+# 53. Log Cleanup
 
-## Mac/Linux Global
+## Application Logs (Docker)
+
+```bash
+docker compose logs backend > ~/logs/backend-final.log 2>&1
+truncate -s 0 $(docker inspect --format='{{.LogPath}}' BACKEND_CONTAINER)
+
+# Or configure in compose:
+# logging:
+#   driver: json-file
+#   options:
+#     max-size: "10m"
+#     max-file: "3"
+```
+
+## PM2 Logs (Legacy Host Install)
+
+```bash
+pm2 flush
+rm -rf ~/.pm2/logs/*
+sudo rm -rf /root/.pm2/logs/*
+```
+
+## npm Debug Logs
+
+```bash
+rm -rf ~/.npm/_logs
+rm -f ~/Projects/myapp/npm-debug.log*
+rm -f ~/Projects/myapp/yarn-error.log*
+```
+
+## Project Log Files
+
+```bash
+cd ~/Projects/myapp
+rm -f *.log
+rm -rf logs/
+rm -f apps/*/logs/*.log
+```
+
+## Mac
+
+```bash
+rm -rf ~/Library/Logs/npm
+rm -rf ~/Library/Caches/node-gyp
+rm -f ~/.node_repl_history
+```
+
+## Linux (VPS)
+
+```bash
+sudo journalctl --vacuum-time=14d
+rm -rf ~/logs/*.log
+```
+
+---
+
+# 54. Cache And Leftover Files
+
+## npm Cache (Mac / Linux)
+
+```bash
+npm cache clean --force
+rm -rf ~/.npm/_cacache
+rm -rf ~/.npm/_logs
+npm cache verify
+```
+
+## Yarn / pnpm Cache
+
+```bash
+yarn cache clean
+rm -rf ~/.yarn/cache
+pnpm store prune
+rm -rf ~/.pnpm-store
+rm -rf ~/Library/pnpm  # Mac
+```
+
+## node-gyp Build Cache
+
+```bash
+rm -rf ~/.node-gyp
+rm -rf ~/Library/Caches/node-gyp   # Mac
+```
+
+## Docker Cache (Mac / Linux)
+
+```bash
+docker builder prune -f
+docker builder prune -a -f
+docker image prune -a -f
+docker system prune -f
+```
+
+## Project Leftovers
+
+```bash
+cd ~/Projects/myapp
+rm -rf node_modules
+rm -rf dist build .next coverage
+rm -rf .turbo
+rm -f .eslintcache
+rm -rf tmp/
+```
+
+## Mac Leftovers
+
+```bash
+rm -rf ~/.npm ~/.npm-global ~/.node-gyp ~/.pm2 ~/.yarn ~/.pnpm-store
+rm -rf ~/Library/Caches/node-gyp
+rm -rf ~/Library/Caches/Yarn
+rm -rf ~/Library/Caches/pnpm
+brew cleanup
+```
+
+## Linux Leftovers
+
+```bash
+rm -rf ~/.npm ~/.npm-global ~/.node-gyp ~/.pm2
+sudo rm -rf /usr/local/lib/node_modules
+sudo rm -rf /root/.npm /root/.pm2
+sudo apt autoremove -y
+sudo apt autoclean
+```
+
+## Orphan Docker Volumes And Networks
+
+```bash
+docker volume ls | grep myapp
+docker network ls | grep myapp
+docker volume prune -f    # backup first
+docker network prune -f
+```
+
+---
+
+# 55. Verification After Removal
+
+## Mac
+
+```bash
+which node npm npx pm2 fnm nvm
+node -v 2>&1
+brew list | grep node
+ls ~/.nvm 2>&1
+ls ~/.npm 2>&1
+docker ps -a | grep node
+docker images | grep node
+```
+
+Expected: commands not found, no brew node packages, cache dirs gone.
+
+## Linux (Global Install)
 
 ```bash
 which node npm pm2
 node -v 2>&1
+dpkg -l | grep nodejs
+ls ~/.npm 2>&1
+ls ~/.pm2 2>&1
 ```
 
-## Project
+Expected: commands not found, package absent.
+
+## Docker (Mac / Linux)
 
 ```bash
-ls node_modules 2>&1
-npm cache verify
-```
-
-## Docker
-
-```bash
-docker images | grep -E "node|myapp"
-docker ps -a | grep backend
+docker images | grep -E 'node|myapp'
+docker ps -a | grep -E 'backend|frontend'
+docker volume ls | grep myapp
 curl http://localhost:5000/health 2>&1
 ```
 
+Expected: no node/app images (if removed), no running containers, health check fails.
+
+## Project Directory
+
+```bash
+cd ~/Projects/myapp
+ls node_modules 2>&1
+ls dist 2>&1
+npm cache verify
+```
+
+## Cleanup Checklist
+
+✓ Good:
+
+* node_modules removed from projects
+* npm/yarn/pnpm cache cleared
+* version manager uninstalled (fnm/nvm)
+* Docker images and build cache pruned
+* PM2 data removed (if legacy install)
+* log files exported then deleted
+
+✗ Avoid:
+
+* `docker compose down -v` without database backup
+* deleting `package-lock.json` unless intentionally regenerating
+
 ---
 
-# 53. PM2 Process Manager (Legacy)
+# 56. PM2 Process Manager (Legacy)
 
 PM2 runs Node.js directly on the VPS host — legacy approach only.
 
@@ -1782,7 +2112,7 @@ Use only for existing PM2 deployments. New projects use Docker.
 
 ---
 
-# 54. When To Avoid PM2 In Production
+# 57. When To Avoid PM2 In Production
 
 ✓ Use Docker instead:
 
@@ -1801,7 +2131,7 @@ Use only for existing PM2 deployments. New projects use Docker.
 
 ---
 
-# 55. Recommended Production Workflow
+# 58. Recommended Production Workflow
 
 ```txt
 1. Develop locally (Mac + Docker Compose dev)
@@ -1816,7 +2146,7 @@ Use only for existing PM2 deployments. New projects use Docker.
 
 ---
 
-# 56. Modern Workflow
+# 59. Modern Workflow
 
 ```txt
 Developer (Mac)
@@ -1848,7 +2178,7 @@ Developer → GitHub Push → Coolify → Docker → Users
 
 ---
 
-# 57. Real-World Workflow
+# 60. Real-World Workflow
 
 Example: Express API + Next.js frontend on Hetzner VPS.
 
@@ -1894,7 +2224,7 @@ df -h && free -h
 
 ---
 
-# 58. Final Production Checklist
+# 61. Final Production Checklist
 
 ## Code And Dependencies
 
@@ -1978,8 +2308,18 @@ cd /var/www/myapp
 docker compose pull && docker compose up -d
 curl -f http://localhost:5000/health
 
-# Cleanup
-rm -rf node_modules
+# Cleanup (Mac)
+rm -rf node_modules dist .next ~/.npm ~/.pm2
 npm cache clean --force
-docker system prune -f
+brew uninstall node fnm
+docker compose -f docker-compose.dev.yml down -v
+
+# Cleanup (Linux)
+sudo apt purge -y nodejs && sudo apt autoremove -y
+rm -rf ~/.npm ~/.pm2 /usr/local/lib/node_modules
+
+# Cleanup (Docker)
+docker compose down -v    # backup DBs first
+docker image prune -a -f
+docker builder prune -a -f
 ```
