@@ -1,1220 +1,1982 @@
 # Node.js & npm
 
-## What Is Node.js?
+## Table Of Contents
 
-Node.js is a JavaScript runtime used to run JavaScript outside the browser.
+### Fundamentals
 
-Common uses:
+1. [What Is Node.js](#1-what-is-nodejs)
+2. [What Is npm](#2-what-is-npm)
+3. [Production Architecture](#3-production-architecture)
+4. [Production Folder Structure](#4-production-folder-structure)
+5. [Docker-First vs Global Install](#5-docker-first-vs-global-install)
 
-- Backend servers
-- APIs
-- Full-stack applications
-- Real-time apps
-- Automation tools
-- CLI tools
-- Microservices
+### Installation
+
+6. [Install Node.js On Mac](#6-install-nodejs-on-mac)
+7. [Install Node.js On Linux (Global)](#7-install-nodejs-on-linux-global)
+8. [Install Node.js In Docker](#8-install-nodejs-in-docker)
+9. [Verify Node.js Installation](#9-verify-nodejs-installation)
+
+### Configuration
+
+10. [package.json](#10-packagejson)
+11. [package-lock.json](#11-package-lockjson)
+12. [Environment Variables](#12-environment-variables)
+13. [node_modules And .gitignore](#13-node_modules-and-gitignore)
+14. [npm Scripts](#14-npm-scripts)
+15. [Package Managers (npm, pnpm, yarn)](#15-package-managers-npm-pnpm-yarn)
+
+### Development Workflow
+
+16. [Create Node.js Project](#16-create-nodejs-project)
+17. [Install And Remove Packages](#17-install-and-remove-packages)
+18. [Run Development Server](#18-run-development-server)
+19. [Development Dockerfile](#19-development-dockerfile)
+20. [Development Docker Compose](#20-development-docker-compose)
+21. [Development Best Practices](#21-development-best-practices)
+
+### Production Workflow
+
+22. [Production Dockerfile (Multi-Stage)](#22-production-dockerfile-multi-stage)
+23. [Production Docker Compose](#23-production-docker-compose)
+24. [Build And Deploy Workflow](#24-build-and-deploy-workflow)
+25. [Nginx And Cloudflare Integration](#25-nginx-and-cloudflare-integration)
+26. [CI/CD With GitHub Actions](#26-cicd-with-github-actions)
+27. [Rollback Workflow](#27-rollback-workflow)
+28. [Production Node.js Checklist](#28-production-nodejs-checklist)
+
+### Security Best Practices
+
+29. [npm Audit And Dependencies](#29-npm-audit-and-dependencies)
+30. [Environment Variable Security](#30-environment-variable-security)
+31. [Runtime Security](#31-runtime-security)
+32. [Security Checklist](#32-security-checklist)
+
+### Monitoring And Logging
+
+33. [Application Logs](#33-application-logs)
+34. [Docker Container Logs](#34-docker-container-logs)
+35. [Process And Resource Monitoring](#35-process-and-resource-monitoring)
+36. [Health Checks](#36-health-checks)
+37. [Debugging](#37-debugging)
+
+### Backup And Restore
+
+38. [Backup Strategy](#38-backup-strategy)
+39. [Backup Commands](#39-backup-commands)
+40. [Restore Workflow](#40-restore-workflow)
+
+### Troubleshooting
+
+41. [Permission Denied / EACCES](#41-permission-denied--eacces)
+42. [Port Already In Use](#42-port-already-in-use)
+43. [Dependency Issues](#43-dependency-issues)
+44. [Build Failures](#44-build-failures)
+45. [Container Restart Loops](#45-container-restart-loops)
+46. [SSL And DNS Issues](#46-ssl-and-dns-issues)
+
+### Cleanup And Uninstall
+
+47. [Remove node_modules And Cache (Mac)](#47-remove-node_modules-and-cache-mac)
+48. [Remove node_modules And Cache (Linux)](#48-remove-node_modules-and-cache-linux)
+49. [Uninstall Node.js On Mac](#49-uninstall-nodejs-on-mac)
+50. [Uninstall Node.js On Linux](#50-uninstall-nodejs-on-linux)
+51. [Remove Node.js Docker Images](#51-remove-nodejs-docker-images)
+52. [Verification After Removal](#52-verification-after-removal)
+
+### Legacy: Global Node.js + PM2
+
+53. [PM2 Process Manager (Legacy)](#53-pm2-process-manager-legacy)
+54. [When To Avoid PM2 In Production](#54-when-to-avoid-pm2-in-production)
+
+### Production Workflows
+
+55. [Recommended Production Workflow](#55-recommended-production-workflow)
+56. [Modern Workflow](#56-modern-workflow)
+57. [Real-World Workflow](#57-real-world-workflow)
+58. [Final Production Checklist](#58-final-production-checklist)
 
 ---
 
-# What Is npm?
+# 1. What Is Node.js
 
-npm (Node Package Manager) is used to install and manage JavaScript packages.
+Node.js is a JavaScript runtime used to build backend APIs, full-stack apps, and CLI tools.
+
+Production use cases:
+
+* REST/GraphQL APIs (Express, Fastify, NestJS)
+* full-stack frameworks (Next.js, Nuxt)
+* real-time apps (WebSockets)
+* background workers and microservices
+
+Recommended version: **Node.js 24 LTS** (or current LTS).
+
+---
+
+# 2. What Is npm
+
+npm (Node Package Manager) installs and manages JavaScript dependencies.
 
 Used for:
 
-- installing packages
-- dependency management
-- scripts
-- project setup
-- publishing packages
+* installing packages (`npm install express`)
+* running scripts (`npm run build`)
+* locking dependency versions (`package-lock.json`)
+* publishing packages
+
+Comes bundled with Node.js. Use `npm ci` in production builds for reproducible installs.
 
 ---
 
-# Node.js Installation Approaches
+# 3. Production Architecture
 
-There are two common ways to use Node.js on a VPS.
+```txt
+User
+↓
+Cloudflare
+↓
+Nginx
+↓
+Frontend (Next.js / React)
+↓
+Backend (Node.js API)
+↓
+PostgreSQL
+↓
+Redis
+```
 
-Choose ONE workflow depending on your use case.
+Node.js runs inside Docker containers — not directly on the VPS host.
 
----
-
-## Option 1 → Global Node.js Installation
-
-Node.js is installed directly on the VPS operating system.
-
-Best for:
-
-- learning Node.js
-- local development
-- PM2 deployments
-- simple VPS apps
-- running scripts directly
-
-Go to:
-
-```md
-[Global Node.js Workflow](#global-nodejs-workflow)
+```txt
+Developer
+↓
+GitHub
+↓
+GitHub Actions
+↓
+Docker Hub
+↓
+VPS
+↓
+docker compose up -d
+↓
+Node.js Container
 ```
 
 ---
 
-## Option 2 → Docker-Based Node.js
+# 4. Production Folder Structure
 
-Node.js runs inside Docker containers.
+## Monorepo (Full Stack)
 
-Best for:
+```txt
+myapp/
+├── apps/
+│   ├── frontend/
+│   │   ├── Dockerfile
+│   │   ├── package.json
+│   │   └── src/
+│   └── backend/
+│       ├── Dockerfile
+│       ├── package.json
+│       ├── src/
+│       │   ├── index.js
+│       │   ├── routes/
+│       │   └── middleware/
+│       └── tests/
+├── docker-compose.yml
+├── docker-compose.prod.yml
+├── docker-compose.dev.yml
+├── .env.example
+├── .dockerignore
+└── .github/
+    └── workflows/
+        └── deploy.yml
+```
 
-- production deployments
-- isolated environments
-- scalable applications
-- version consistency
-- microservices
-- modern DevOps workflows
+## Single Backend API
 
-Recommended for production deployments.
+```txt
+api/
+├── Dockerfile
+├── .dockerignore
+├── .env.example
+├── package.json
+├── package-lock.json
+├── src/
+│   ├── index.js
+│   ├── routes/
+│   └── config/
+└── tests/
+```
 
-Go to:
+## VPS Deployment Path
 
-```md
-[Docker-Based Node.js Workflow](#docker-based-nodejs-workflow)
+```txt
+/var/www/myapp/
+├── docker-compose.prod.yml
+├── .env
+└── nginx/
+    └── default.conf
 ```
 
 ---
 
-# Global Node.js Workflow
+# 5. Docker-First vs Global Install
 
-# 1. Install Node.js Globally
+| Approach | Use Case |
+|----------|----------|
+| **Docker (recommended)** | All production deployments |
+| **Global + PM2 (legacy)** | Learning, quick scripts, legacy VPS |
 
-## Update Packages
+Production rule:
+
+```txt
+✓ Docker for production
+✓ Node.js on Mac for local development
+✗ Global Node.js + PM2 for new production projects
+```
+
+```txt
+Development (Mac)     → Node.js via nvm/fnm OR Docker Compose dev
+Production (VPS)      → Docker container only
+CI/CD                 → node:24-slim in GitHub Actions or Docker build
+```
+
+---
+
+# 6. Install Node.js On Mac
+
+Use a version manager for local development.
+
+## Option A — fnm (Recommended)
 
 ```bash
-sudo apt update
+brew install fnm
+echo 'eval "$(fnm env)"' >> ~/.zshrc
+source ~/.zshrc
+fnm install 24
+fnm use 24
+fnm default 24
 ```
 
-Refreshes Ubuntu package lists.
-
----
-
-## Install Node.js LTS Repository
+## Option B — nvm
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.zshrc
+nvm install 24
+nvm use 24
+nvm alias default 24
 ```
 
-Adds NodeSource Node.js LTS repository.
-
----
-
-## Install Node.js
-
-```bash
-sudo apt install -y nodejs
-```
-
-Installs latest LTS version of:
-
-- Node.js
-- npm
-
----
-
-# 2. Verify Global Installation
-
-## Check Node.js Version
+## Verify
 
 ```bash
 node -v
-```
-
-Displays installed Node.js version.
-
----
-
-## Check npm Version
-
-```bash
 npm -v
 ```
 
-Displays installed npm version.
+Expected:
 
----
-
-# 3. Package Managers
-
-## npm
-
-Default Node.js package manager.
-
-Installed automatically with Node.js.
-
----
-
-## Install pnpm
-
-```bash
-npm install -g pnpm
+```txt
+v24.x.x
+10.x.x
 ```
 
-Installs pnpm package manager.
-
-Benefits:
-
-- faster installs
-- lower disk usage
-- efficient dependency storage
-
 ---
 
-## Install Yarn
+# 7. Install Node.js On Linux (Global)
+
+For local scripts or legacy PM2 setups only — not recommended for new production.
+
+## NodeSource LTS
 
 ```bash
-npm install -g yarn
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+sudo apt install -y nodejs
 ```
 
-Installs Yarn package manager.
-
-Alternative to npm.
-
----
-
-# 4. Create Node.js Project
-
-## Create Project Folder
+## Verify
 
 ```bash
-mkdir my-node-app
+node -v
+npm -v
+which node
 ```
 
-Creates Node.js project folder.
-
----
-
-## Enter Project Folder
+## Fix npm Permissions (If Needed)
 
 ```bash
-cd my-node-app
+mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
 ```
 
-Moves into the project directory.
+✓ Good:
+
+* global install for utility scripts only
+
+✗ Avoid:
+
+* global Node.js as primary production runtime
+* `sudo npm install -g`
 
 ---
 
-## Initialize package.json
+# 8. Install Node.js In Docker
+
+Production Node.js runs in containers.
+
+## Pull Official Image
+
+```bash
+docker pull node:24-slim
+```
+
+## Run Interactive Container
+
+```bash
+docker run -it --rm node:24-slim bash
+node -v
+npm -v
+exit
+```
+
+## Image Variants
+
+```txt
+node:24-slim     → production (smallest, recommended)
+node:24-alpine   → minimal Alpine-based
+node:24          → full Debian (larger, has more tools)
+node:24-bullseye → specific Debian version
+```
+
+Production preference: `node:24-slim`.
+
+---
+
+# 9. Verify Node.js Installation
+
+## Mac
+
+```bash
+node -v && npm -v
+which node
+```
+
+## Linux (Global)
+
+```bash
+node -v && npm -v
+which node
+npm list -g --depth=0
+```
+
+## Docker
+
+```bash
+docker run --rm node:24-slim node -v
+docker run --rm node:24-slim npm -v
+```
+
+## Project
+
+```bash
+cd ~/Projects/myapp/apps/backend
+node -v
+npm ci
+npm run build
+```
+
+---
+
+# 10. package.json
+
+Central config file for every Node.js project.
+
+## Initialize
 
 ```bash
 npm init -y
 ```
 
-Creates `package.json` automatically.
-
----
-
-# 5. package.json
-
-`package.json` contains:
-
-- dependencies
-- scripts
-- project metadata
-- versions
-- package information
-
-Example:
+## Production Example
 
 ```json
 {
-  "name": "my-node-app",
+  "name": "myapp-api",
   "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "dev": "node --watch src/index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "node --test",
+    "lint": "eslint src/"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "dependencies": {
+    "express": "^5.0.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
+```
+
+Key fields:
+
+```txt
+scripts     → npm run dev / build / start
+engines     → required Node.js version
+dependencies → production packages
+devDependencies → build/test tools only
+private: true → prevents accidental npm publish
+```
+
+---
+
+# 11. package-lock.json
+
+Locks exact dependency versions for reproducible builds.
+
+```txt
+package.json       → version ranges (^5.0.0)
+package-lock.json  → exact versions (5.0.1)
+```
+
+## Rules
+
+```txt
+✓ Always commit package-lock.json
+✓ Use npm ci in Docker/production builds
+✗ Delete package-lock.json in production projects
+✗ Use npm install in CI (use npm ci)
+```
+
+## npm ci vs npm install
+
+```bash
+npm ci          # Production/CI — exact lock file, fails if out of sync
+npm install     # Development — may update lock file
+```
+
+---
+
+# 12. Environment Variables
+
+## .env File (Local / Server)
+
+```env
+NODE_ENV=production
+PORT=5000
+DATABASE_URL=postgresql://user:pass@postgres:5432/mydb
+REDIS_URL=redis://redis:6379
+JWT_SECRET=your-long-random-secret
+```
+
+## .env.example (Commit To Git)
+
+```env
+NODE_ENV=development
+PORT=5000
+DATABASE_URL=
+REDIS_URL=
+JWT_SECRET=
+```
+
+## Load In Node.js
+
+```javascript
+import "dotenv/config";
+
+const port = process.env.PORT || 5000;
+```
+
+## Docker Compose
+
+```yaml
+services:
+  backend:
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+```
+
+✓ Good:
+
+* `.env` on server only, `chmod 600`
+* `.env.example` documents required vars
+
+✗ Avoid:
+
+* committing `.env` to GitHub
+* hardcoding secrets in source code
+
+---
+
+# 13. node_modules And .gitignore
+
+## .gitignore
+
+```txt
+node_modules/
+.env
+.env.local
+dist/
+coverage/
+*.log
+.DS_Store
+```
+
+## Rules
+
+```txt
+✓ node_modules in .gitignore always
+✓ Docker builds run npm ci (installs inside container)
+✗ Commit node_modules to Git
+✗ Copy node_modules into Docker image from host
+```
+
+---
+
+# 14. npm Scripts
+
+## Run Scripts
+
+```bash
+npm run dev
+npm run build
+npm run start
+npm test
+```
+
+## Common Production Scripts
+
+```json
+"scripts": {
+  "dev": "node --watch src/index.js",
+  "build": "tsc --project tsconfig.json",
+  "start": "node dist/index.js",
+  "start:prod": "NODE_ENV=production node dist/index.js"
+}
+```
+
+Dockerfile uses:
+
+```dockerfile
+CMD ["npm", "start"]
+# or directly:
+CMD ["node", "dist/index.js"]
+```
+
+---
+
+# 15. Package Managers (npm, pnpm, yarn)
+
+## npm (Default — Recommended)
+
+```bash
+npm install express
+npm ci
+```
+
+## pnpm (Faster, Monorepos)
+
+```bash
+npm install -g pnpm
+pnpm install
+pnpm run build
+```
+
+## yarn
+
+```bash
+npm install -g yarn
+yarn install
+yarn build
+```
+
+Production recommendation: **npm** with `package-lock.json` and `npm ci` — widest CI/CD compatibility.
+
+Pick one per project. Do not mix lock files.
+
+---
+
+# 16. Create Node.js Project
+
+## Local (Mac)
+
+```bash
+mkdir myapp-api && cd myapp-api
+npm init -y
+npm install express dotenv
+mkdir src
+touch src/index.js
+```
+
+## Basic Express App
+
+```javascript
+import express from "express";
+
+const app = express();
+const port = process.env.PORT || 5000;
+
+app.get("/", (req, res) => res.json({ message: "API running" }));
+app.get("/health", (req, res) => res.json({ status: "ok" }));
+
+app.listen(port, () => console.log(`Server on port ${port}`));
+```
+
+## package.json Update
+
+```json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js"
   }
 }
 ```
 
 ---
 
-# 6. Create Basic Node.js App
+# 17. Install And Remove Packages
 
-## Create index.js
-
-```bash
-nano index.js
-```
-
-Creates application entry file.
-
----
-
-## Basic Node.js Server
-
-```javascript
-const http = require("http");
-
-const server = http.createServer((req, res) => {
-  res.writeHead(200, {
-    "Content-Type": "text/plain",
-  });
-
-  res.end("Node.js server running!");
-});
-
-server.listen(3000, () => {
-  console.log("Server running on port 3000");
-});
-```
-
-Basic Node.js HTTP server example.
-
----
-
-## Save File
-
-```txt
-Ctrl + O
-Enter
-Ctrl + X
-```
-
-Saves file.
-
----
-
-# 7. Run Node.js App
-
-## Run Application
+## Install Production Dependency
 
 ```bash
-node index.js
+npm install express
+npm install pg redis
 ```
 
-Runs Node.js application.
+## Install Dev Dependency
+
+```bash
+npm install -D typescript eslint
+```
+
+## Install Exact Version
+
+```bash
+npm install express@5.0.0
+```
+
+## Remove Package
+
+```bash
+npm uninstall express
+```
+
+## Install All From Lock File
+
+```bash
+npm ci
+```
+
+## Production Only
+
+```bash
+npm ci --omit=dev
+```
 
 ---
 
-## Verify In Browser
+# 18. Run Development Server
 
-Open:
+## Local (Mac)
 
-```txt
-http://YOUR_PUBLIC_IP:3000
+```bash
+npm run dev
 ```
 
-Should display:
+## With Environment File
 
-```txt
-Node.js server running!
+```bash
+cp .env.example .env
+npm run dev
 ```
 
----
+## Verify
 
-## Stop Application
+```bash
+curl http://localhost:5000/health
+```
+
+## Stop
 
 ```txt
 Ctrl + C
 ```
 
-Stops the Node.js application.
+---
+
+# 19. Development Dockerfile
+
+```dockerfile
+FROM node:24-slim
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["npm", "run", "dev"]
+```
+
+Used with bind mount for hot reload — development only.
 
 ---
 
-# 8. Install Packages
+# 20. Development Docker Compose
 
-## Install Dependency
+```yaml
+services:
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./apps/backend/src:/app/src
+      - ./apps/backend/package.json:/app/package.json
+    env_file:
+      - ./apps/backend/.env
+    command: npm run dev
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev:/var/lib/postgresql/data
+
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_dev:
+```
+
+## Start Dev Stack
 
 ```bash
-npm install package-name
-```
-
-Installs package locally.
-
----
-
-## Install Dev Dependency
-
-```bash
-npm install -D package-name
-```
-
-Installs development dependency.
-
----
-
-## Install Global Package
-
-```bash
-npm install -g package-name
-```
-
-Installs package globally.
-
----
-
-# 9. Remove Packages
-
-## Remove Package
-
-```bash
-npm uninstall package-name
-```
-
-Removes package.
-
----
-
-# 10. npm Scripts
-
-## Run npm Script
-
-```bash
-npm run script-name
-```
-
-Runs scripts from `package.json`.
-
----
-
-## Example package.json Scripts
-
-```json
-"scripts": {
-  "dev": "node index.js",
-  "start": "node index.js"
-}
+docker compose -f docker-compose.dev.yml up -d
+docker compose logs -f backend
 ```
 
 ---
 
-# 11. Environment Variables
+# 21. Development Best Practices
 
-Environment variables store sensitive or configurable values.
+✓ Good:
+
+* `npm run dev` with hot reload locally
+* Docker Compose for local full stack
+* `.env.example` in Git
+* same Node.js version as production (24 LTS)
+
+✗ Avoid:
+
+* developing directly on production VPS
+* different Node versions local vs production
+* skipping `package-lock.json`
 
 ---
 
-## Example .env File
+# 22. Production Dockerfile (Multi-Stage)
 
-```txt
-PORT=3000
-NODE_ENV=production
-DATABASE_URL=your_database_url
-JWT_SECRET=your_secret
+```dockerfile
+# Build stage
+FROM node:24-slim AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+# Production stage
+FROM node:24-slim
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+COPY --from=builder /app/dist ./dist
+
+USER node
+
+EXPOSE 5000
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD node -e "fetch('http://localhost:5000/health').then(r=>process.exit(r.ok?0:1))"
+
+CMD ["node", "dist/index.js"]
 ```
 
----
-
-## .env Security
-
-Never push `.env` files to GitHub.
-
-Add to `.gitignore`:
-
-```txt
-.env
-```
-
----
-
-# 12. node_modules
-
-`node_modules` contains installed dependencies.
-
-Recommended:
-
-- never push `node_modules` to GitHub
-
-Add to `.gitignore`:
+## .dockerignore
 
 ```txt
 node_modules
+.env
+.env.*
+.git
+*.log
+coverage
+dist
+README.md
 ```
 
 ---
 
-# 13. package-lock.json
+# 23. Production Docker Compose
 
-`package-lock.json` locks exact dependency versions.
+```yaml
+services:
+  backend:
+    image: youruser/myapp-backend:${TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
-Benefits:
+  frontend:
+    image: youruser/myapp-frontend:${TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - app-network
 
-- consistent installs
-- reproducible builds
-- safer deployments
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-Recommended:
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    networks:
+      - app-network
 
-- always keep `package-lock.json`
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+    networks:
+      - app-network
+    depends_on:
+      - backend
+      - frontend
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+```
 
 ---
 
-# 14. Install Dependencies
+# 24. Build And Deploy Workflow
 
-## Install Project Dependencies
+## Build Image Locally
 
 ```bash
-npm install
+docker build -t youruser/myapp-backend:latest -f apps/backend/Dockerfile apps/backend
 ```
 
-Installs dependencies from `package.json`.
-
----
-
-## Install Only Production Dependencies
+## Push To Docker Hub
 
 ```bash
-npm install --production
+docker login
+docker push youruser/myapp-backend:latest
 ```
 
-Installs only production packages.
+## Deploy On VPS
 
-Useful for VPS deployments.
+```bash
+ssh vps-prod
+cd /var/www/myapp
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+docker compose ps
+curl -f http://localhost:5000/health
+```
+
+## Full Deploy Flow
+
+```txt
+Code change
+↓
+git push origin main
+↓
+GitHub Actions: test → build → push image
+↓
+SSH to VPS → docker compose pull → up -d
+↓
+Health check passes
+```
 
 ---
 
-# 15. npm Security & Maintenance
+# 25. Nginx And Cloudflare Integration
 
-## Check Security Vulnerabilities
+```txt
+User
+↓
+Cloudflare
+↓
+Nginx (:443)
+↓
+Backend Node.js (:5000 internal)
+```
+
+## Nginx Config Snippet
+
+```nginx
+upstream backend {
+    server backend:5000;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name api.yourdomain.com;
+
+    location / {
+        proxy_pass http://backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+Node.js listens on internal port only — not exposed publicly.
+
+See `11-nginx-reverse-proxy.md` for full Nginx setup.
+
+---
+
+# 26. CI/CD With GitHub Actions
+
+```yaml
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: apps/backend/package-lock.json
+      - run: npm ci
+        working-directory: apps/backend
+      - run: npm test
+        working-directory: apps/backend
+
+  build-push:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: apps/backend
+          push: true
+          tags: youruser/myapp-backend:latest
+
+  deploy:
+    needs: build-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          script: |
+            cd /var/www/myapp
+            docker compose -f docker-compose.prod.yml pull backend
+            docker compose -f docker-compose.prod.yml up -d backend
+            docker compose ps
+```
+
+---
+
+# 27. Rollback Workflow
+
+## Tag-Based Rollback
+
+```bash
+ssh vps-prod
+cd /var/www/myapp
+export TAG=v1.2.3
+docker compose -f docker-compose.prod.yml up -d backend
+docker compose ps
+curl -f http://localhost:5000/health
+```
+
+## GitHub Actions Rollback
+
+Push previous git tag or revert commit → CI rebuilds and deploys.
+
+## Backup Before Deploy
+
+```bash
+docker tag youruser/myapp-backend:latest youruser/myapp-backend:rollback
+```
+
+---
+
+# 28. Production Node.js Checklist
+
+✓ Good:
+
+* Node.js 24 LTS in Docker
+* multi-stage Dockerfile
+* `npm ci --omit=dev` in production stage
+* non-root `USER node`
+* health check endpoint
+* `.env` not in Git
+* Nginx reverse proxy
+
+✗ Avoid:
+
+* global Node.js + PM2 for new projects
+* `node:latest` in production
+* running as root in container
+* exposing Node.js port publicly
+
+---
+
+# 29. npm Audit And Dependencies
+
+## Audit
 
 ```bash
 npm audit
+npm audit --production
 ```
 
-Scans dependencies for known security vulnerabilities.
-
----
-
-## Automatically Fix Vulnerabilities
+## Fix
 
 ```bash
 npm audit fix
 ```
 
-Attempts to automatically fix vulnerable packages.
-
----
-
-## Force Fix Vulnerabilities
+Use `--force` only after reviewing breaking changes:
 
 ```bash
 npm audit fix --force
 ```
 
-Forces major dependency updates to fix vulnerabilities.
-
-Use carefully in production projects.
-
----
-
-## Check Outdated Packages
+## Check Outdated
 
 ```bash
 npm outdated
 ```
 
-Displays outdated dependencies.
-
----
-
-## Update Packages
+## Update (Development)
 
 ```bash
 npm update
+npm install package@latest
 ```
 
-Updates installed dependencies.
+Schedule monthly dependency reviews in production projects.
+
+✓ Good:
+
+* regular `npm audit` in CI
+* pin major dependencies
+* minimal dependency count
+
+✗ Avoid:
+
+* ignoring critical CVEs
+* unnecessary packages
 
 ---
 
-# 16. Useful npm Commands
+# 30. Environment Variable Security
 
-## List Installed Packages
+✓ Good:
 
-```bash
-npm list
-```
+* secrets in `.env` on server / Coolify / GitHub Secrets
+* `chmod 600 .env`
+* validate required env vars on startup
+* different secrets per environment
 
-Displays installed packages.
+✗ Avoid:
 
----
+* secrets in `package.json`
+* secrets in Dockerfile `ENV`
+* logging env vars at startup
 
-## Clear npm Cache
-
-```bash
-npm cache clean --force
-```
-
-Clears npm cache.
-
----
-
-## Check npm Cache
-
-```bash
-npm cache verify
-```
-
-Verifies npm cache integrity.
-
----
-
-# 17. Build Applications
-
-## Build Production App
-
-```bash
-npm run build
-```
-
-Builds production application.
-
-Common in frameworks like:
-
-- Next.js
-- React
-- Vue
-- Nuxt
-
----
-
-# 18. Production Process Manager (PM2)
-
-## Install PM2
-
-```bash
-npm install -g pm2
-```
-
-Installs PM2 process manager.
-
----
-
-## Start Application
-
-```bash
-pm2 start index.js
-```
-
-Runs application in background.
-
----
-
-## Start App With Name
-
-```bash
-pm2 start index.js --name myapp
-```
-
-Starts application with custom name.
-
----
-
-## Show Running Apps
-
-```bash
-pm2 list
-```
-
-Displays running PM2 applications.
-
----
-
-## Restart App
-
-```bash
-pm2 restart APP_NAME
-```
-
-Restarts application.
-
----
-
-## Stop App
-
-```bash
-pm2 stop APP_NAME
-```
-
-Stops application.
-
----
-
-## Delete App
-
-```bash
-pm2 delete APP_NAME
-```
-
-Removes application from PM2.
-
----
-
-## Monitor PM2 Processes
-
-```bash
-pm2 monit
-```
-
-Displays real-time monitoring dashboard.
-
----
-
-## View PM2 Logs
-
-```bash
-pm2 logs
-```
-
-Displays application logs.
-
----
-
-# 19. PM2 Auto Start On Server Reboot
-
-## Save PM2 Processes
-
-```bash
-pm2 save
-```
-
-Saves current PM2 processes.
-
----
-
-## Enable PM2 Startup
-
-```bash
-pm2 startup
-```
-
-Enables automatic startup after reboot.
-
----
-
-# 20. Node.js Monitoring
-
-## Check Running Node Processes
-
-```bash
-ps aux | grep node
-```
-
-Displays running Node.js processes.
-
----
-
-## Check Open Ports
-
-```bash
-sudo ss -tulpn
-```
-
-Displays open ports/services.
-
----
-
-## Monitor Server Resources
-
-```bash
-htop
-```
-
-Displays live CPU/RAM usage.
-
----
-
-# 21. Node.js Security Basics
-
-- Never expose `.env` files
-- Use strong secrets/passwords
-- Keep dependencies updated
-- Avoid unnecessary packages
-- Validate user input
-- Use HTTPS in production
-- Do not run apps as root
-- Store secrets securely
-- Avoid exposing internal APIs publicly
-
----
-
-# Docker-Based Node.js Workflow
-
-# 1. Pull Node.js Docker Image
-
-## Download Node.js Docker Image
-
-```bash
-docker pull node:20
-```
-
-Downloads official Node.js Docker image.
-
----
-
-## Verify Downloaded Images
-
-```bash
-docker images
-```
-
-Should show:
-
-```txt
-node:20
-```
-
----
-
-# 2. Run Temporary Node.js Container
-
-## Start Interactive Node.js Container
-
-```bash
-docker run -it node:20 bash
-```
-
-Starts temporary interactive Node.js container.
-
-Useful for:
-
-- testing Node.js
-- testing npm
-- temporary development
-- quick experiments
-
----
-
-## Check Node.js Version
-
-```bash
-node -v
-```
-
-Displays Node.js version inside Docker container.
-
----
-
-## Check npm Version
-
-```bash
-npm -v
-```
-
-Displays npm version inside Docker container.
-
----
-
-## Exit Container
-
-```bash
-exit
-```
-
-Stops and exits temporary container.
-
----
-
-# 3. Create Docker-Based Node.js Project
-
-## Create Project Folder
-
-```bash
-mkdir docker-node-app
-```
-
-Creates Docker Node.js project folder.
-
----
-
-## Enter Project Folder
-
-```bash
-cd docker-node-app
-```
-
-Moves into project directory.
-
----
-
-## Initialize Node.js Project
-
-```bash
-npm init -y
-```
-
-Creates `package.json`.
-
----
-
-## Install Express
-
-```bash
-npm install express
-```
-
-Installs Express framework.
-
----
-
-# 4. Create Node.js App
-
-## Create index.js
-
-```bash
-nano index.js
-```
-
-Creates Node.js application file.
-
----
-
-## Basic Express App
+## Startup Validation
 
 ```javascript
-const express = require("express");
-
-const app = express();
-
-app.get("/", (req, res) => {
-  res.send("Docker Node.js App Running!");
-});
-
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
-});
-```
-
-Basic Express application example.
-
----
-
-## Save File
-
-```txt
-Ctrl + O
-Enter
-Ctrl + X
-```
-
-Saves file.
-
----
-
-# 5. Create Dockerfile
-
-## Create Dockerfile
-
-```bash
-nano Dockerfile
-```
-
-Creates Dockerfile.
-
----
-
-## Example Node.js Dockerfile
-
-```dockerfile
-FROM node:20
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
-```
-
-Production-ready basic Node.js Dockerfile.
-
----
-
-## Save Dockerfile
-
-```txt
-Ctrl + O
-Enter
-Ctrl + X
-```
-
-Saves Dockerfile.
-
----
-
-# 6. Configure package.json
-
-## Open package.json
-
-```bash
-nano package.json
-```
-
----
-
-## Add Start Script
-
-```json
-"scripts": {
-  "start": "node index.js"
+const required = ["DATABASE_URL", "JWT_SECRET", "PORT"];
+for (const key of required) {
+  if (!process.env[key]) throw new Error(`Missing env: ${key}`);
 }
 ```
 
 ---
 
-## Save package.json
+# 31. Runtime Security
+
+✓ Good:
+
+* run as non-root user in Docker
+* input validation on all API endpoints
+* rate limiting (express-rate-limit)
+* helmet.js for HTTP headers
+* HTTPS only in production
+* CORS restricted to known domains
+
+✗ Avoid:
+
+* `eval()` on user input
+* exposing stack traces in production
+* running as root in container
+
+---
+
+# 32. Security Checklist
+
+✓ Good:
+
+* `npm audit` clean (or documented exceptions)
+* `.env` not in Git
+* non-root container user
+* HTTPS via Nginx/Cloudflare
+* JWT secrets 32+ chars random
+* dependencies updated regularly
+
+✗ Avoid:
+
+* hardcoded credentials
+* public `/admin` without auth
+* disabled CORS on production API
+
+---
+
+# 33. Application Logs
+
+## stdout/stderr (Docker Captures These)
+
+```javascript
+console.log("Server started on port", port);
+console.error("Database connection failed", err.message);
+```
+
+## View Logs
+
+```bash
+docker compose logs -f backend
+docker compose logs backend --tail=200 --since 1h
+```
+
+## Structured Logging (Production)
+
+Use a logging library:
+
+```bash
+npm install pino
+```
+
+```javascript
+import pino from "pino";
+const logger = pino({ level: process.env.LOG_LEVEL || "info" });
+logger.info({ port }, "Server started");
+```
+
+---
+
+# 34. Docker Container Logs
+
+```bash
+docker logs CONTAINER_NAME -f
+docker logs CONTAINER_NAME --tail=100
+docker compose logs -f backend
+```
+
+## Export Logs
+
+```bash
+docker compose logs backend > backend-$(date +%F).log
+```
+
+---
+
+# 35. Process And Resource Monitoring
+
+## Docker Stats
+
+```bash
+docker stats backend --no-stream
+docker stats --no-stream
+```
+
+## Inside Container
+
+```bash
+docker compose exec backend node -e "console.log(process.memoryUsage())"
+```
+
+## VPS Host
+
+```bash
+free -h
+htop
+ps aux | grep node
+```
+
+## Open Ports
+
+```bash
+sudo ss -tlnp | grep node
+docker compose ps
+```
+
+---
+
+# 36. Health Checks
+
+## Express Health Endpoint
+
+```javascript
+app.get("/health", async (req, res) => {
+  try {
+    await db.query("SELECT 1");
+    res.json({ status: "ok", uptime: process.uptime() });
+  } catch (err) {
+    res.status(503).json({ status: "error" });
+  }
+});
+```
+
+## Docker Compose Health Check
+
+```yaml
+backend:
+  healthcheck:
+    test: ["CMD", "node", "-e", "fetch('http://localhost:5000/health').then(r=>process.exit(r.ok?0:1))"]
+    interval: 30s
+    timeout: 5s
+    retries: 3
+    start_period: 10s
+```
+
+## Verify
+
+```bash
+curl -f http://localhost:5000/health
+curl -f https://api.yourdomain.com/health
+```
+
+---
+
+# 37. Debugging
+
+## Verbose Node.js
+
+```bash
+node --trace-warnings dist/index.js
+NODE_DEBUG=http node dist/index.js
+```
+
+## Docker Exec
+
+```bash
+docker compose exec backend sh
+docker compose exec backend node -v
+docker compose exec backend env
+```
+
+## Check Config
+
+```bash
+docker compose config
+docker inspect backend | grep -A10 Env
+```
+
+## Network Debug
+
+```bash
+docker compose exec backend nc -zv postgres 5432
+docker compose exec backend ping -c 2 redis
+curl -v http://localhost:5000/health
+```
+
+---
+
+# 38. Backup Strategy
 
 ```txt
-Ctrl + O
-Enter
-Ctrl + X
+1. GitHub repo (source code)
+2. Docker images tagged in registry
+3. PostgreSQL daily dumps
+4. .env backed up securely (encrypted)
+5. Docker volumes backed up weekly
 ```
 
-Saves package.json.
+Node.js app itself is stateless — backup the database and config, not the container.
 
 ---
 
-# 7. Build Docker Image
+# 39. Backup Commands
 
-## Build Node.js Docker Image
+## Database
 
 ```bash
-docker build -t node-app .
+docker compose exec postgres pg_dump -U postgres mydb > ~/backups/mydb-$(date +%F).sql
 ```
 
-Builds Docker image.
-
----
-
-## Verify Docker Images
+## Config
 
 ```bash
-docker images
+tar -czvf ~/backups/node-config-$(date +%F).tar.gz \
+  /var/www/myapp/.env \
+  /var/www/myapp/docker-compose.prod.yml
 ```
 
-Displays Docker images.
-
----
-
-# 8. Run Docker Container
-
-## Run Node.js Docker Container
+## Copy To Mac
 
 ```bash
-docker run -d \
-  --name node-app \
-  -p 3000:3000 \
-  --restart unless-stopped \
-  node-app
+scp vps-prod:~/backups/mydb-*.sql ./backups/
 ```
-
-Runs Node.js Docker container in background.
 
 ---
 
-## Verify Running Containers
+# 40. Restore Workflow
+
+## Restore Database
 
 ```bash
-docker ps
+cat ~/backups/mydb-YYYY-MM-DD.sql | docker compose exec -T postgres psql -U postgres mydb
 ```
 
-Checks running containers.
-
----
-
-## Verify In Browser
-
-Open:
-
-```txt
-http://YOUR_PUBLIC_IP:3000
-```
-
-Should display:
-
-```txt
-Docker Node.js App Running!
-```
-
----
-
-# 9. Docker Container Management
-
-## View Container Logs
+## Redeploy App
 
 ```bash
-docker logs node-app
+cd /var/www/myapp
+export TAG=latest
+docker compose -f docker-compose.prod.yml up -d backend
+curl -f http://localhost:5000/health
 ```
-
-Displays container logs.
 
 ---
 
-## Live Container Logs
+# 41. Permission Denied / EACCES
+
+## npm EACCES On Mac/Linux
 
 ```bash
-docker logs -f node-app
+sudo chown -R $(whoami) ~/.npm
+mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
 ```
 
-Streams live container logs.
-
----
-
-## Restart Container
+## Docker Permission
 
 ```bash
-docker restart node-app
+sudo usermod -aG docker $USER
+newgrp docker
 ```
 
-Restarts container.
-
----
-
-## Stop Container
+## File Permissions
 
 ```bash
-docker stop node-app
+chmod 755 deploy.sh
+sudo chown -R mosabbir:mosabbir /var/www/myapp
 ```
-
-Stops container.
 
 ---
 
-## Start Container Again
+# 42. Port Already In Use
+
+## Find Process
 
 ```bash
-docker start node-app
+sudo ss -tlnp | grep :5000
+sudo lsof -i :5000
 ```
 
-Starts stopped container.
-
----
-
-## Remove Container
+## Kill Process
 
 ```bash
-docker rm -f node-app
+kill $(lsof -t -i :5000)
 ```
 
-Deletes container.
-
----
-
-# 10. Docker-Based Production Best Practices
-
-- Use Docker for production deployments
-- Use restart policies
-- Use environment variables
-- Use Docker volumes for persistent storage
-- Keep Docker images updated
-- Avoid running containers as root
-- Monitor logs regularly
-- Use reverse proxy in production
-- Use HTTPS/SSL
-- Use Docker Compose for multi-service apps
-
----
-
-# 11. Common Node.js Issues
-
-## Port Already In Use
-
-Check ports:
+## Docker Port Conflict
 
 ```bash
-sudo ss -tulpn
+docker ps --format "table {{.Names}}\t{{.Ports}}"
+docker compose down
+docker compose up -d
+```
+
+Change port in `.env`:
+
+```env
+PORT=5001
 ```
 
 ---
 
-## Dependency Issues
+# 43. Dependency Issues
 
-Delete old dependencies:
+## Clean Reinstall
 
 ```bash
 rm -rf node_modules package-lock.json
-```
-
-Reinstall:
-
-```bash
 npm install
 ```
 
----
-
-## Permission Errors
-
-Fix npm permissions:
+## Docker Clean Build
 
 ```bash
-sudo chown -R $USER:$USER ~/.npm
+docker compose build --no-cache backend
+docker compose up -d backend
+```
+
+## Lock File Out of Sync
+
+```bash
+npm ci
+# If fails: update lock file locally, commit, redeploy
+npm install
+git add package-lock.json
+git commit -m "fix: update lock file"
 ```
 
 ---
 
-## Application Crashing
+# 44. Build Failures
 
-Check logs:
+## Common Causes
+
+```txt
+TypeScript errors
+Missing devDependencies in production stage
+npm ci fails (lock file mismatch)
+Out of disk space during Docker build
+Wrong Node.js version
+```
+
+## Diagnose
 
 ```bash
-pm2 logs
+npm run build          # locally first
+docker build --progress=plain -t test .
+df -h
+docker system df
+```
+
+## Fix Disk Space
+
+```bash
+docker system prune -f
+docker builder prune -f
 ```
 
 ---
 
-## Docker Container Logs
+# 45. Container Restart Loops
+
+## Diagnose
 
 ```bash
-docker logs CONTAINER_ID
+docker compose ps
+docker compose logs backend --tail=50
+docker inspect backend --format='{{.State.RestartCount}}'
 ```
 
-Displays Docker container logs.
+## Common Causes
+
+```txt
+Missing DATABASE_URL
+App crashes on boot
+Wrong CMD in Dockerfile
+Port binding conflict
+OOM killed (out of memory)
+```
+
+## Fix
+
+```bash
+docker compose logs backend 2>&1 | tail -30
+docker compose exec backend env
+# Fix .env → docker compose up -d backend
+```
 
 ---
 
-# 12. Performance Tips
+# 46. SSL And DNS Issues
 
-- Use PM2 for global Node.js deployments
-- Use Docker for isolated deployments
-- Remove unused dependencies
-- Keep Node.js updated
-- Use caching when needed
-- Monitor RAM/CPU usage
-- Use production builds
-- Avoid blocking operations
-- Use restart policies
-- Monitor logs regularly
+## Verify API Reachable
 
----
+```bash
+curl -I http://api.yourdomain.com/health
+curl -I https://api.yourdomain.com/health
+dig api.yourdomain.com +short
+```
 
-# 13. Recommended Production Workflow
+## Common Fixes
 
-## Global Node.js Workflow
+```txt
+Cloudflare SSL → Full (strict)
+Nginx proxy_pass points to backend:5000
+Backend listens on 0.0.0.0 not 127.0.0.1 inside container
+UFW allows 80/443
+```
 
-1. Install Node.js
-2. Create project
-3. Configure environment variables
-4. Install PM2
-5. Run application with PM2
-6. Configure reverse proxy
-7. Configure SSL
-8. Monitor logs/processes
-9. Configure backups
+```javascript
+// Listen on all interfaces inside container
+app.listen(port, "0.0.0.0", () => console.log(`Port ${port}`));
+```
 
 ---
 
-## Docker-Based Workflow
+# 47. Remove node_modules And Cache (Mac)
 
-1. Install Docker
-2. Create Node.js project
-3. Create Dockerfile
-4. Build Docker image
-5. Run Docker container
-6. Configure reverse proxy
-7. Configure SSL
-8. Monitor container logs
-9. Configure backups
-10. Use Docker Compose for multi-service apps
+```bash
+rm -rf node_modules
+rm -rf ~/.npm/_cacache
+npm cache clean --force
+npm cache verify
+```
+
+## Remove Global Packages
+
+```bash
+npm list -g --depth=0
+npm uninstall -g pm2
+```
+
+---
+
+# 48. Remove node_modules And Cache (Linux)
+
+```bash
+rm -rf node_modules
+rm -rf ~/.npm
+npm cache clean --force
+sudo chown -R $(whoami) ~/.npm
+```
+
+---
+
+# 49. Uninstall Node.js On Mac
+
+## fnm
+
+```bash
+fnm uninstall 24
+brew uninstall fnm
+```
+
+## nvm
+
+```bash
+nvm uninstall 24
+rm -rf ~/.nvm
+```
+
+## Homebrew Node
+
+```bash
+brew uninstall node
+brew cleanup
+```
+
+## Verify
+
+```bash
+which node
+node -v
+```
+
+Expected: command not found.
+
+---
+
+# 50. Uninstall Node.js On Linux
+
+## NodeSource Install
+
+```bash
+sudo apt purge nodejs -y
+sudo apt autoremove -y
+sudo rm -rf /usr/local/lib/node_modules
+sudo rm -rf ~/.npm
+```
+
+## Remove PM2 (If Installed)
+
+```bash
+pm2 kill
+npm uninstall -g pm2
+sudo rm -rf ~/.pm2
+```
+
+## Verify
+
+```bash
+which node
+node -v
+pm2 -v
+```
+
+---
+
+# 51. Remove Node.js Docker Images
+
+## Remove App Containers
+
+```bash
+docker compose down
+docker compose down --rmi all
+```
+
+## Remove Node Images
+
+```bash
+docker rmi node:24-slim
+docker rmi youruser/myapp-backend:latest
+docker image prune -a -f
+```
+
+## Verify
+
+```bash
+docker images | grep node
+docker ps -a
+```
+
+---
+
+# 52. Verification After Removal
+
+## Mac/Linux Global
+
+```bash
+which node npm pm2
+node -v 2>&1
+```
+
+## Project
+
+```bash
+ls node_modules 2>&1
+npm cache verify
+```
+
+## Docker
+
+```bash
+docker images | grep -E "node|myapp"
+docker ps -a | grep backend
+curl http://localhost:5000/health 2>&1
+```
+
+---
+
+# 53. PM2 Process Manager (Legacy)
+
+PM2 runs Node.js directly on the VPS host — legacy approach only.
+
+## Install
+
+```bash
+npm install -g pm2
+```
+
+## Start App
+
+```bash
+pm2 start src/index.js --name myapp
+pm2 list
+pm2 logs myapp
+pm2 restart myapp
+pm2 stop myapp
+pm2 delete myapp
+```
+
+## Auto-Start On Reboot
+
+```bash
+pm2 save
+pm2 startup
+```
+
+Use only for existing PM2 deployments. New projects use Docker.
+
+---
+
+# 54. When To Avoid PM2 In Production
+
+✓ Use Docker instead:
+
+* reproducible builds
+* easy rollback via image tags
+* isolation from host OS
+* consistent with frontend/database containers
+* CI/CD integration
+
+✗ PM2 drawbacks:
+
+* Node.js version tied to host
+* no container isolation
+* harder multi-service orchestration
+* manual dependency management on VPS
+
+---
+
+# 55. Recommended Production Workflow
+
+```txt
+1. Develop locally (Mac + Docker Compose dev)
+2. Node.js 24 LTS, npm ci, package-lock.json committed
+3. Multi-stage Dockerfile with non-root user
+4. GitHub Actions: test → build → push image
+5. VPS: docker compose pull && up -d
+6. Nginx reverse proxy + Cloudflare SSL
+7. Health checks + log monitoring
+8. Database backups daily
+```
+
+---
+
+# 56. Modern Workflow
+
+```txt
+Developer (Mac)
+↓
+Local Docker Compose (dev)
+↓
+GitHub Push
+↓
+GitHub Actions (test + build)
+↓
+Docker Hub
+↓
+SSH → VPS
+↓
+docker compose up -d
+↓
+Nginx
+↓
+Cloudflare
+↓
+Users
+```
+
+Alternative with Coolify:
+
+```txt
+Developer → GitHub Push → Coolify → Docker → Users
+```
+
+---
+
+# 57. Real-World Workflow
+
+Example: Express API + Next.js frontend on Hetzner VPS.
+
+## Project Setup
+
+```bash
+# Mac
+mkdir myapp && cd myapp
+# Create apps/backend, apps/frontend
+# Add Dockerfiles, docker-compose.prod.yml
+git init && git remote add origin git@github.com:user/myapp.git
+git push origin main
+```
+
+## VPS Deploy
+
+```bash
+ssh vps-prod
+mkdir -p /var/www/myapp
+# Copy docker-compose.prod.yml + .env
+docker compose -f docker-compose.prod.yml up -d
+curl -f http://localhost:5000/health
+```
+
+## CI/CD (Every Push)
+
+```txt
+GitHub Actions runs tests
+Builds backend + frontend images
+Pushes to Docker Hub
+SSH deploys to VPS
+```
+
+## Weekly Maintenance
+
+```bash
+ssh vps-prod
+docker compose ps
+docker compose logs backend --tail=20
+npm audit  # run in CI, review report
+df -h && free -h
+```
+
+---
+
+# 58. Final Production Checklist
+
+## Code And Dependencies
+
+✓ Node.js 24 LTS
+✓ package-lock.json committed
+✓ npm audit reviewed
+✓ `.env.example` in Git, `.env` excluded
+
+## Docker
+
+✓ Multi-stage Dockerfile
+✓ `npm ci --omit=dev` in production stage
+✓ non-root USER node
+✓ HEALTHCHECK defined
+✓ .dockerignore configured
+
+## Infrastructure
+
+✓ Nginx reverse proxy
+✓ Cloudflare SSL
+✓ health endpoint responding
+✓ database backups scheduled
+✓ CI/CD pipeline working
+
+✗ Global Node.js on VPS for production
+✗ PM2 for new projects
+✗ node:latest image tag
+✗ secrets in Git
+
+## Full Stack
+
+```txt
+Developer
+↓
+GitHub
+↓
+GitHub Actions
+↓
+Docker Hub
+↓
+VPS (Docker Compose)
+↓
+Node.js Container
+↓
+Nginx
+↓
+Cloudflare
+↓
+Users
+```
+
+---
+
+## Node.js Quick Commands Cheat Sheet
+
+```bash
+# Versions
+node -v && npm -v
+
+# Project
+npm ci
+npm run dev
+npm run build
+npm start
+
+# Packages
+npm install express
+npm install -D typescript
+npm uninstall express
+npm audit
+
+# Docker
+docker build -t myapp-backend .
+docker compose up -d
+docker compose logs -f backend
+docker compose exec backend sh
+
+# Deploy (VPS)
+ssh vps-prod
+cd /var/www/myapp
+docker compose pull && docker compose up -d
+curl -f http://localhost:5000/health
+
+# Cleanup
+rm -rf node_modules
+npm cache clean --force
+docker system prune -f
+```
