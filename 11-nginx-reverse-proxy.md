@@ -4,78 +4,78 @@
 
 ### Fundamentals
 
-1. [What Is Nginx](#what-is-nginx)
-2. [What Is A Reverse Proxy](#what-is-a-reverse-proxy)
+1. [What Is Nginx](#1-what-is-nginx)
+2. [What Is A Reverse Proxy](#2-what-is-a-reverse-proxy)
 
 ### Installation
 
-3. [Install Nginx On Linux](#install-nginx-on-linux)
-4. [Install Nginx On Mac](#install-nginx-on-mac)
-5. [Run Nginx With Docker](#run-nginx-with-docker)
+3. [Install Nginx On Linux](#3-install-nginx-on-linux)
+4. [Install Nginx On Mac](#4-install-nginx-on-mac)
+5. [Run Nginx With Docker](#5-run-nginx-with-docker)
 
 ### Management
 
-6. [Verify Installation](#verify-installation)
-7. [Start Stop Restart Reload](#start-stop-restart-reload)
-8. [Nginx File Locations](#nginx-file-locations)
+6. [Verify Installation](#6-verify-installation)
+7. [Start Stop Restart Reload](#7-start-stop-restart-reload)
+8. [Nginx File Locations](#8-nginx-file-locations)
 
 ### Reverse Proxy
 
-9. [Create Reverse Proxy](#create-reverse-proxy)
-10. [Basic Reverse Proxy](#basic-reverse-proxy)
-11. [Enable Site](#enable-site)
-12. [Reverse Proxy Multiple Apps](#reverse-proxy-multiple-apps)
-13. [API Reverse Proxy](#api-reverse-proxy)
-14. [WebSocket Support](#websocket-support)
-15. [Docker Compose Reverse Proxy](#docker-compose-reverse-proxy)
+9. [Create Reverse Proxy](#9-create-reverse-proxy)
+10. [Basic Reverse Proxy](#10-basic-reverse-proxy)
+11. [Enable Site](#11-enable-site)
+12. [Reverse Proxy Multiple Apps](#12-reverse-proxy-multiple-apps)
+13. [API Reverse Proxy](#13-api-reverse-proxy)
+14. [WebSocket Support](#14-websocket-support)
+15. [Docker Compose Reverse Proxy](#15-docker-compose-reverse-proxy)
 
 ### SSL
 
-16. [SSL HTTPS](#ssl--https)
-17. [Force HTTPS Redirect](#force-https-redirect)
-18. [Cloudflare Origin SSL](#cloudflare-origin-ssl)
+16. [SSL / HTTPS](#16-ssl--https)
+17. [Force HTTPS Redirect](#17-force-https-redirect)
+18. [Cloudflare Origin SSL](#18-cloudflare-origin-ssl)
 
 ### Security
 
-19. [Security Headers](#security-headers)
-20. [Block Direct IP Access](#block-direct-ip-access)
-21. [Hide Backend Ports](#hide-backend-ports)
-22. [Rate Limiting](#rate-limiting)
-23. [Upload Limits](#upload-limits)
-24. [Static File Hosting](#static-file-hosting)
-25. [Protect Hidden Files](#protect-hidden-files)
-26. [HTTP2](#http2)
-27. [Gzip Compression](#gzip-compression)
-28. [Hide Nginx Version](#hide-nginx-version)
-29. [Production Security Example](#production-security-example)
-30. [Security Checklist](#security-checklist)
+19. [Security Headers](#19-security-headers)
+20. [Block Direct IP Access](#20-block-direct-ip-access)
+21. [Hide Backend Ports](#21-hide-backend-ports)
+22. [Rate Limiting](#22-rate-limiting)
+23. [Upload Limits](#23-upload-limits)
+24. [Static File Hosting](#24-static-file-hosting)
+25. [Protect Hidden Files](#25-protect-hidden-files)
+26. [HTTP/2](#26-http2)
+27. [Gzip Compression](#27-gzip-compression)
+28. [Hide Nginx Version](#28-hide-nginx-version)
+29. [Production Security Example](#29-production-security-example)
+30. [Security Checklist](#30-security-checklist)
 
 ### Monitoring & Debugging
 
-31. [Nginx Logs](#nginx-logs)
-32. [Monitor Logs](#monitor-logs)
-33. [Docker Logs](#docker-logs)
-34. [Nginx Debugging](#nginx-debugging)
-35. [Common Nginx Issues](#common-nginx-issues)
+31. [Nginx Logs](#31-nginx-logs)
+32. [Monitor Logs](#32-monitor-logs)
+33. [Docker Logs](#33-docker-logs)
+34. [Nginx Debugging](#34-nginx-debugging)
+35. [Common Nginx Issues](#35-common-nginx-issues)
 
 ### Cleanup
 
-36. [Uninstall Nginx On Linux](#uninstall-nginx-on-linux)
-37. [Uninstall Nginx On Mac](#uninstall-nginx-on-mac)
-38. [Remove Docker Nginx](#remove-docker-nginx)
-39. [Docker Cleanup](#docker-cleanup)
-40. [Full Cleanup Verification](#full-cleanup-verification)
+36. [Uninstall Nginx On Linux](#36-uninstall-nginx-on-linux)
+37. [Uninstall Nginx On Mac](#37-uninstall-nginx-on-mac)
+38. [Remove Docker Nginx](#38-remove-docker-nginx)
+39. [Docker Cleanup](#39-docker-cleanup)
+40. [Full Cleanup Verification](#40-full-cleanup-verification)
 
 ### Production
 
-41. [Recommended Production Workflow](#recommended-production-workflow)
-42. [Production Deployment Checklist](#production-deployment-checklist)
+41. [Recommended Production Workflow](#41-recommended-production-workflow)
+42. [Production Deployment Checklist](#42-production-deployment-checklist)
 
 ### Backup & Migration
 
-43. [Nginx Backup Restore](#nginx-backup--restore)
-44. [Nginx Migration](#nginx-migration)
-45. [Nginx Quick Commands Cheat Sheet](#nginx-quick-commands-cheat-sheet)
+43. [Nginx Backup & Restore](#43-nginx-backup--restore)
+44. [Nginx Migration](#44-nginx-migration)
+45. [Nginx Quick Commands Cheat Sheet](#45-nginx-quick-commands-cheat-sheet)
 
 # 1. What Is Nginx
 
