@@ -2147,7 +2147,7 @@ No Nginx container or image should exist.
 
 ---
 
-# Recommended Production Workflow
+# 41. Recommended Production Workflow
 
 ## Production Architecture
 
