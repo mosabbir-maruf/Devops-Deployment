@@ -3822,26 +3822,6 @@ Always:
 
 ---
 
-Never:
-
-```txt id="4pw55l"
-✗ Expose Databases Publicly
-
-✗ Use Bind Mounts For Application Code
-
-✗ Modify Running Containers
-
-✗ Store Secrets In Images
-
-✗ Use latest Tags Everywhere
-
-✗ Skip Backups
-
-✗ Deploy Without HTTPS
-```
-
----
-
 # Production Workflow Summary
 
 ```txt id="4n6yqq"
