@@ -41,7 +41,7 @@ The Makefile auto-detects your project type (**Node.js**, **Go**, **Python**) an
 
 | Command | Description |
 |---------|-------------|
-| `make dev` | Run in dev mode — auto-deletes container, image & build cache on stop |
+| `make dev` | Run in dev mode with hot-reload (file changes auto-restart) — auto-deletes container, image & build cache on stop |
 | `make build` | Build Docker image |
 | `make prod` | Build & run in production mode |
 | `make stop` | Stop dev & prod containers |
