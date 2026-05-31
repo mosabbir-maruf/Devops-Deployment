@@ -68,7 +68,11 @@ ifeq ($(IS_NODE),yes)
 		-v /app/node_modules \
 		-w /app \
 		node:24-slim \
-		sh -c "npm install && npm run dev"
+		sh -c "npm install && npm run dev"; \
+	rc=$$?; \
+	docker rmi node:24-slim 2>/dev/null || true; \
+	docker builder prune -f 2>/dev/null || true; \
+	exit $$rc
 else ifeq ($(IS_GO),yes)
 	@echo "Starting Go dev server on port $(DEV_PORT)..."
 	go run . &
