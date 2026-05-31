@@ -6068,7 +6068,7 @@ Users
 
 ---
 
-# Development Workflow
+# Development Workflow (VPS)
 
 ## Local Development
 
@@ -6151,12 +6151,6 @@ docker ps
 ```bash id="t3q9vx"
 docker compose logs -f
 ```
-
----
-
-# Image-Based Deployment Workflow
-
-Useful when using Docker Hub.
 
 ---
 
