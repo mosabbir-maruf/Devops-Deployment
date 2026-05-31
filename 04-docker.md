@@ -3198,28 +3198,6 @@ Prevents host/container dependency conflicts.
 
 ---
 
-# Development Dockerfile
-
-## Example
-
-```dockerfile id="v87bjp"
-FROM node:24-slim
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
-
-EXPOSE 3000
-
-CMD ["npm", "run", "dev"]
-```
-
----
-
 # Development Environment Variables
 
 ## Local Environment File
@@ -3607,6 +3585,14 @@ project/
         └── key.pem
 ```
 
+Never commit:
+
+```txt
+cert.pem
+key.pem
+.env
+```
+
 ---
 
 ## Docker Compose Example
@@ -3642,6 +3628,11 @@ services:
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 ```
 
 ---
@@ -3730,72 +3721,6 @@ Avoid:
 
 ```txt id="a9f5lz"
 Flexible
-```
-
----
-
-# Production Compose Example
-
-## Full Production Stack
-
-```yaml id="m40ek7"
-services:
-
-  frontend:
-    build: ./frontend
-
-    restart: unless-stopped
-
-    expose:
-      - "3000"
-
-  backend:
-    build: ./backend
-
-    restart: unless-stopped
-
-    expose:
-      - "5000"
-
-    env_file:
-      - .env
-
-  postgres:
-    image: postgres:17
-
-    restart: unless-stopped
-
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:8
-
-    restart: unless-stopped
-
-    volumes:
-      - redis-data:/data
-
-  nginx:
-    image: nginx:alpine
-
-    restart: unless-stopped
-
-    depends_on:
-      - frontend
-      - backend
-
-    ports:
-      - "80:80"
-      - "443:443"
-
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-
-volumes:
-  postgres-data:
-  redis-data:
 ```
 
 ---
