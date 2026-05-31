@@ -86,7 +86,7 @@
 ### VPS Deployment
 
 49. [VPS Docker Workflow](#49-vps-docker-workflow)
-50. [Deployment Commands](#50-deployment-commands-legacy)
+50. [Deployment Commands](#50-deployment-commands)
 51. [Rollback Workflow](#51-rollback-workflow)
 
 ### Reference
@@ -3760,38 +3760,6 @@ Flexible
 
 ---
 
-# Production Update Workflow (Legacy)
-
-## Deploy New Version
-
-```txt id="v6u39w"
-Git Pull
-↓
-Build New Image
-↓
-Deploy New Container
-↓
-Remove Old Container
-```
-
----
-
-# 50. Deployment Commands (Legacy)
-
-```bash id="dtx2vc"
-git pull origin main
-```
-
-```bash id="fx8eez"
-docker compose build
-```
-
-```bash id="0kbgj9"
-docker compose up -d
-```
-
----
-
 # Production Rules
 
 Always:
@@ -6128,7 +6096,7 @@ git push origin main
 
 ---
 
-# VPS Deployment Workflow
+# 50. Deployment Commands
 
 ## Connect To VPS
 
@@ -6182,38 +6150,6 @@ docker ps
 
 ```bash id="t3q9vx"
 docker compose logs -f
-```
-
----
-
-# Production Update Workflow (Legacy)
-
-## Standard Deployment
-
-```txt id="c7m4qr"
-Code Change
-↓
-Git Push
-↓
-SSH VPS
-↓
-Git Pull
-↓
-Build
-↓
-Deploy
-```
-
----
-
-## Commands
-
-```bash id="y8v2kw"
-git pull origin main
-
-docker compose build
-
-docker compose up -d
 ```
 
 ---
