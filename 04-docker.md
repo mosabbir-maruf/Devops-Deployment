@@ -2075,7 +2075,7 @@ Smaller image.
 
 ---
 
-# Production Node.js Dockerfile
+# Production Node.js Dockerfile (Best Practices)
 
 ## Multi-Stage Example
 
@@ -2098,18 +2098,22 @@ FROM node:24-slim
 
 WORKDIR /app
 
+ENV NODE_ENV=production
+
 COPY package*.json ./
 
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
+
+USER node
 
 EXPOSE 3000
 
 CMD ["node", "dist/index.js"]
 ```
 
-Recommended production pattern.
+Recommended production pattern with multi-stage build and non-root user.
 
 ---
 
@@ -2133,39 +2137,6 @@ COPY . .
 EXPOSE 3000
 
 CMD ["npm", "run", "dev"]
-```
-
----
-
-# Production Dockerfile
-
-Production focuses on:
-
-```txt
-Small
-Secure
-Fast
-Immutable
-```
-
-Example:
-
-```dockerfile
-FROM node:24-slim
-
-WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm ci --omit=dev
-
-COPY . .
-
-RUN npm run build
-
-EXPOSE 3000
-
-CMD ["node", "dist/index.js"]
 ```
 
 ---
@@ -2688,6 +2659,24 @@ services:
     volumes:
       - redis-data:/data
 
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 volumes:
   postgres-data:
   redis-data:
@@ -2853,9 +2842,9 @@ Images
 
 Named Volumes
 
-restart policies
+Restart Policies
 
-health checks
+Health Checks
 ```
 
 ---
