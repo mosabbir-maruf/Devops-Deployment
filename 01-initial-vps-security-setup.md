@@ -948,6 +948,50 @@ Without these ports, websites won't load, Nginx/Coolify won't be reachable, and 
 
 ---
 
+## Delete Firewall Rules
+
+View rules with numbers:
+
+```bash
+sudo ufw status numbered
+```
+
+Delete a rule by its number:
+
+```bash
+sudo ufw delete <RULE_NUMBER>
+```
+
+Example:
+
+```bash
+sudo ufw status numbered
+```
+
+```txt
+Status: active
+
+     To                         Action      From
+--  ---                         ------      ----
+[ 1] 1182/tcp                   ALLOW IN    Anywhere
+[ 2] 80/tcp                     ALLOW IN    Anywhere
+[ 3] 443/tcp                    ALLOW IN    Anywhere
+```
+
+```bash
+sudo ufw delete 3
+```
+
+Deletes rule number 3 (443/tcp).
+
+You can also delete by service/port name:
+
+```bash
+sudo ufw delete allow 80/tcp
+```
+
+---
+
 # 22. Recommended SSH File Structure (Mac)
 
 ```txt
