@@ -46,18 +46,19 @@ Related guides after this: `02-ssh-guide.md`, `04-docker.md`, `11-nginx-reverse-
 14. [Verify SSH Config Before Restart](#14-verify-ssh-config-before-restart)
 15. [Restart SSH](#15-restart-ssh)
 16. [Verify SSH Service](#16-verify-ssh-service)
-17. [Login Using Custom SSH Port](#17-login-using-custom-ssh-port)
+17. [SSH Socket Issue](#ssh-socket-issue-important)
+18. [Login Using Custom SSH Port](#18-login-using-custom-ssh-port)
 
 ### Mac SSH Config And Verification
 
-18. [Create SSH Shortcut Alias In Your Mac (Recommended)](#18-create-ssh-shortcut-alias-in-your-mac-recommended)
-19. [Verify Firewall](#19-verify-firewall)
-20. [Recommended SSH File Structure (Mac)](#20-recommended-ssh-file-structure-mac)
+19. [Create SSH Shortcut Alias In Your Mac (Recommended)](#19-create-ssh-shortcut-alias-in-your-mac-recommended)
+20. [Verify Firewall](#20-verify-firewall)
+21. [Recommended SSH File Structure (Mac)](#21-recommended-ssh-file-structure-mac)
 
 ### Best Practices And Checklist
 
-21. [SSH Security Best Practices](#21-ssh-security-best-practices)
-22. [Final Security Checklist](#22-final-security-checklist)
+22. [SSH Security Best Practices](#22-ssh-security-best-practices)
+23. [Final Security Checklist](#23-final-security-checklist)
 
 ### Next Steps
 
@@ -657,44 +658,31 @@ shows `Port 1182`.
 
 Some systems use `ssh.socket` (socket activation) instead of allowing sshd to bind directly. When `ssh.socket` is active, it ignores the `Port` setting in `sshd_config` and always listens on port 22.
 
-Check if `ssh.socket` is running on your system:
+### Check
 
 ```bash
 sudo systemctl status ssh.socket
 ```
 
-If the output shows `ssh.socket` is **active** and listening on port 22:
-
-```txt
-Listen: 0.0.0.0:22
-Listen: [::]:22
-```
-
-then `ssh.socket` is overriding your custom SSH port.
-
-If the command returns `Unit ssh.socket could not be found` or shows **inactive**/**dead**, this issue does **not** apply to your system — skip this section.
+| If you see | Then |
+|---|---|
+| `Listen: 0.0.0.0:22` + `Listen: [::]:22` (active) | `ssh.socket` is overriding your port — apply the **Fix** below |
+| `Unit ssh.socket could not be found` or **inactive**/**dead** | This issue does **not** apply to your system — **skip this section** |
 
 ### Fix
 
-Disable socket activation:
-
 ```bash
 sudo systemctl disable --now ssh.socket
-```
-
-Restart SSH:
-
-```bash
 sudo systemctl restart ssh
 ```
 
-Verify:
+### Verify Fix
 
 ```bash
 sudo ss -tulpn | grep ssh
 ```
 
-Expected:
+Expected output:
 
 ```txt
 0.0.0.0:1182
@@ -703,7 +691,7 @@ Expected:
 
 ### Verify Before Closing Current Session
 
-Open a **new terminal** on your Mac:
+Open a **new terminal** on your Mac to test the new port:
 
 ```bash
 ssh -i ~/.ssh/vps_ed25519 -p 1182 mosabbir@YOUR_PUBLIC_IP
@@ -713,33 +701,16 @@ Only close the existing SSH session after confirming the new port works.
 
 ### Troubleshooting Commands
 
-Check configured port:
-
 ```bash
-sudo grep "^Port" /etc/ssh/sshd_config
-```
-
-Check SSH service:
-
-```bash
-sudo systemctl status ssh
-```
-
-Check socket activation:
-
-```bash
-sudo systemctl status ssh.socket
-```
-
-Check listening ports:
-
-```bash
-sudo ss -tulpn | grep ssh
+sudo grep "^Port" /etc/ssh/sshd_config   # Check configured port
+sudo systemctl status ssh                  # Check SSH service
+sudo systemctl status ssh.socket           # Check socket activation
+sudo ss -tulpn | grep ssh                  # Check listening ports
 ```
 
 ---
 
-# 17. Login Using Custom SSH Port
+# 18. Login Using Custom SSH Port
 
 ## Secure SSH Login
 
@@ -755,7 +726,7 @@ Connects securely using:
 
 ---
 
-# 18. Create SSH Shortcut Alias In Your Mac (Recommended)
+# 19. Create SSH Shortcut Alias In Your Mac (Recommended)
 
 ## Open SSH Config
 
@@ -879,7 +850,7 @@ Recommended for daily VPS workflows.
 
 ---
 
-# 19. Verify Firewall
+# 20. Verify Firewall
 
 ## Check Firewall Rules
 
@@ -897,7 +868,7 @@ and default SSH port removed if configured.
 
 ---
 
-# 20. Recommended SSH File Structure (Mac)
+# 21. Recommended SSH File Structure (Mac)
 
 ```txt
 ~/.ssh/
@@ -921,7 +892,7 @@ vps_ed25519
 
 ---
 
-# 21. SSH Security Best Practices
+# 22. SSH Security Best Practices
 
 Recommended:
 
@@ -940,7 +911,7 @@ Recommended:
 
 ---
 
-# 22. Final Security Checklist
+# 23. Final Security Checklist
 
 - SSH Key Authentication Enabled
 - Separate GitHub & VPS SSH Keys Configured
