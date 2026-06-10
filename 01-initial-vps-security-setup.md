@@ -639,43 +639,19 @@ active (running)
 
 ### Problem
 
-After changing:
-
-```txt
-Port 1182
-```
-
-inside:
-
-```bash
-/etc/ssh/sshd_config
-```
-
-SSH may still continue listening on port 22.
-
-Symptoms:
+After changing `Port 1182` inside `/etc/ssh/sshd_config`, SSH may still continue listening on port 22.
 
 ```bash
 ssh -p 1182 mosabbir@YOUR_PUBLIC_IP
 ```
 
-returns:
-
-```txt
-Connection refused
-```
-
-Even though:
+returns `Connection refused`, even though:
 
 ```bash
 sudo grep "^Port" /etc/ssh/sshd_config
 ```
 
-shows:
-
-```txt
-Port 1182
-```
+shows `Port 1182`.
 
 ### Root Cause
 
