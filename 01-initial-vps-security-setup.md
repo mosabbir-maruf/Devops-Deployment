@@ -331,6 +331,18 @@ Creates SSH directory for the new user.
 
 ---
 
+## Verify Current User
+
+```bash
+whoami
+```
+
+Should print `root` at this point in the setup.
+
+This confirms you're logged in as root before copying SSH keys to the new user.
+
+---
+
 ## Copy VPS Public Key (Option 1 – Copy From Root)
 
 ```bash
