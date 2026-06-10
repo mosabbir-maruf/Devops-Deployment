@@ -635,7 +635,7 @@ active (running)
 
 ---
 
-## Ubuntu 24.04 AWS EC2 SSH Socket Issue (Important)
+## SSH Socket Issue (Important)
 
 ### Problem
 
@@ -679,22 +679,24 @@ Port 1182
 
 ### Root Cause
 
-Ubuntu 24.04 AWS images may use `ssh.socket` instead of allowing sshd to bind directly.
+Some systems use `ssh.socket` (socket activation) instead of allowing sshd to bind directly. When `ssh.socket` is active, it ignores the `Port` setting in `sshd_config` and always listens on port 22.
 
-Check:
+Check if `ssh.socket` is running on your system:
 
 ```bash
 sudo systemctl status ssh.socket
 ```
 
-If you see:
+If the output shows `ssh.socket` is **active** and listening on port 22:
 
 ```txt
 Listen: 0.0.0.0:22
 Listen: [::]:22
 ```
 
-then `ssh.socket` is forcing SSH to use port 22.
+then `ssh.socket` is overriding your custom SSH port.
+
+If the command returns `Unit ssh.socket could not be found` or shows **inactive**/**dead**, this issue does **not** apply to your system — skip this section.
 
 ### Fix
 
