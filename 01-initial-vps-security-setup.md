@@ -331,7 +331,19 @@ Creates SSH directory for the new user.
 
 ---
 
-## Copy VPS Public Key
+## Copy VPS Public Key (Option 1 – Copy From Root)
+
+```bash
+sudo cp /home/ubuntu/.ssh/authorized_keys /home/mosabbir/.ssh/
+```
+
+Copies the authorized_keys file from the root user to the new admin user.
+
+This is faster if root SSH access is already configured.
+
+---
+
+## Copy VPS Public Key (Option 2 – Manual Paste)
 
 ```bash
 nano /home/mosabbir/.ssh/authorized_keys
