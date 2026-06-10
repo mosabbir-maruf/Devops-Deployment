@@ -950,6 +950,8 @@ Without these ports, websites won't load, Nginx/Coolify won't be reachable, and 
 
 ## Delete Firewall Rules
 
+Only use this section if you need to remove a firewall rule.
+
 View rules with numbers:
 
 ```bash
