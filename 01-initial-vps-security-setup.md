@@ -302,7 +302,7 @@ ssh root@YOUR_PUBLIC_IP
 ## Create User
 
 ```bash
-adduser mosabbir
+sudo adduser mosabbir
 ```
 
 Creates a new Linux user.
@@ -324,7 +324,7 @@ Gives administrator/sudo privileges.
 ## Create SSH Folder
 
 ```bash
-mkdir -p /home/mosabbir/.ssh
+sudo mkdir -p /home/mosabbir/.ssh
 ```
 
 Creates SSH directory for the new user.
@@ -358,7 +358,7 @@ This is faster if root SSH access is already configured.
 ## Copy VPS Public Key (Option 2 – Manual Paste)
 
 ```bash
-nano /home/mosabbir/.ssh/authorized_keys
+sudo nano /home/mosabbir/.ssh/authorized_keys
 ```
 
 Opens authorized_keys file.
@@ -380,7 +380,7 @@ This allows VPS login using the dedicated VPS SSH key.
 ## Set Ownership
 
 ```bash
-chown -R mosabbir:mosabbir /home/mosabbir/.ssh
+sudo chown -R mosabbir:mosabbir /home/mosabbir/.ssh
 ```
 
 Sets correct ownership for SSH files.
@@ -390,7 +390,7 @@ Sets correct ownership for SSH files.
 ## Secure SSH Folder
 
 ```bash
-chmod 700 /home/mosabbir/.ssh
+sudo chmod 700 /home/mosabbir/.ssh
 ```
 
 Makes SSH folder private and secure.
@@ -400,7 +400,7 @@ Makes SSH folder private and secure.
 ## Secure Authorized Keys
 
 ```bash
-chmod 600 /home/mosabbir/.ssh/authorized_keys
+sudo chmod 600 /home/mosabbir/.ssh/authorized_keys
 ```
 
 Protects authorized_keys file permissions.
@@ -631,6 +631,132 @@ Should show:
 
 ```txt
 active (running)
+```
+
+---
+
+## Ubuntu 24.04 AWS EC2 SSH Socket Issue (Important)
+
+### Problem
+
+After changing:
+
+```txt
+Port 1182
+```
+
+inside:
+
+```bash
+/etc/ssh/sshd_config
+```
+
+SSH may still continue listening on port 22.
+
+Symptoms:
+
+```bash
+ssh -p 1182 mosabbir@YOUR_PUBLIC_IP
+```
+
+returns:
+
+```txt
+Connection refused
+```
+
+Even though:
+
+```bash
+sudo grep "^Port" /etc/ssh/sshd_config
+```
+
+shows:
+
+```txt
+Port 1182
+```
+
+### Root Cause
+
+Ubuntu 24.04 AWS images may use `ssh.socket` instead of allowing sshd to bind directly.
+
+Check:
+
+```bash
+sudo systemctl status ssh.socket
+```
+
+If you see:
+
+```txt
+Listen: 0.0.0.0:22
+Listen: [::]:22
+```
+
+then `ssh.socket` is forcing SSH to use port 22.
+
+### Fix
+
+Disable socket activation:
+
+```bash
+sudo systemctl disable --now ssh.socket
+```
+
+Restart SSH:
+
+```bash
+sudo systemctl restart ssh
+```
+
+Verify:
+
+```bash
+sudo ss -tulpn | grep ssh
+```
+
+Expected:
+
+```txt
+0.0.0.0:1182
+[::]:1182
+```
+
+### Verify Before Closing Current Session
+
+Open a **new terminal** on your Mac:
+
+```bash
+ssh -i ~/.ssh/vps_ed25519 -p 1182 mosabbir@YOUR_PUBLIC_IP
+```
+
+Only close the existing SSH session after confirming the new port works.
+
+### Troubleshooting Commands
+
+Check configured port:
+
+```bash
+sudo grep "^Port" /etc/ssh/sshd_config
+```
+
+Check SSH service:
+
+```bash
+sudo systemctl status ssh
+```
+
+Check socket activation:
+
+```bash
+sudo systemctl status ssh.socket
+```
+
+Check listening ports:
+
+```bash
+sudo ss -tulpn | grep ssh
 ```
 
 ---
