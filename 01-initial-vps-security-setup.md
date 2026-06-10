@@ -53,12 +53,19 @@ Related guides after this: `02-ssh-guide.md`, `04-docker.md`, `11-nginx-reverse-
 
 19. [Create SSH Shortcut Alias In Your Mac (Recommended)](#19-create-ssh-shortcut-alias-in-your-mac-recommended)
 20. [Verify Firewall](#20-verify-firewall)
-21. [Recommended SSH File Structure (Mac)](#21-recommended-ssh-file-structure-mac)
+
+### VPS Firewall & Fail2Ban Notes
+
+21. [Important Firewall Note For Web Servers](#21-important-firewall-note-for-web-servers)
+
+### Mac SSH (Continued)
+
+22. [Recommended SSH File Structure (Mac)](#22-recommended-ssh-file-structure-mac)
 
 ### Best Practices And Checklist
 
-22. [SSH Security Best Practices](#22-ssh-security-best-practices)
-23. [Final Security Checklist](#23-final-security-checklist)
+23. [SSH Security Best Practices](#23-ssh-security-best-practices)
+24. [Final Security Checklist](#24-final-security-checklist)
 
 ### Next Steps
 
@@ -484,6 +491,24 @@ Checks if Fail2Ban is running.
 
 ---
 
+## Verify Fail2Ban Jails
+
+```bash
+sudo fail2ban-client status
+```
+
+Expected output:
+
+```txt
+Status
+|- Number of jail: ...
+`- Jail list: ...
+```
+
+Confirms Fail2Ban is actively monitoring SSH for brute-force attacks.
+
+---
+
 # 10. SSH Security Hardening
 
 ## Open SSH Config
@@ -868,7 +893,62 @@ and default SSH port removed if configured.
 
 ---
 
-# 21. Recommended SSH File Structure (Mac)
+# 21. Important Firewall Note For Web Servers
+
+After completing SSH hardening, your firewall may only allow:
+
+```txt
+1182/tcp ALLOW
+```
+
+This is sufficient for SSH access only.
+
+If you plan to use Coolify, Docker, Nginx, websites, APIs, or Let's Encrypt SSL, you must also allow HTTP and HTTPS:
+
+```bash
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+```
+
+Verify:
+
+```bash
+sudo ufw status numbered
+```
+
+Expected:
+
+```txt
+Status: active
+
+1182/tcp ALLOW
+80/tcp   ALLOW
+443/tcp  ALLOW
+```
+
+### Why?
+
+Port 80 (HTTP):
+
+```txt
+- Website access
+- HTTP traffic
+- Let's Encrypt SSL validation
+```
+
+Port 443 (HTTPS):
+
+```txt
+- Secure HTTPS traffic
+- SSL certificates
+- Production websites
+```
+
+Without these ports, websites won't load, Nginx/Coolify won't be reachable, and SSL certificate issuance may fail.
+
+---
+
+# 22. Recommended SSH File Structure (Mac)
 
 ```txt
 ~/.ssh/
@@ -892,7 +972,7 @@ vps_ed25519
 
 ---
 
-# 22. SSH Security Best Practices
+# 23. SSH Security Best Practices
 
 Recommended:
 
@@ -911,7 +991,7 @@ Recommended:
 
 ---
 
-# 23. Final Security Checklist
+# 24. Final Security Checklist
 
 - SSH Key Authentication Enabled
 - Separate GitHub & VPS SSH Keys Configured
@@ -942,11 +1022,13 @@ Once the final security checklist passes, continue with:
 | Nginx reverse proxy | `11-nginx-reverse-proxy.md` |
 | Domain + Cloudflare | `12-domain-dns-cloudflare.md` |
 
-Quick verify everything still works:
+## Final Security Verification
+
+Run these commands to confirm everything is working:
 
 ```bash
-ssh vps
-sudo ufw status
-sudo fail2ban-client status
-sudo systemctl status ssh
+ssh -p 1182 mosabbir@YOUR_PUBLIC_IP   # SSH with custom port
+sudo ufw status                        # Firewall rules
+sudo fail2ban-client status            # Fail2Ban jails
+sudo systemctl status ssh              # SSH service
 ```
