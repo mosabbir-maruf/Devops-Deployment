@@ -199,16 +199,16 @@ find ~/reverse-proxy -type d | sort
 ## Expected Output
 
 ```txt
-~/reverse-proxy
-~/reverse-proxy/certbot
-~/reverse-proxy/certbot/conf
-~/reverse-proxy/certbot/www
-~/reverse-proxy/nginx
-~/reverse-proxy/nginx/includes
-~/reverse-proxy/nginx/sites
-~/reverse-proxy/nginx/ssl
-~/reverse-proxy/nginx/ssl/default
-~/reverse-proxy/scripts
+reverse-proxy/
+├── certbot/
+│   ├── conf/
+│   └── www/
+├── nginx/
+│   ├── includes/
+│   ├── sites/
+│   └── ssl/
+│       └── default/
+└── scripts/
 ```
 
 ## Verify Ownership
@@ -220,11 +220,12 @@ ls -la ~/reverse-proxy
 ## Expected Output
 
 ```txt
-total ...
-drwxr-xr-x ... reverse-proxy/
-drwxr-xr-x ... certbot/
-drwxr-xr-x ... nginx/
-drwxr-xr-x ... scripts/
+total 20
+drwxrwxr-x 5 mosabbir mosabbir 4096 Jun 11 18:52 .
+drwxr-x--- 5 mosabbir mosabbir 4096 Jun 11 18:52 ..
+drwxrwxr-x 4 mosabbir mosabbir 4096 Jun 11 18:52 certbot
+drwxrwxr-x 5 mosabbir mosabbir 4096 Jun 11 18:52 nginx
+drwxrwxr-x 2 mosabbir mosabbir 4096 Jun 11 18:52 scripts
 ```
 
 ## Next Step
