@@ -1082,9 +1082,7 @@ services:
         max-file: "3"
 ```
 
-> **Note:** If your application exposes a different health endpoint, update the path in `healthcheck.test` above.
-
-> **Note:** This healthcheck requires `wget` inside the application container. If `wget` is unavailable, replace `wget` with `curl` in the healthcheck command.
+> **Note:** The example healthcheck assumes the application exposes an HTTP health endpoint at `/health` and that `wget` is available inside the container. Update the healthcheck command as needed to match your application's health endpoint and the tools available in the container image.
 
 ## Create .env File
 
