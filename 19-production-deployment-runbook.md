@@ -937,8 +937,8 @@ server {
     error_log  /var/log/nginx/gateway-error.log warn;
 
     location / {
-        return 200 "gateway.example.com placeholder — proxy_pass will be added in Phase 13";
-        add_header Content-Type text/plain;
+        default_type text/plain;
+        return 200 "Service Available\n\nThis domain is configured correctly and is responding successfully.\n\nThe application content has not been published yet.\n\nPlease check back later.";
     }
 }
 ```
@@ -1392,7 +1392,7 @@ server {
 The key change:
 
 ```txt
-Old:  return 200 "gateway.example.com placeholder...";
+Old:  return 200 "Service Available...";
 New:  proxy_pass http://ai-gateway-server:8900;
 ```
 
