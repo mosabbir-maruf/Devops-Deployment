@@ -945,18 +945,19 @@ server {
 
 ## Validate And Reload
 
+### Test configuration
 ```bash
-# Test configuration
 docker exec reverse-proxy-nginx nginx -t
+```
 
-# If syntax is ok, reload
+### If syntax is ok, reload
+```bash
 docker exec reverse-proxy-nginx nginx -s reload
 ```
 
-## Verification
+## Verification Test HTTPS
 
 ```bash
-# Test HTTPS
 curl -I https://gateway.example.com
 ```
 
