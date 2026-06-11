@@ -122,10 +122,7 @@ Create the Docker bridge network that all containers will share.
 ## Commands
 
 ```bash
-docker network create \
-  --driver bridge \
-  --attachable \
-  shared-network
+docker network create --driver bridge --attachable shared-network
 ```
 
 ## Verification
