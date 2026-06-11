@@ -236,6 +236,46 @@ Proceed to Phase 4.
 
 ---
 
+# Final Folder Structure
+
+Expected production directory layout after all phases:
+
+```txt
+~/reverse-proxy
+├── docker-compose.yml
+├── nginx
+│   ├── nginx.conf
+│   ├── sites
+│   │   ├── default.conf
+│   │   ├── gateway.example.com.conf
+│   │   └── api.example.com.conf
+│   ├── includes
+│   └── ssl
+│       └── default
+│           ├── fullchain.pem
+│           └── privkey.pem
+├── certbot
+│   ├── conf
+│   └── www
+└── scripts
+    └── daily-check.sh
+
+~/ai-gateway
+├── docker-compose.yml
+└── .env
+
+~/api
+├── docker-compose.yml
+└── .env
+```
+
+- `reverse-proxy` contains all nginx, SSL, and certbot resources.
+- Each application has its own isolated directory.
+- All projects connect through the `shared-network` Docker network.
+- Only `reverse-proxy` exposes ports 80 and 443 to the internet.
+
+---
+
 # Phase 4: Create nginx.conf
 
 ## Goal
