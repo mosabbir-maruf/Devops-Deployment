@@ -801,13 +801,7 @@ curl -sI http://gateway.example.com/.well-known/acme-challenge/test
 ## Generate Certificate
 
 ```bash
-docker exec reverse-proxy-certbot certbot certonly \
-  --webroot \
-  --webroot-path /var/www/certbot \
-  -d gateway.example.com \
-  --email your-email@example.com \
-  --agree-tos \
-  --non-interactive
+docker exec reverse-proxy-certbot certbot certonly --webroot --webroot-path /var/www/certbot -d gateway.example.com --email your-email@example.com --agree-tos --non-interactive
 ```
 
 ## Expected Success Output
