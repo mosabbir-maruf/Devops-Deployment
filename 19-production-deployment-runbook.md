@@ -849,10 +849,9 @@ Found the following certs:
     Expiry Date: 2026-09-09 12:00:00+00:00 (VALID: 89 days)
     Certificate Path: /etc/letsencrypt/live/gateway.example.com/fullchain.pem
 ```
-
-```bash
 # Verify certificate files exist on the host
-ls -la ~/reverse-proxy/certbot/conf/live/gateway.example.com/
+```bash
+sudo ls -la ~/reverse-proxy/certbot/conf/live/gateway.example.com/
 ```
 
 ## Expected Output
