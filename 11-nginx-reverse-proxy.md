@@ -2715,3 +2715,11 @@ curl localhost
 ```bash
 curl -I https://example.com
 ```
+
+---
+
+## Multi-Project Architecture
+
+For hosting multiple independent projects behind a centralized Nginx reverse proxy using a shared Docker network, see the companion guide:
+
+[18-production-reverse-proxy-shared-network.md](./18-production-reverse-proxy-shared-network.md)

@@ -262,6 +262,21 @@ Includes:
 
 ---
 
+### [18-production-reverse-proxy-shared-network.md](./18-production-reverse-proxy-shared-network.md)
+
+Production-grade Docker-based reverse proxy architecture for hosting multiple projects on a single VPS.
+
+Includes:
+
+- centralized Nginx reverse proxy with shared Docker network
+- multi-project architecture (gateway, API, admin)
+- Let's Encrypt SSL, Cloudflare integration
+- CI/CD with GitHub Actions and GHCR
+- monitoring, health checks, zero-downtime deployment
+- backup, disaster recovery, reverse proxy rules
+
+---
+
 ## Git & CI/CD
 
 ### [13-git-github-ci-cd.md](./13-git-github-ci-cd.md)
@@ -364,6 +379,7 @@ Follow this order for a complete production setup:
 | 15 | [backup-snapshots](./15-backup-snapshots.md) | Backup strategy |
 | 16 | [troubleshooting](./16-troubleshooting.md) | Debug production |
 | 17 | [useful-commands](./17-useful-commands.md) | Quick reference |
+| 18 | [production-reverse-proxy-shared-network](./18-production-reverse-proxy-shared-network.md) | Multi-project reverse proxy |
 
 ---
 

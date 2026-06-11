@@ -1051,6 +1051,8 @@ server {
 
 See `11-nginx-reverse-proxy.md` for full Nginx setup.
 
+For a multi-project architecture with a centralized reverse proxy, shared Docker network, and independent project stacks, see `18-production-reverse-proxy-shared-network.md`.
+
 ---
 
 # 32. Cloudflare Integration
