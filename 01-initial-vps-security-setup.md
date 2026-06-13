@@ -62,10 +62,14 @@ Related guides after this: `02-ssh-guide.md`, `04-docker.md`, `11-nginx-reverse-
 
 22. [Recommended SSH File Structure (Mac)](#22-recommended-ssh-file-structure-mac)
 
+### Swap File Setup
+
+23. [Swap File Setup](#23-swap-file-setup)
+
 ### Best Practices And Checklist
 
-23. [SSH Security Best Practices](#23-ssh-security-best-practices)
-24. [Final Security Checklist](#24-final-security-checklist)
+24. [SSH Security Best Practices](#24-ssh-security-best-practices)
+25. [Final Security Checklist](#25-final-security-checklist)
 
 ### Next Steps
 
@@ -1018,7 +1022,179 @@ vps_ed25519
 
 ---
 
-# 23. SSH Security Best Practices
+# 23. Swap File Setup
+
+## Check Current Swap Status
+
+```bash
+free -h
+swapon --show
+```
+
+Expected:
+
+```txt
+              total        used        free      shared  buff/cache   available
+Mem:            ...         ...         ...         ...         ...         ...
+Swap:            0B         0B         0B
+```
+
+Shows current memory and swap usage. No existing swap is expected on a fresh VPS.
+
+---
+
+## Create Swap File
+
+```bash
+sudo fallocate -l 8G /swapfile
+ls -lh /swapfile
+```
+
+Expected:
+
+```txt
+-rw-r--r-- 1 root root 8.0G ...
+```
+
+Creates an 8GB swap file.
+
+---
+
+## Secure Swap File
+
+```bash
+sudo chmod 600 /swapfile
+ls -lh /swapfile
+```
+
+Expected:
+
+```txt
+-rw------- 1 root root 8.0G ...
+```
+
+Restricts swap file access to root only (security best practice).
+
+---
+
+## Format As Swap
+
+```bash
+sudo mkswap /swapfile
+```
+
+Expected:
+
+```txt
+Setting up swapspace version 1, size = 8 GiB ...
+```
+
+Formats the file as a Linux swap area.
+
+---
+
+## Enable Swap
+
+```bash
+sudo swapon /swapfile
+```
+
+## Confirm Swap Is Active
+
+```bash
+free -h
+swapon --show
+```
+
+Expected:
+
+```txt
+NAME       TYPE SIZE USED PRIO
+/swapfile  file   8G   0B   -2
+```
+
+Verifies swap is enabled and active.
+
+---
+
+## Make Swap Permanent
+
+Add to `/etc/fstab` so swap persists across reboots:
+
+```bash
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
+
+Verify:
+
+```bash
+cat /etc/fstab
+```
+
+The last line should be:
+
+```txt
+/swapfile none swap sw 0 0
+```
+
+---
+
+## Production Swappiness
+
+Check current swappiness value:
+
+```bash
+cat /proc/sys/vm/swappiness
+```
+
+Set swappiness to 10 (only swap when RAM is 90% full — better for performance):
+
+```bash
+echo 'vm.swappiness=10' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+```
+
+Verify:
+
+```bash
+cat /proc/sys/vm/swappiness
+```
+
+Expected:
+
+```txt
+10
+```
+
+---
+
+## Final Test
+
+Reboot the server:
+
+```bash
+sudo reboot
+```
+
+After the server reboots, reconnect and verify:
+
+```bash
+free -h
+swapon --show
+```
+
+Expected:
+
+```txt
+NAME       TYPE SIZE USED PRIO
+/swapfile  file   8G   0B   -2
+```
+
+Confirms swap is automatically enabled after reboot and working correctly.
+
+---
+
+# 24. SSH Security Best Practices
 
 Recommended:
 
@@ -1037,7 +1213,7 @@ Recommended:
 
 ---
 
-# 24. Final Security Checklist
+# 25. Final Security Checklist
 
 - SSH Key Authentication Enabled
 - Separate GitHub & VPS SSH Keys Configured
