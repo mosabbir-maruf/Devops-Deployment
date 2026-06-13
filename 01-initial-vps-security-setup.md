@@ -645,6 +645,8 @@ sudo systemctl restart ssh
 
 Applies new SSH configuration.
 
+> **Note:** If `ssh.socket` is active on your system, this restart may not apply the port change. Proceed to the SSH Socket Issue section below to check and fix this.
+
 ---
 
 # 16. Verify SSH Service
@@ -666,6 +668,10 @@ active (running)
 ---
 
 ## SSH Socket Issue (Important)
+
+### ⚠️ Warning
+
+Disabling `ssh.socket` without ensuring `ssh.service` is enabled for automatic startup may cause **complete SSH lockout after reboot**. The fix below handles both steps correctly.
 
 ### Problem
 
@@ -700,12 +706,41 @@ sudo systemctl status ssh.socket
 
 ### Fix
 
+Disable socket activation, explicitly enable the SSH service for automatic startup after reboot, then restart:
+
 ```bash
 sudo systemctl disable --now ssh.socket
+sudo systemctl enable ssh
 sudo systemctl restart ssh
 ```
 
 ### Verify Fix
+
+Check that SSH service is enabled for automatic startup:
+
+```bash
+systemctl is-enabled ssh
+```
+
+Expected:
+
+```txt
+enabled
+```
+
+Check that SSH service is running:
+
+```bash
+sudo systemctl status ssh
+```
+
+Expected:
+
+```txt
+active (running)
+```
+
+Check that SSH is listening on the custom port:
 
 ```bash
 sudo ss -tulpn | grep ssh
@@ -728,10 +763,35 @@ ssh -i ~/.ssh/vps_ed25519 -p 1182 mosabbir@YOUR_PUBLIC_IP
 
 Only close the existing SSH session after confirming the new port works.
 
+### Reboot Validation (Mandatory)
+
+After confirming the fix works in the current session, validate that SSH survives a reboot:
+
+```bash
+sudo reboot
+```
+
+Wait for the server to come back, then reconnect:
+
+```bash
+ssh -i ~/.ssh/vps_ed25519 -p 1182 mosabbir@YOUR_PUBLIC_IP
+```
+
+After reconnecting, verify everything survived the reboot:
+
+```bash
+systemctl is-enabled ssh
+sudo systemctl status ssh
+sudo ss -tulpn | grep ssh
+```
+
+All three checks should show the same results as the **Verify Fix** step above. If any check fails, do not close the current session and troubleshoot before rebooting again.
+
 ### Troubleshooting Commands
 
 ```bash
 sudo grep "^Port" /etc/ssh/sshd_config   # Check configured port
+systemctl is-enabled ssh                   # Check SSH auto-start
 sudo systemctl status ssh                  # Check SSH service
 sudo systemctl status ssh.socket           # Check socket activation
 sudo ss -tulpn | grep ssh                  # Check listening ports
@@ -1218,7 +1278,7 @@ Reboot the server:
 sudo reboot
 ```
 
-After the server reboots, reconnect and verify:
+After the server reboots, reconnect and verify swap:
 
 ```bash
 free -h
@@ -1232,7 +1292,17 @@ NAME       TYPE SIZE USED PRIO
 /swapfile  file   8G   0B   -2
 ```
 
-Confirms swap is automatically enabled after reboot and working correctly.
+While connected, also verify SSH survived the reboot:
+
+```bash
+systemctl is-enabled ssh
+sudo systemctl status ssh
+sudo ss -tulpn | grep ssh
+```
+
+All checks should confirm SSH is enabled, running, and listening on the custom port.
+
+Confirms swap and SSH are both working correctly after reboot.
 
 ---
 
