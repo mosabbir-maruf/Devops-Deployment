@@ -1034,9 +1034,9 @@ swapon --show
 Expected:
 
 ```txt
-              total        used        free      shared  buff/cache   available
-Mem:            ...         ...         ...         ...         ...         ...
-Swap:            0B         0B         0B
+               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       456Mi       7.1Gi       4.0Mi       453Mi       7.3Gi
+Swap:             0B          0B          0B
 ```
 
 Shows current memory and swap usage. No existing swap is expected on a fresh VPS.
@@ -1053,7 +1053,7 @@ ls -lh /swapfile
 Expected:
 
 ```txt
--rw-r--r-- 1 root root 8.0G ...
+-rw-r--r-- 1 root root 8.0G Jun 13 07:57 /swapfile
 ```
 
 Creates an 8GB swap file.
@@ -1070,7 +1070,7 @@ ls -lh /swapfile
 Expected:
 
 ```txt
--rw------- 1 root root 8.0G ...
+-rw------- 1 root root 8.0G Jun 13 07:57 /swapfile
 ```
 
 Restricts swap file access to root only (security best practice).
@@ -1086,7 +1086,8 @@ sudo mkswap /swapfile
 Expected:
 
 ```txt
-Setting up swapspace version 1, size = 8 GiB ...
+Setting up swapspace version 1, size = 8 GiB (8589930496 bytes)
+no label, UUID=f90af7af-ca89-45cd-ad59-54e96bc638e2
 ```
 
 Formats the file as a Linux swap area.
@@ -1109,8 +1110,11 @@ swapon --show
 Expected:
 
 ```txt
-NAME       TYPE SIZE USED PRIO
-/swapfile  file   8G   0B   -2
+               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       462Mi       7.1Gi       4.0Mi       455Mi       7.3Gi
+Swap:          8.0Gi          0B       8.0Gi
+NAME      TYPE SIZE USED PRIO
+/swapfile file   8G   0B   -2
 ```
 
 Verifies swap is enabled and active.
@@ -1125,15 +1129,24 @@ Add to `/etc/fstab` so swap persists across reboots:
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 ```
 
+Expected output:
+
+```txt
+/swapfile none swap sw 0 0
+```
+
 Verify:
 
 ```bash
 cat /etc/fstab
 ```
 
-The last line should be:
+Expected output (last line):
 
 ```txt
+LABEL=cloudimg-rootfs   /        ext4   discard,commit=30,errors=remount-ro     0 1
+LABEL=BOOT      /boot   ext4    defaults        0 2
+LABEL=UEFI      /boot/efi       vfat    umask=0077      0 1
 /swapfile none swap sw 0 0
 ```
 
@@ -1141,17 +1154,46 @@ The last line should be:
 
 ## Production Swappiness
 
-Check current swappiness value:
+Check current swappiness value (default is usually 60):
 
 ```bash
 cat /proc/sys/vm/swappiness
 ```
 
+Expected:
+
+```txt
+60
+```
+
 Set swappiness to 10 (only swap when RAM is 90% full — better for performance):
 
 ```bash
-echo 'vm.swappiness=10' | sudo tee -a /etc/sysctl.conf
-sudo sysctl -p
+echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf
+sudo sysctl --system
+```
+
+Expected output:
+
+```txt
+vm.swappiness=10
+* Applying /usr/lib/sysctl.d/10-apparmor.conf ...
+* Applying /etc/sysctl.d/10-bufferbloat.conf ...
+* Applying /etc/sysctl.d/10-console-messages.conf ...
+* Applying /etc/sysctl.d/10-ipv6-privacy.conf ...
+* Applying /etc/sysctl.d/10-kernel-hardening.conf ...
+* Applying /etc/sysctl.d/10-magic-sysrq.conf ...
+* Applying /etc/sysctl.d/10-map-count.conf ...
+* Applying /etc/sysctl.d/10-network-security.conf ...
+* Applying /etc/sysctl.d/10-ptrace.conf ...
+* Applying /etc/sysctl.d/10-zeropage.conf ...
+* Applying /usr/lib/sysctl.d/50-pid-max.conf ...
+* Applying /etc/sysctl.d/99-cloudimg-ipv6.conf ...
+* Applying /usr/lib/sysctl.d/99-protect-links.conf ...
+* Applying /etc/sysctl.d/99-swappiness.conf ...
+* Applying /etc/sysctl.d/99-sysctl.conf ...
+* Applying /etc/sysctl.conf ...
+vm.swappiness = 10
 ```
 
 Verify:
