@@ -296,7 +296,7 @@ Includes:
 
 ### [Infra-Bot](https://github.com/mosabbir-maruf/Infra-Bot)
 
-AI-powered infrastructure automation bot for VPS management, deployment, and operations.
+Cloudflare Workers-powered infrastructure control plane with Telegram operations, AWS EC2, Azure & DigitalOcean management, telemetry monitoring, rate limiting, and secure remote administration.
 
 ---
 
@@ -404,7 +404,7 @@ Follow this order for a complete production setup:
 | 17 | [useful-commands](./17-useful-commands.md) | Quick reference |
 | 18 | [production-reverse-proxy-shared-network](./18-production-reverse-proxy-shared-network.md) | Multi-project reverse proxy |
 | 19 | [production-deployment-runbook](./19-production-deployment-runbook.md) | Production deployment runbook |
-| 20 | [Infra-Bot](https://github.com/mosabbir-maruf/Infra-Bot) | AI infrastructure automation bot |
+| 20 | [Infra-Bot](https://github.com/mosabbir-maruf/Infra-Bot) | Cloudflare Workers infra control plane |
 
 ---
 
