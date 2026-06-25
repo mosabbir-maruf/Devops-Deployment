@@ -262,44 +262,6 @@ Includes:
 
 ---
 
-### [18-production-reverse-proxy-shared-network.md](./18-production-reverse-proxy-shared-network.md)
-
-Production-grade Docker-based reverse proxy architecture for hosting multiple projects on a single VPS.
-
-Includes:
-
-- centralized Nginx reverse proxy with shared Docker network
-- multi-project architecture (gateway, API, admin)
-- Let's Encrypt SSL, Cloudflare integration
-- CI/CD with GitHub Actions and GHCR
-- monitoring, health checks, zero-downtime deployment
-- backup, disaster recovery, reverse proxy rules
-
----
-
-### [19-production-deployment-runbook.md](./19-production-deployment-runbook.md)
-
-Consolidated production deployment runbook for fresh deployment, SSL management, reverse proxy, application deployment, disaster recovery, and day-to-day operations.
-
-Includes:
-
-- Infrastructure foundation (Docker, networking, firewall)
-- Reverse proxy stack (Nginx, Certbot, shared network)
-- SSL & HTTPS lifecycle (Cloudflare, Let's Encrypt, auto-renewal)
-- Application deployment, update, and rollback procedures
-- Centralized production validation checklist
-- Backup and restore procedures
-- Disaster recovery with phase references
-- Emergency and operational command reference
-
----
-
-### [Infra-Bot](https://github.com/mosabbir-maruf/Infra-Bot)
-
-Cloudflare Workers-powered infrastructure control plane with Telegram operations, AWS EC2, Azure & DigitalOcean management, telemetry monitoring, rate limiting, and secure remote administration.
-
----
-
 ## Git & CI/CD
 
 ### [13-git-github-ci-cd.md](./13-git-github-ci-cd.md)
@@ -376,6 +338,46 @@ Includes:
 - Nginx, DNS, SSL, Cloudflare
 - daily VPS check, deploy, emergency fix commands
 - port and file path reference tables
+
+---
+
+## Deployment & Infrastructure
+
+### [18-production-reverse-proxy-shared-network.md](./18-production-reverse-proxy-shared-network.md)
+
+Production-grade Docker-based reverse proxy architecture for hosting multiple projects on a single VPS.
+
+Includes:
+
+- centralized Nginx reverse proxy with shared Docker network
+- multi-project architecture (gateway, API, admin)
+- Let's Encrypt SSL, Cloudflare integration
+- CI/CD with GitHub Actions and GHCR
+- monitoring, health checks, zero-downtime deployment
+- backup, disaster recovery, reverse proxy rules
+
+---
+
+### [19-production-deployment-runbook.md](./19-production-deployment-runbook.md)
+
+Consolidated production deployment runbook for fresh deployment, SSL management, reverse proxy, application deployment, disaster recovery, and day-to-day operations.
+
+Includes:
+
+- Infrastructure foundation (Docker, networking, firewall)
+- Reverse proxy stack (Nginx, Certbot, shared network)
+- SSL & HTTPS lifecycle (Cloudflare, Let's Encrypt, auto-renewal)
+- Application deployment, update, and rollback procedures
+- Centralized production validation checklist
+- Backup and restore procedures
+- Disaster recovery with phase references
+- Emergency and operational command reference
+
+---
+
+### [Infra-Bot](https://github.com/mosabbir-maruf/Infra-Bot)
+
+Cloudflare Workers-powered infrastructure control plane with Telegram operations, AWS EC2, Azure & DigitalOcean management, telemetry monitoring, rate limiting, and secure remote administration.
 
 ---
 
