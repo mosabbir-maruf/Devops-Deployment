@@ -1,8 +1,6 @@
 # Production Deployment Runbook
 
-**Author:** Mosabbir Maruf
 **Last Updated:** 2026-06-26
-**Repo:** https://github.com/mosabbir-maruf/Devops-Deployment
 
 > **Note:** All domains, email addresses, usernames, registry paths, and IP addresses are examples. Replace with your production values.
 
@@ -27,11 +25,11 @@ Throughout this runbook, these values are used as placeholders:
 
 | Placeholder | Example | Description |
 |---|---|---|
-| `gateway.example.com` | `gateway.animewarp.app` | Application domain |
+| `gateway.example.com` | `gateway.example.com` | Application domain |
 | `your-email@example.com` | `admin@example.com` | Let's Encrypt email |
-| `your-github-username` | `mosabbir-maruf` | GHCR username |
+| `your-github-username` | `your-gh-username` | GHCR username |
 | `YOUR_VPS_IP` | `198.51.100.100` | Server public IP |
-| `AI_GATEWAY_IMAGE` | `ghcr.io/mosabbir-maruf/ai-gateway:latest` | App container image |
+| `AI_GATEWAY_IMAGE` | `ghcr.io/your-gh-username/ai-gateway:latest` | App container image |
 | `HEALTH_ENDPOINT` | `/health` | App health check path |
 | `APP_INTERNAL_PORT` | `8900` | Port the app listens on |
 
