@@ -1,7 +1,5 @@
 # Production Deployment Runbook
 
-> **Note:** All domains, email addresses, usernames, registry paths, and IP addresses are examples only. Replace with your own production values.
-
 ---
 
 ## Table Of Contents
@@ -14,6 +12,10 @@
 - [Phase 6: Operations](#phase-6-operations)
 - [Phase 7: Disaster Recovery](#phase-7-disaster-recovery)
 - [Appendix: Emergency & Operational Commands](#appendix-emergency--operational-commands)
+
+---
+
+> **Note:** All domains, email addresses, usernames, registry paths, and IP addresses are examples only. Replace with your own production values.
 
 ---
 
