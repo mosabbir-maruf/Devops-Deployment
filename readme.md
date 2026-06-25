@@ -386,7 +386,8 @@ Follow this order for a complete production setup:
 | 16 | [troubleshooting](./16-troubleshooting.md) | Debug production |
 | 17 | [useful-commands](./17-useful-commands.md) | Quick reference |
 | 18 | [production-reverse-proxy-shared-network](./18-production-reverse-proxy-shared-network.md) | Multi-project reverse proxy |
-| 19 | [Infra-Bot](https://github.com/mosabbir-maruf/Infra-Bot) | AI infrastructure automation bot |
+| 19 | [production-deployment-runbook](./19-production-deployment-runbook.md) | Production deployment runbook |
+| 20 | [Infra-Bot](https://github.com/mosabbir-maruf/Infra-Bot) | AI infrastructure automation bot |
 
 ---
 
