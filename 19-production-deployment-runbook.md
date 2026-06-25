@@ -4,6 +4,7 @@
 
 ## Table Of Contents
 
+- [Configuration Reference](#configuration-reference)
 - [Phase 1: Infrastructure Foundation](#phase-1-infrastructure-foundation)
 - [Phase 2: Reverse Proxy Stack](#phase-2-reverse-proxy-stack)
 - [Phase 3: SSL & HTTPS](#phase-3-ssl--https)
@@ -12,6 +13,7 @@
 - [Phase 6: Operations](#phase-6-operations)
 - [Phase 7: Disaster Recovery](#phase-7-disaster-recovery)
 - [Appendix: Emergency & Operational Commands](#appendix-emergency--operational-commands)
+- [Final Architecture](#final-architecture)
 
 ---
 
@@ -1046,7 +1048,7 @@ docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx ngin
 docker compose -f ~/ai-gateway/docker-compose.yml up -d
 ```
 
-**Recommendation:** Integrate with [15-backup-snapshots.md](../15-backup-snapshots.md) for automated offsite backups.
+**Recommendation:** Integrate with [15-backup-snapshots.md](./15-backup-snapshots.md) for automated offsite backups.
 
 ### 6.6 Maintenance — Update Reverse Proxy Images
 
