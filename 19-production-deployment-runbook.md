@@ -138,6 +138,12 @@ reverse-proxy/
 
 ### 2.2 Nginx Configuration
 
+```bash
+nano ~/reverse-proxy/nginx/nginx.conf
+```
+
+**Exact content:**
+
 `~/reverse-proxy/nginx/nginx.conf`
 
 ```nginx
@@ -199,7 +205,15 @@ http {
 }
 ```
 
+**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
+
 ### 2.3 Docker Compose
+
+```bash
+nano ~/reverse-proxy/docker-compose.yml
+```
+
+**Exact content:**
 
 `~/reverse-proxy/docker-compose.yml`
 
@@ -244,9 +258,17 @@ networks:
     name: shared-network
 ```
 
+**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
+
 ### 2.4 Site Configuration
 
-**Default catch-all** — `~/reverse-proxy/nginx/sites/default.conf`:
+```bash
+nano ~/reverse-proxy/nginx/sites/default.conf
+```
+
+**Default catch-all:**
+
+`~/reverse-proxy/nginx/sites/default.conf`
 
 ```nginx
 server {
@@ -266,7 +288,15 @@ server {
 }
 ```
 
-**HTTP-only placeholder** — `~/reverse-proxy/nginx/sites/gateway.example.com.conf`:
+**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
+
+```bash
+nano ~/reverse-proxy/nginx/sites/gateway.example.com.conf
+```
+
+**HTTP-only placeholder:**
+
+`~/reverse-proxy/nginx/sites/gateway.example.com.conf`
 
 ```nginx
 server {
@@ -282,6 +312,8 @@ server {
     }
 }
 ```
+
+**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
 
 ### 2.5 Generate Fallback Certificate & Start
 
@@ -426,7 +458,13 @@ sudo ls -la ~/reverse-proxy/certbot/conf/live/gateway.example.com/
 
 ### 3.3 Enable HTTPS
 
-Replace `~/reverse-proxy/nginx/sites/gateway.example.com.conf`:
+```bash
+nano ~/reverse-proxy/nginx/sites/gateway.example.com.conf
+```
+
+Replace the entire file with:
+
+`~/reverse-proxy/nginx/sites/gateway.example.com.conf`
 
 ```nginx
 server {
@@ -461,6 +499,8 @@ server {
     }
 }
 ```
+
+**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
 
 **Apply & verify:**
 
@@ -580,6 +620,12 @@ mkdir -p ~/ai-gateway
 cd ~/ai-gateway
 ```
 
+```bash
+nano ~/ai-gateway/docker-compose.yml
+```
+
+**Exact content:**
+
 `~/ai-gateway/docker-compose.yml`:
 
 ```yaml
@@ -614,6 +660,14 @@ networks:
 
 > **Note:** Adjust `healthcheck.test` path and `APP_INTERNAL_PORT` to match your application's actual health endpoint and listening port.
 
+**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
+
+```bash
+nano ~/ai-gateway/.env
+```
+
+**Exact content:**
+
 `~/ai-gateway/.env`:
 
 ```env
@@ -625,6 +679,8 @@ PORT=8900
 ```bash
 chmod 600 ~/ai-gateway/.env
 ```
+
+**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
 
 **Authenticate with GHCR:**
 
@@ -666,7 +722,13 @@ docker exec reverse-proxy-nginx wget -qO- http://ai-gateway-server:8900/health
 
 ### 4.2 Integrate with Reverse Proxy
 
-Replace `~/reverse-proxy/nginx/sites/gateway.example.com.conf`:
+```bash
+nano ~/reverse-proxy/nginx/sites/gateway.example.com.conf
+```
+
+Replace the entire file with:
+
+`~/reverse-proxy/nginx/sites/gateway.example.com.conf`
 
 ```nginx
 server {
@@ -707,6 +769,8 @@ server {
     }
 }
 ```
+
+**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
 
 **Apply & verify:**
 
