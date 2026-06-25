@@ -1,12 +1,10 @@
 # Production Deployment Runbook
 
-**Last Updated:** 2026-06-26
-
-> **Note:** All domains, email addresses, usernames, registry paths, and IP addresses are examples. Replace with your production values.
+> **Note:** All domains, email addresses, usernames, registry paths, and IP addresses are examples only. Replace with your own production values.
 
 ---
 
-## Table of Contents
+## Table Of Contents
 
 - [Phase 1: Infrastructure Foundation](#phase-1-infrastructure-foundation)
 - [Phase 2: Reverse Proxy Stack](#phase-2-reverse-proxy-stack)
