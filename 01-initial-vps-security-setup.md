@@ -42,34 +42,33 @@ Related guides after this: `02-ssh-guide.md`, `04-docker.md`, `11-nginx-reverse-
 10. [SSH Security Hardening](#10-ssh-security-hardening)
 11. [Allow Custom SSH Port](#11-allow-custom-ssh-port)
 12. [Remove Old SSH Port Rule](#12-remove-old-ssh-port-rule)
-13. [Save & Exit Nano](#13-save--exit-nano)
-14. [Verify SSH Config Before Restart](#14-verify-ssh-config-before-restart)
-15. [Restart SSH](#15-restart-ssh)
-16. [Verify SSH Service](#16-verify-ssh-service)
-17. [SSH Socket Issue](#ssh-socket-issue-important)
-18. [Login Using Custom SSH Port](#18-login-using-custom-ssh-port)
+13. [Verify SSH Config Before Restart](#13-verify-ssh-config-before-restart)
+14. [Restart SSH](#14-restart-ssh)
+15. [Verify SSH Service](#15-verify-ssh-service)
+16. [SSH Socket Issue](#ssh-socket-issue-important)
+17. [Login Using Custom SSH Port](#17-login-using-custom-ssh-port)
 
 ### Mac SSH Config And Verification
 
-19. [Create SSH Shortcut Alias In Your Mac (Recommended)](#19-create-ssh-shortcut-alias-in-your-mac-recommended)
-20. [Verify Firewall](#20-verify-firewall)
+18. [Create SSH Shortcut Alias In Your Mac (Recommended)](#18-create-ssh-shortcut-alias-in-your-mac-recommended)
+19. [Verify Firewall](#19-verify-firewall)
 
 ### VPS Firewall & Fail2Ban Notes
 
-21. [Important Firewall Note For Web Servers](#21-important-firewall-note-for-web-servers)
+20. [Important Firewall Note For Web Servers](#20-important-firewall-note-for-web-servers)
 
 ### Mac SSH (Continued)
 
-22. [Recommended SSH File Structure (Mac)](#22-recommended-ssh-file-structure-mac)
+21. [Recommended SSH File Structure (Mac)](#21-recommended-ssh-file-structure-mac)
 
 ### Swap File Setup
 
-23. [Swap File Setup](#23-swap-file-setup)
+22. [Swap File Setup](#22-swap-file-setup)
 
 ### Best Practices And Checklist
 
-24. [SSH Security Best Practices](#24-ssh-security-best-practices)
-25. [Final Security Checklist](#25-final-security-checklist)
+23. [SSH Security Best Practices](#23-ssh-security-best-practices)
+24. [Final Security Checklist](#24-final-security-checklist)
 
 ### Next Steps
 
@@ -559,6 +558,8 @@ Port 1182
 → Changes default SSH port 22 to a custom port.
 ```
 
+**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
+
 ---
 
 # 11. Allow Custom SSH Port
@@ -587,39 +588,7 @@ Recommended for additional security.
 
 ---
 
-# 13. Save & Exit Nano
-
-## Save File
-
-```txt
-Ctrl + O
-```
-
-Saves the file.
-
----
-
-## Confirm Save
-
-```txt
-Enter
-```
-
-Confirms filename.
-
----
-
-## Exit Nano
-
-```txt
-Ctrl + X
-```
-
-Exits Nano editor.
-
----
-
-# 14. Verify SSH Config Before Restart
+# 13. Verify SSH Config Before Restart
 
 ## Check SSH Config Syntax
 
@@ -635,7 +604,7 @@ No output usually means the configuration is valid.
 
 ---
 
-# 15. Restart SSH
+# 14. Restart SSH
 
 ## Restart SSH Service
 
@@ -649,7 +618,7 @@ Applies new SSH configuration.
 
 ---
 
-# 16. Verify SSH Service
+# 15. Verify SSH Service
 
 ## Check SSH Status
 
@@ -799,7 +768,7 @@ sudo ss -tulpn | grep ssh                  # Check listening ports
 
 ---
 
-# 18. Login Using Custom SSH Port
+# 16. Login Using Custom SSH Port
 
 ## Secure SSH Login
 
@@ -815,7 +784,7 @@ Connects securely using:
 
 ---
 
-# 19. Create SSH Shortcut Alias In Your Mac (Recommended)
+# 17. Create SSH Shortcut Alias In Your Mac (Recommended)
 
 ## Open SSH Config
 
@@ -939,7 +908,7 @@ Recommended for daily VPS workflows.
 
 ---
 
-# 20. Verify Firewall
+# 18. Verify Firewall
 
 ## Check Firewall Rules
 
@@ -957,7 +926,7 @@ and default SSH port removed if configured.
 
 ---
 
-# 21. Important Firewall Note For Web Servers
+# 19. Important Firewall Note For Web Servers
 
 After completing SSH hardening, your firewall may only allow:
 
@@ -1058,7 +1027,7 @@ sudo ufw delete allow 80/tcp
 
 ---
 
-# 22. Recommended SSH File Structure (Mac)
+# 20. Recommended SSH File Structure (Mac)
 
 ```txt
 ~/.ssh/
@@ -1082,7 +1051,7 @@ vps_ed25519
 
 ---
 
-# 23. Swap File Setup
+# 21. Swap File Setup
 
 ## Check Current Swap Status
 
@@ -1306,7 +1275,7 @@ Confirms swap and SSH are both working correctly after reboot.
 
 ---
 
-# 24. SSH Security Best Practices
+# 22. SSH Security Best Practices
 
 Recommended:
 
@@ -1325,7 +1294,7 @@ Recommended:
 
 ---
 
-# 25. Final Security Checklist
+# 23. Final Security Checklist
 
 - SSH Key Authentication Enabled
 - Separate GitHub & VPS SSH Keys Configured
