@@ -1,296 +1,144 @@
 # Production Deployment Runbook
 
-## Table Of Contents
+**Author:** Mosabbir Maruf
+**Last Updated:** 2026-06-26
+**Repo:** https://github.com/mosabbir-maruf/Devops-Deployment
 
-- [Phase 1: Server Validation](#phase-1-server-validation)
-- [Phase 2: Create Shared Network](#phase-2-create-shared-network)
-- [Phase 3: Create Reverse Proxy Folder Structure](#phase-3-create-reverse-proxy-folder-structure)
-- [Phase 4: Create nginx.conf](#phase-4-create-nginxconf)
-- [Phase 5: Create Reverse Proxy docker-compose.yml](#phase-5-create-reverse-proxy-docker-composeyml)
-- [Phase 6: Create First Domain Config](#phase-6-create-first-domain-config)
-- [Phase 7: Start Reverse Proxy](#phase-7-start-reverse-proxy)
-- [Phase 8: Cloudflare DNS Setup](#phase-8-cloudflare-dns-setup)
-- [Phase 9: Generate SSL Certificate](#phase-9-generate-ssl-certificate)
-- [Phase 10: Enable HTTPS](#phase-10-enable-https)
-- [Phase 11: Deploy AI Gateway](#phase-11-deploy-ai-gateway)
-- [Phase 12: Connect AI Gateway To Shared Network](#phase-12-connect-ai-gateway-to-shared-network)
-- [Phase 13: Update Reverse Proxy With proxy_pass](#phase-13-update-reverse-proxy-with-proxypass)
-- [Phase 14: Production Validation](#phase-14-production-validation)
-- [Phase 15: SSL Renewal Setup](#phase-15-ssl-renewal-setup)
-- [Phase 16: Routine Maintenance](#phase-16-routine-maintenance)
-- [Phase 17: Disaster Recovery](#phase-17-disaster-recovery)
-- [Appendix: Emergency Commands](#appendix-emergency-commands)
+> **Note:** All domains, email addresses, usernames, registry paths, and IP addresses are examples. Replace with your production values.
 
 ---
 
-> **Note:** All domains, email addresses, usernames, registry paths, and IP addresses in this document are examples only and should be replaced with your own production values.
+## Table of Contents
 
-# Phase 1: Server Validation
+- [Phase 1: Infrastructure Foundation](#phase-1-infrastructure-foundation)
+- [Phase 2: Reverse Proxy Stack](#phase-2-reverse-proxy-stack)
+- [Phase 3: SSL & HTTPS](#phase-3-ssl--https)
+- [Phase 4: Application Deployment](#phase-4-application-deployment)
+- [Phase 5: Production Validation](#phase-5-production-validation)
+- [Phase 6: Operations](#phase-6-operations)
+- [Phase 7: Disaster Recovery](#phase-7-disaster-recovery)
+- [Appendix: Emergency & Operational Commands](#appendix-emergency--operational-commands)
 
-## Goal
+---
 
-Confirm that Docker, Docker Compose, networking, and the firewall are working on a fresh Ubuntu VPS.
+## Configuration Reference
 
-## Commands
+Throughout this runbook, these values are used as placeholders:
+
+| Placeholder | Example | Description |
+|---|---|---|
+| `gateway.example.com` | `gateway.animewarp.app` | Application domain |
+| `your-email@example.com` | `admin@example.com` | Let's Encrypt email |
+| `your-github-username` | `mosabbir-maruf` | GHCR username |
+| `YOUR_VPS_IP` | `198.51.100.100` | Server public IP |
+| `AI_GATEWAY_IMAGE` | `ghcr.io/mosabbir-maruf/ai-gateway:latest` | App container image |
+| `HEALTH_ENDPOINT` | `/health` | App health check path |
+| `APP_INTERNAL_PORT` | `8900` | Port the app listens on |
+
+---
+
+## Phase 1: Infrastructure Foundation
+
+### 1.1 Server Validation
+
+Verify Docker, networking, and firewall are operational:
 
 ```bash
-# Check Docker version
 docker --version
-
-# Check Docker Compose version
 docker compose version
-
-# Check Docker is running
 sudo systemctl status docker --no-pager
-
-# Check public IP
 curl -s ifconfig.me
-
-# Check firewall status
 sudo ufw status verbose
-
-# Check current listening ports
 sudo ss -tulpn
 ```
 
-## Expected Output
+**Expected:**
 
-```txt
-docker --version
+```
 Docker version 27.5.1, build ...
-
-docker compose version
 Docker Compose version 2.32.0
-
-sudo systemctl status docker --no-pager
 ● docker.service - Docker Application Container Engine
-     Loaded: loaded
      Active: active (running)
-
-curl -s ifconfig.me
 198.51.100.100
-
-sudo ufw status verbose
 Status: active
-Logging: on (low)
-Default: deny (incoming), allow (outgoing)
-New profiles: skip
-
-To                         Action      From
---                         ------      ----
-80/tcp                     ALLOW IN    Anywhere
-443/tcp                    ALLOW IN    Anywhere
-22/tcp                     ALLOW IN    Anywhere
+80/tcp, 443/tcp, 22/tcp ALLOW IN
 ```
 
-## Troubleshooting
-
-```txt
-Error: "docker: command not found"
-Fix: Install Docker:
-  curl -fsSL https://get.docker.com | sh
-  sudo usermod -aG docker $USER
-  Log out and back in.
-
-Error: "docker compose: command not found"
-Fix: Install Docker Compose plugin:
-  sudo apt install docker-compose-plugin -y
-
-Error: "UFW is inactive"
-Fix: Enable UFW:
-  sudo ufw --force enable
-
-Error: "80/tcp and 443/tcp not in UFW rules"
-Fix: Open ports:
-  sudo ufw allow 80/tcp
-  sudo ufw allow 443/tcp
-  sudo ufw reload
-```
-
-## Next Step
-
-Proceed to Phase 2.
-
----
-
-# Phase 2: Create Shared Network
-
-## Goal
-
-Create the Docker bridge network that all containers will share.
-
-## Commands
+### 1.2 Shared Network
 
 ```bash
 docker network create --driver bridge --attachable shared-network
-```
-
-## Verification
-
-```bash
 docker network ls
 ```
 
-## Expected Output
-
-```txt
-NETWORK ID     NAME              DRIVER    SCOPE
-abc12345       shared-network    bridge    local
-def67890       bridge            bridge    local
-```
-
-## Detailed Inspection
+**Verify:**
 
 ```bash
 docker network inspect shared-network
 ```
 
-## Expected Output
+**Expected:** Empty `"Containers": {}` (populated as services join).
 
-```json
-[
-    {
-        "Name": "shared-network",
-        "Driver": "bridge",
-        "Scope": "local",
-        "Attachable": true,
-        "Containers": {}
-    }
-]
+### Troubleshooting
+
 ```
+"docker: command not found"
+  curl -fsSL https://get.docker.com | sh
+  sudo usermod -aG docker $USER
+  Log out and back in.
 
-## Troubleshooting
+"docker compose: command not found"
+  sudo apt install docker-compose-plugin -y
 
-```txt
-Error: "network with name shared-network already exists"
-Fix: This is fine. The network already exists. Run the verification command to confirm.
+"UFW is inactive"
+  sudo ufw --force enable
 
-Error: "Pool overlaps with other one on this address space"
-Fix: Prune unused networks and retry:
+"80/tcp and 443/tcp not in UFW rules"
+  sudo ufw allow 80/tcp
+  sudo ufw allow 443/tcp
+  sudo ufw reload
+
+"network with name shared-network already exists"
+  This is safe. Proceed.
+
+"Pool overlaps with other one on this address space"
   docker network prune -f
   docker network create --driver bridge --attachable shared-network
 ```
 
-## Next Step
-
-Proceed to Phase 3.
-
 ---
 
-# Phase 3: Create Reverse Proxy Folder Structure
+## Phase 2: Reverse Proxy Stack
 
-## Goal
-
-Create the directory structure for the reverse proxy stack at `~/reverse-proxy`.
-
-## Commands
+### 2.1 Directory Structure
 
 ```bash
 mkdir -p ~/reverse-proxy/{nginx/{sites,includes,ssl/default},certbot/{conf,www},scripts}
 cd ~/reverse-proxy
 ```
 
-## Verification
+**Verify:**
 
 ```bash
 find ~/reverse-proxy -type d | sort
-```
-
-## Expected Output
-
-```txt
-reverse-proxy/
-├── certbot/
-│   ├── conf/
-│   └── www/
-├── nginx/
-│   ├── includes/
-│   ├── sites/
-│   └── ssl/
-│       └── default/
-└── scripts/
-```
-
-## Verify Ownership
-
-```bash
 ls -la ~/reverse-proxy
 ```
 
-## Expected Output
+**Expected:**
 
-```txt
-total 20
-drwxrwxr-x 5 mosabbir mosabbir 4096 Jun 11 18:52 .
-drwxr-x--- 5 mosabbir mosabbir 4096 Jun 11 18:52 ..
-drwxrwxr-x 4 mosabbir mosabbir 4096 Jun 11 18:52 certbot
-drwxrwxr-x 5 mosabbir mosabbir 4096 Jun 11 18:52 nginx
-drwxrwxr-x 2 mosabbir mosabbir 4096 Jun 11 18:52 scripts
+```
+reverse-proxy/
+├── certbot/conf/
+├── certbot/www/
+├── nginx/includes/
+├── nginx/sites/
+├── nginx/ssl/default/
+└── scripts/
 ```
 
-## Next Step
-
-Proceed to Phase 4.
-
----
-
-# Final Folder Structure
-
-Expected production directory layout after all phases:
-
-```txt
-~/reverse-proxy
-├── docker-compose.yml
-├── nginx
-│   ├── nginx.conf
-│   ├── sites
-│   │   ├── default.conf
-│   │   ├── gateway.example.com.conf
-│   │   └── api.example.com.conf
-│   ├── includes
-│   └── ssl
-│       └── default
-│           ├── fullchain.pem
-│           └── privkey.pem
-├── certbot
-│   ├── conf
-│   └── www
-└── scripts
-    └── daily-check.sh
-
-~/ai-gateway
-├── docker-compose.yml
-└── .env
-
-~/api
-├── docker-compose.yml
-└── .env
-```
-
-- `reverse-proxy` contains all nginx, SSL, and certbot resources.
-- Each application has its own isolated directory.
-- All projects connect through the `shared-network` Docker network.
-- Only `reverse-proxy` exposes ports 80 and 443 to the internet.
-
----
-
-# Phase 4: Create nginx.conf
-
-## Goal
-
-Create the main Nginx configuration file.
-
-## File Path
+### 2.2 Nginx Configuration
 
 `~/reverse-proxy/nginx/nginx.conf`
-
-## Commands
-
-```bash
-nano ~/reverse-proxy/nginx/nginx.conf
-```
-
-## Exact File Content
 
 ```nginx
 user nginx;
@@ -309,7 +157,6 @@ events {
 http {
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
-
     server_tokens off;
 
     log_format json escape=json '{'
@@ -323,7 +170,6 @@ http {
         '"http_referrer":"$http_referer",'
         '"http_user_agent":"$http_user_agent"'
     '}';
-
     access_log /var/log/nginx/access.log json buffer=32k flush=5s;
 
     gzip on;
@@ -346,7 +192,6 @@ http {
     proxy_set_header X-Forwarded-Proto $scheme;
 
     client_max_body_size 100M;
-
     limit_req_zone $binary_remote_addr zone=general:10m rate=50r/s;
     limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
 
@@ -354,50 +199,9 @@ http {
 }
 ```
 
-## Save The File
-
-1. Press `Ctrl+O` to write the file
-2. Press `Enter` to confirm the filename
-3. Press `Ctrl+X` to exit
-
-## Verification
-
-```bash
-cat ~/reverse-proxy/nginx/nginx.conf | head -5
-```
-
-## Expected Output
-
-```txt
-user nginx;
-worker_processes auto;
-worker_rlimit_nofile 65535;
-pid /var/run/nginx.pid;
-```
-
-## Next Step
-
-Proceed to Phase 5.
-
----
-
-# Phase 5: Create Reverse Proxy docker-compose.yml
-
-## Goal
-
-Create the Docker Compose file that runs Nginx and Certbot.
-
-## File Path
+### 2.3 Docker Compose
 
 `~/reverse-proxy/docker-compose.yml`
-
-## Command
-
-```bash
-nano ~/reverse-proxy/docker-compose.yml
-```
-
-## Exact File Content
 
 ```yaml
 services:
@@ -440,104 +244,9 @@ networks:
     name: shared-network
 ```
 
-The `restart: unless-stopped` directive means:
-- Container crash → Docker automatically restarts it.
-- VPS reboot → Container automatically starts.
-- Docker service restart → Container automatically starts.
-- Manual `docker stop` → Container remains stopped until manually started.
+### 2.4 Site Configuration
 
-## Verification
-
-```bash
-cat ~/reverse-proxy/docker-compose.yml | head -10
-```
-
-## Expected Output
-
-```txt
-services:
-  nginx:
-    image: nginx:1.27-alpine
-    container_name: reverse-proxy-nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-```
-
-## Next Step
-
-Proceed to Phase 6.
-
----
-
-# Phase 6: Create First Domain Config
-
-## Goal
-
-Create the Nginx site configuration for gateway.example.com.
-
-## File Path
-
-`~/reverse-proxy/nginx/sites/gateway.example.com.conf`
-
-## Commands
-
-```bash
-nano ~/reverse-proxy/nginx/sites/gateway.example.com.conf
-```
-
-## Exact File Content
-
-```nginx
-server {
-    listen 80;
-    server_name gateway.example.com;
-
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-    }
-
-    location / {
-        return 200 "Nginx OK";
-    }
-}
-```
-
-This creates a temporary HTTP-only endpoint used to verify that Nginx is working before SSL is configured.
-
-## Verification
-
-```bash
-cat ~/reverse-proxy/nginx/sites/gateway.example.com.conf
-```
-
-## Expected Output
-
-```txt
-server {
-    listen 80;
-    server_name gateway.example.com;
-
-    location /.well-known/acme-challenge/ {
-        root /var/www/certbot;
-    }
-
-    location / {
-        return 200 "Nginx OK";
-    }
-}
-```
-
-## Default Catch-All Block
-
-Create a default server block to catch unmatched requests:
-
-```bash
-nano ~/reverse-proxy/nginx/sites/default.conf
-```
-
-Exact content:
+**Default catch-all** — `~/reverse-proxy/nginx/sites/default.conf`:
 
 ```nginx
 server {
@@ -550,39 +259,33 @@ server {
     listen 443 ssl default_server;
     server_name _;
 
-    ssl_certificate /etc/nginx/ssl/default/fullchain.pem;
+    ssl_certificate     /etc/nginx/ssl/default/fullchain.pem;
     ssl_certificate_key /etc/nginx/ssl/default/privkey.pem;
 
     return 444;
 }
 ```
 
-## Troubleshooting
+**HTTP-only placeholder** — `~/reverse-proxy/nginx/sites/gateway.example.com.conf`:
 
-```txt
-Error: "File name must end with .conf"
-Fix: Nginx only includes *.conf files from the sites directory.
-     Make sure the filename ends with .conf
+```nginx
+server {
+    listen 80;
+    server_name gateway.example.com;
 
-Error: "Typo in server_name"
-Fix: Must match your domain exactly. Copy-paste: gateway.example.com
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 200 "Nginx OK";
+    }
+}
 ```
 
-## Next Step
+### 2.5 Generate Fallback Certificate & Start
 
-Proceed to Phase 7.
-
----
-
-# Phase 7: Start Reverse Proxy
-
-## Goal
-
-Start the Nginx and Certbot containers.
-
-## Generate Self-Signed Fallback Certificate
-
-The default SSL block requires a certificate file. Generate a placeholder:
+The default SSL block requires a certificate. Generate a self-signed placeholder:
 
 ```bash
 docker run --rm \
@@ -592,115 +295,63 @@ docker run --rm \
   -subj '/CN=localhost'"
 ```
 
-## Start The Stack
+Start the stack:
 
 ```bash
 cd ~/reverse-proxy
 docker compose up -d
 ```
 
-## Verification
+**Verify:**
 
 ```bash
 docker compose ps
-```
-
-## Expected Output
-
-```txt
-NAME                    IMAGE                 COMMAND                  SERVICE    CREATED         STATUS         PORTS
-reverse-proxy-nginx     nginx:1.27-alpine     "/docker-entrypoint.…"   nginx      5 seconds ago   Up 5 seconds   0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp
-reverse-proxy-certbot   certbot/certbot:v2.9.0 "sleep infinity"        certbot    5 seconds ago   Up 5 seconds
-```
-
-## Verify Nginx Config Is Valid
-
-```bash
-docker exec reverse-proxy-nginx nginx -t
-```
-
-## Expected Output
-
-```txt
-nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-nginx: configuration file /etc/nginx/nginx.conf test is successful
-```
-
-## Verify Nginx Responds
-
-```bash
 curl -H "Host: gateway.example.com" http://localhost
 ```
 
-This sends a request with the specific virtual host header, verifying Nginx routes to the correct server block instead of hitting the default catch-all block.
+**Expected:**
 
-## Expected Output
+```
+NAME                    IMAGE                 STATUS         PORTS
+reverse-proxy-nginx     nginx:1.27-alpine     Up             0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp
+reverse-proxy-certbot   certbot/certbot:v2.9.0 Up
 
-```txt
 Nginx OK
 ```
 
-Nginx returns the configured response from the gateway.example.com server block.
+### Troubleshooting
 
-## Verify Stack Is On Shared Network
-
-```bash
-docker network inspect shared-network
 ```
-
-## Expected Output (Containers Section)
-
-```json
-"Containers": {
-    "abc...": {
-        "Name": "reverse-proxy-nginx",
-    },
-    "def...": {
-        "Name": "reverse-proxy-certbot",
-    }
-}
-```
-
-## Troubleshooting
-
-```txt
-Error: "port is already allocated"
-Fix: Something else is using port 80 or 443:
+"port is already allocated"
   sudo ss -tulpn | grep -E ":80 |:443 "
-  Stop the conflicting service, e.g.:
-  sudo systemctl stop nginx
+  sudo systemctl stop nginx   # if host nginx is running
   sudo systemctl disable nginx
 
-Error: "cannot load certificate"
-Fix: The self-signed fallback certificate is missing:
+"cannot load certificate"
   ls -la ~/reverse-proxy/nginx/ssl/default/
-  Regenerate using the docker run command above.
+  Regenerate using the docker run command in 2.5.
 
-Error: "Network shared-network not found"
-Fix: Create the network:
+"Network shared-network not found"
   docker network create --driver bridge --attachable shared-network
+
+"File name must end with .conf"
+  Nginx only includes *.conf from sites/. Verify filenames.
+
+"Typo in server_name"
+  Must match your domain exactly.
 ```
-
-## Next Step
-
-Proceed to Phase 8.
 
 ---
 
-# Phase 8: Cloudflare DNS Setup
+## Phase 3: SSL & HTTPS
 
-## Goal
+### 3.1 Cloudflare DNS — Temporary DNS Only
 
-Configure Cloudflare DNS for gateway.example.com with DNS Only mode (gray cloud).
+1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com).
+2. Select your domain zone.
+3. **DNS → Records → Add Record:**
 
-## Steps
-
-1. Log in to your Cloudflare dashboard at `https://dash.cloudflare.com`.
-2. Select your domain zone in Cloudflare (for example: **animewarp.app**).
-3. Go to **DNS** → **Records**.
-4. Add a new A record:
-
-```txt
+```
 Type:   A
 Name:   gateway
 IPv4:   <YOUR_VPS_IP>
@@ -708,206 +359,74 @@ Proxy Status: DNS Only (gray cloud)
 TTL:    Auto
 ```
 
-5. Click **Save**.
-
-## Verification
-
-Wait 1-2 minutes, then run:
+**Verify DNS propagation:**
 
 ```bash
 dig gateway.example.com +short
 ```
 
-## Expected Output
+**Expected:** Your VPS IP (not a Cloudflare IP). Wait 1-2 minutes if needed.
 
-```txt
-198.51.100.100
-```
-
-The output must be your VPS IP address (not a Cloudflare IP).
-
-## If Proxy Is Enabled (Wrong)
-
-```txt
-dig gateway.example.com +short
-104.16.x.x
-172.64.x.x
-```
-
-If you see Cloudflare IPs (104.x.x.x or 172.x.x.x), the record is set to Proxied (orange cloud). Change it to **DNS Only** (gray cloud) before proceeding.
-
-## Confirm Reachability
+**Verify reachability:**
 
 ```bash
 curl -I http://gateway.example.com
 ```
 
-## Expected Output
+**Expected:** `HTTP/1.1 200 OK`
 
-```txt
-HTTP/1.1 200 OK
-```
+### 3.2 Issue SSL Certificate
 
-The 200 OK response is correct because the Phase 6 config returns a simple health check before SSL is configured.
-
-## Troubleshooting
-
-```txt
-Error: "curl: (6) Could not resolve host"
-Fix: DNS has not propagated yet. Wait a few minutes and retry:
-  dig gateway.example.com +short
-
-Error: "curl: (7) Failed to connect"
-Fix: Port 80 is blocked by UFW or Nginx is not running:
-  sudo ufw status | grep 80
-  docker compose ps | grep nginx
-
-Error: "curl: (52) Empty reply from server"
-Fix: This is Nginx's default server block (444) responding.
-     The server_name is not matching yet because DNS just propagated.
-     This is expected and will resolve when the server_name matches.
-```
-
-## Next Step
-
-Proceed to Phase 9.
-
----
-
-# Phase 9: Generate SSL Certificate
-
-## Goal
-
-Issue a Let's Encrypt SSL certificate for gateway.example.com.
-
-## Pre-Flight Checks
-
-Before running certbot, confirm:
+Pre-flight checks:
 
 ```bash
-# DNS is resolving to VPS IP (not Cloudflare)
 dig gateway.example.com +short
-# Expected: your VPS IP
-
-# Port 80 is reachable from the internet
 curl -sI http://gateway.example.com | head -1
-# Expected: HTTP/1.1 200 OK
-
-# ACME challenge path is served
 curl -sI http://gateway.example.com/.well-known/acme-challenge/test
-# Expected: 404 (the file doesn't exist, but the route is valid)
 ```
 
-## Generate Certificate
+Generate certificate:
 
 ```bash
-docker exec reverse-proxy-certbot certbot certonly --webroot --webroot-path /var/www/certbot -d gateway.example.com --email your-email@example.com --agree-tos --non-interactive
+docker exec reverse-proxy-certbot certbot certonly \
+  --webroot --webroot-path /var/www/certbot \
+  -d gateway.example.com \
+  --email your-email@example.com \
+  --agree-tos --non-interactive
 ```
 
-## Expected Success Output
+**Expected:**
 
-```txt
-Saving debug log to /var/log/letsencrypt/letsencrypt.log
-Requesting a certificate for gateway.example.com
-
+```
 Successfully received certificate.
 Certificate is saved at:
   /etc/letsencrypt/live/gateway.example.com/fullchain.pem
 Key is saved at:
   /etc/letsencrypt/live/gateway.example.com/privkey.pem
-This certificate expires on 2026-09-09.
-These files will be updated when the certificate renews.
 ```
 
-## Where Certificates Are Stored
+**Certificate storage:**
 
-```txt
-Host path:
-  ~/reverse-proxy/certbot/conf/live/gateway.example.com/
-    ├── cert.pem       → server certificate only
-    ├── chain.pem      → intermediate CA certificates
-    ├── fullchain.pem  → cert.pem + chain.pem
-    └── privkey.pem    → private key (keep secret)
+```
+Host:  ~/reverse-proxy/certbot/conf/live/gateway.example.com/
+        ├── cert.pem       (server certificate)
+        ├── chain.pem      (intermediate CA)
+        ├── fullchain.pem  (cert + chain)
+        └── privkey.pem    (private key — keep secret)
 
-Container path (mapped from host):
-  /etc/letsencrypt/live/gateway.example.com/
+Container: /etc/letsencrypt/live/gateway.example.com/
 ```
 
-## Verification
+**Verify:**
 
-## List all certificates
 ```bash
 docker exec reverse-proxy-certbot certbot certificates
-```
-
-## Expected Output
-
-```txt
-Found the following certs:
-  Certificate Name: gateway.example.com
-    Domains: gateway.example.com
-    Expiry Date: 2026-09-09 12:00:00+00:00 (VALID: 89 days)
-    Certificate Path: /etc/letsencrypt/live/gateway.example.com/fullchain.pem
-```
-## Verify certificate files exist on the host
-```bash
 sudo ls -la ~/reverse-proxy/certbot/conf/live/gateway.example.com/
 ```
 
-## Expected Output
+### 3.3 Enable HTTPS
 
-```txt
-total ...
-lrwxrwxrwx ... cert.pem -> ../../archive/gateway.example.com/cert1.pem
-lrwxrwxrwx ... chain.pem -> ...
-lrwxrwxrwx ... fullchain.pem -> ...
-lrwxrwxrwx ... privkey.pem -> ...
--rw-r--r-- ... README
-```
-
-## Troubleshooting
-
-```txt
-Error: "Could not connect to server"
-  Problem: Port 80 is blocked or Nginx is not running.
-  Fix:
-    sudo ufw status | grep 80/tcp
-    docker compose ps | grep nginx
-    dig gateway.example.com +short
-
-Error: "The server could not connect to the client to verify the domain"
-  Problem: Cloudflare is proxying the request (orange cloud).
-  Fix: Change the DNS record to DNS Only (gray cloud) and wait 2 minutes.
-
-Error: "too many certificates already issued"
-  Problem: Let's Encrypt rate limit (50 certs/week per domain).
-  Fix: Wait a week or use the staging environment:
-    --server https://acme-staging-v02.api.letsencrypt.org/directory
-```
-
-## Next Step
-
-Proceed to Phase 10.
-
----
-
-# Phase 10: Enable HTTPS
-
-## Goal
-
-Add the HTTPS server block to the Nginx site config and turn on SSL.
-
-## File Path
-
-`~/reverse-proxy/nginx/sites/gateway.example.com.conf`
-
-## Command
-
-```bash
-nano ~/reverse-proxy/nginx/sites/gateway.example.com.conf
-```
-
-## Exact File Content (Replace The Entire File)
+Replace `~/reverse-proxy/nginx/sites/gateway.example.com.conf`:
 
 ```nginx
 server {
@@ -938,39 +457,21 @@ server {
 
     location / {
         default_type text/plain;
-        return 200 "Service Available\n\nThis domain is configured correctly and is responding successfully.\n\nThe application content has not been published yet.\n\nPlease check back later.";
+        return 200 "Service Available\n\nThis domain is configured correctly.\n\nThe application has not been deployed yet.\n";
     }
 }
 ```
 
-## Validate And Reload
-
-### Test configuration
-```bash
-docker exec reverse-proxy-nginx nginx -t
-```
-
-### If syntax is ok, reload
-```bash
-docker exec reverse-proxy-nginx nginx -s reload
-```
-
-## Verification Test HTTPS
+**Apply & verify:**
 
 ```bash
+docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload
 curl -I https://gateway.example.com
 ```
 
-## Expected Output
+**Expected:** `HTTP/2 200` with `strict-transport-security` header.
 
-```txt
-HTTP/2 200
-server: nginx
-content-type: text/plain
-strict-transport-security: max-age=31536000; includeSubDomains
-```
-
-## Verify SSL Certificate
+**Verify SSL certificate details:**
 
 ```bash
 echo | openssl s_client -servername gateway.example.com \
@@ -978,228 +479,108 @@ echo | openssl s_client -servername gateway.example.com \
   | openssl x509 -noout -issuer -subject -dates
 ```
 
-## Expected Output
+### 3.4 Update Cloudflare to Proxied
 
-```txt
-issuer= /C=US/O=Let's Encrypt/CN=R11
-subject= CN=gateway.example.com
-notBefore=Jun 11 00:00:00 2026 GMT
-notAfter=Sep  9 00:00:00 2026 GMT
+1. Back in Cloudflare dashboard, change the A record to **Proxied** (orange cloud).
+2. **SSL/TLS → Full (strict)**
+3. Enable **Always Use HTTPS**
+
 ```
-
-## Update Cloudflare DNS
-
-1. Go back to Cloudflare dashboard.
-2. Change the A record from **DNS Only** (gray) to **Proxied** (orange).
-3. Set **SSL/TLS** → **Full (strict)**.
-4. Enable **Always Use HTTPS**.
-
-```txt
-Cloudflare settings after SSL:
+Cloudflare post-SSL settings:
   Proxy Status: Proxied (orange cloud)
   SSL/TLS Mode: Full (strict)
   Always Use HTTPS: On
 ```
 
-## Verify Via Cloudflare
+**Verify via Cloudflare:**
 
 ```bash
 curl -I https://gateway.example.com
 ```
 
-The connection now goes through Cloudflare.
+### 3.5 Automated SSL Renewal
 
-## Troubleshooting
+SSL renewal depends on host cron. The certbot container does not auto-renew by itself.
 
-```txt
-Error: "nginx: [emerg] cannot load certificate"
-  Problem: The certificate file path is wrong.
-  Fix: Verify the path:
-    docker exec reverse-proxy-nginx ls -la /etc/letsencrypt/live/gateway.example.com/
-  The path in the container must match what certbot created.
+**Manual renewal test:**
 
-Error: "525 SSL handshake failed"
-  Problem: Cloudflare Full (strict) is set but the origin certificate
-           is missing or invalid.
-  Fix: Temporarily set Cloudflare SSL to Full (not strict).
-       Then verify the certificate:
-         docker exec reverse-proxy-certbot certbot certificates
-       Fix the certificate issue, then set back to Full (strict).
-
-Error: "curl: (35) SSL routines error"
-  Problem: Nginx SSL configuration issue.
-  Fix: Check Nginx error logs:
-    docker exec reverse-proxy-nginx tail -20 /var/log/nginx/error.log
+```bash
+docker exec reverse-proxy-certbot certbot renew --dry-run
 ```
 
-## Next Step
+**Expected:** All simulated renewals succeed.
 
-Proceed to Phase 11.
+**Set up automatic renewal:**
+
+```bash
+crontab -e
+```
+
+Add:
+
+```cron
+0 3 * * * /usr/bin/docker exec reverse-proxy-certbot certbot renew --quiet && /usr/bin/docker exec reverse-proxy-nginx nginx -s reload
+0 5 1 * * /usr/bin/docker exec reverse-proxy-certbot certbot renew --dry-run --quiet
+```
+
+**Verify cron:**
+
+```bash
+crontab -l
+which docker
+```
+
+**Expected:** Two active cron jobs. Docker path `/usr/bin/docker` (update crontab if different).
+
+### Troubleshooting
+
+```
+"Could not connect to server" (certbot)
+  Port 80 blocked or Nginx not running:
+    sudo ufw status | grep 80/tcp
+    docker compose ps | grep nginx
+    dig gateway.example.com +short
+
+"The server could not connect to verify domain"
+  Cloudflare is proxying (orange cloud) — set to DNS Only (gray), wait 2 min.
+
+"too many certificates already issued"
+  Let's Encrypt rate limit — wait a week or use staging:
+    --server https://acme-staging-v02.api.letsencrypt.org/directory
+
+"nginx: [emerg] cannot load certificate"
+  docker exec reverse-proxy-nginx ls -la /etc/letsencrypt/live/gateway.example.com/
+
+"525 SSL handshake failed" (Cloudflare)
+  Temporarily set Cloudflare SSL to Full (not strict), fix cert, then set back.
+
+"curl: (35) SSL routines error"
+  docker exec reverse-proxy-nginx tail -20 /var/log/nginx/error.log
+
+"crontab: command not found"
+  sudo apt install cron -y && sudo systemctl enable cron && sudo systemctl start cron
+
+"docker: command not found in cron"
+  Use absolute path: /usr/bin/docker exec ...
+
+"Renewal failed: server could not connect"
+  Port 80 required for ACME challenge. Check: sudo ufw status | grep 80
+```
 
 ---
 
-# Phase 11: Deploy AI Gateway
+## Phase 4: Application Deployment
 
-## Goal
+### 4.1 Deploy Application
 
-Deploy the AI Gateway application using an image from GHCR.
-
-## Create Project Directory
+**Create project directory and files:**
 
 ```bash
 mkdir -p ~/ai-gateway
 cd ~/ai-gateway
 ```
 
-## Create Project docker-compose.yml
-
-```bash
-nano ~/ai-gateway/docker-compose.yml
-```
-
-Exact content (without connecting to shared-network yet):
-
-```yaml
-services:
-  app:
-    image: ghcr.io/your-github-username/ai-gateway:latest
-    container_name: ai-gateway-server
-    restart: unless-stopped
-    env_file:
-      - .env
-    expose:
-      - "8900"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8900/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-```
-
-> **Note:** The example healthcheck assumes the application exposes an HTTP health endpoint at `/health` and that `wget` is available inside the container. Update the healthcheck command as needed to match your application's health endpoint and the tools available in the container image.
-
-## Create .env File
-
-```bash
-nano ~/ai-gateway/.env
-```
-
-Exact content (replace with your actual secrets):
-
-```env
-NODE_ENV=production
-PORT=8900
-```
-
-Add any other environment variables your AI Gateway needs (API keys, database URLs, etc.).
-
-Secure the file:
-
-```bash
-chmod 600 ~/ai-gateway/.env
-```
-
-## Authenticate With GHCR
-
-```bash
-echo $GITHUB_TOKEN | docker login ghcr.io -u your-github-username --password-stdin
-```
-
-If you don't have a token, create one at GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens. Grant permission to read packages (GHCR).
-
-## Pull The Image
-
-```bash
-docker compose pull
-```
-
-## Expected Output
-
-```txt
-Pulling app ... pulling from ghcr.io/your-github-username/ai-gateway
-latest: Pulling from your-github-username/ai-gateway
-Digest: sha256:abc123def456...
-Status: Downloaded newer image for ghcr.io/your-github-username/ai-gateway:latest
-```
-
-## Run The Container
-
-```bash
-docker compose up -d
-```
-
-## Verification
-
-```bash
-docker compose ps
-```
-
-## Expected Output
-
-```txt
-NAME                IMAGE                                      STATUS
-ai-gateway-server   ghcr.io/your-github-username/ai-gateway:latest   Up 10 seconds (healthy)
-```
-
-## Check Logs
-
-```bash
-docker compose logs app --tail 20
-```
-
-## Expected Output
-
-```txt
-app    | Server started on port 8900
-app    | Health check passed
-```
-
-## Troubleshooting
-
-```txt
-Error: "unauthorized: authentication required"
-  Fix: Log in to GHCR:
-    echo $GITHUB_TOKEN | docker login ghcr.io -u your-github-username --password-stdin
-
-Error: "manifest not found"
-  Fix: The image tag doesn't exist. Check the tag on GHCR:
-    Check your repository's Packages page in GitHub.
-
-Error: "container exits immediately"
-  Fix: Check logs:
-    docker compose logs app
-  Common cause: missing .env variables or the app requires port 8900.
-
-Error: ".env file not found"
-  Fix: Create the .env file:
-    nano ~/ai-gateway/.env
-```
-
-## Next Step
-
-Proceed to Phase 12.
-
----
-
-# Phase 12: Connect AI Gateway To Shared Network
-
-## Goal
-
-Connect the AI Gateway container to the shared-network so the reverse proxy can reach it.
-
-## Edit docker-compose.yml
-
-```bash
-nano ~/ai-gateway/docker-compose.yml
-```
-
-Replace the entire file with:
+`~/ai-gateway/docker-compose.yml`:
 
 ```yaml
 services:
@@ -1231,121 +612,61 @@ networks:
     name: shared-network
 ```
 
-> **Note:** Edit the `healthcheck.test` path to match your application's actual health endpoint. The examples throughout this guide use `HEALTH_ENDPOINT="/health"`.
+> **Note:** Adjust `healthcheck.test` path and `APP_INTERNAL_PORT` to match your application's actual health endpoint and listening port.
 
-Changes from the previous version:
+`~/ai-gateway/.env`:
 
-```txt
-Added:
-  networks:
-    - shared-network
-
-Added at bottom:
-networks:
-  shared-network:
-    external: true
-    name: shared-network
+```env
+NODE_ENV=production
+PORT=8900
+# Add your secrets here
 ```
 
-## Recreate The Container
+```bash
+chmod 600 ~/ai-gateway/.env
+```
+
+**Authenticate with GHCR:**
 
 ```bash
-cd ~/ai-gateway
-docker compose down
+echo $GITHUB_TOKEN | docker login ghcr.io -u your-github-username --password-stdin
+```
+
+If no token: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens (read:packages).
+
+**Pull and start:**
+
+```bash
+docker compose pull
 docker compose up -d
 ```
 
-## Verify Network Connection
+**Verify:**
 
 ```bash
-docker network inspect shared-network
+docker compose ps
+docker compose logs app --tail 20
 ```
 
-## Expected Output (Containers Section)
+**Expected:**
 
-```json
-"Containers": {
-    "abc...": {
-        "Name": "reverse-proxy-nginx",
-    },
-    "def...": {
-        "Name": "reverse-proxy-certbot",
-    },
-    "ghi...": {
-        "Name": "ai-gateway-server",
-    }
-}
+```
+NAME                IMAGE                                               STATUS
+ai-gateway-server   ghcr.io/your-github-username/ai-gateway:latest     Up (healthy)
+
+app | Server started on port 8900
 ```
 
-## Test Connectivity From Nginx
+**Verify connectivity through shared network:**
 
 ```bash
 docker exec reverse-proxy-nginx getent hosts ai-gateway-server
+docker exec reverse-proxy-nginx wget -qO- http://ai-gateway-server:8900/health
 ```
 
-## Expected Output
+### 4.2 Integrate with Reverse Proxy
 
-```txt
-172.19.0.4    ai-gateway-server
-```
-
-## Test The Health Endpoint Through The Network
-
-```bash
-HEALTH_ENDPOINT="/health"
-docker exec reverse-proxy-nginx wget -qO- http://ai-gateway-server:8900${HEALTH_ENDPOINT}
-```
-
-## Expected Output
-
-```json
-{"status":"healthy","uptime":123.45}
-```
-
-## Troubleshooting
-
-```txt
-Error: "host not found"
-  Problem: The container is not on the shared-network.
-  Fix:
-    docker network inspect shared-network
-    If ai-gateway-server is not listed, the network change was not applied.
-    Run: docker compose down && docker compose up -d
-
-Error: "wget: can't connect to remote host: Connection refused"
-  Problem: The app is not listening on port 8900.
-  Fix: Check the app logs:
-    docker compose logs app --tail 20
-
-Error: "network shared-network not found"
-  Problem: The network was not created (Phase 2).
-  Fix: Create it:
-    docker network create --driver bridge --attachable shared-network
-```
-
-## Next Step
-
-Proceed to Phase 13.
-
----
-
-# Phase 13: Update Reverse Proxy With proxy_pass
-
-## Goal
-
-Replace the placeholder response in the Nginx config with an actual proxy_pass to the AI Gateway.
-
-## File Path
-
-`~/reverse-proxy/nginx/sites/gateway.example.com.conf`
-
-## Command
-
-```bash
-nano ~/reverse-proxy/nginx/sites/gateway.example.com.conf
-```
-
-## Exact File Content (Replace The Entire File)
+Replace `~/reverse-proxy/nginx/sites/gateway.example.com.conf`:
 
 ```nginx
 server {
@@ -1387,480 +708,195 @@ server {
 }
 ```
 
-The key change:
-
-```txt
-Old:  return 200 "Service Available...";
-New:  proxy_pass http://ai-gateway-server:8900;
-```
-
-## Validate And Reload
+**Apply & verify:**
 
 ```bash
-docker exec reverse-proxy-nginx nginx -t
-docker exec reverse-proxy-nginx nginx -s reload
-```
-
-## Verification
-
-```bash
-HEALTH_ENDPOINT="/health"
-curl -I https://gateway.example.com${HEALTH_ENDPOINT}
-curl -s https://gateway.example.com${HEALTH_ENDPOINT}
-```
-
-## Expected Output
-
-```txt
-HTTP/2 200
-content-type: application/json
-```
-
-## Full Health Check
-
-```bash
-HEALTH_ENDPOINT="/health"
-curl -s https://gateway.example.com${HEALTH_ENDPOINT} | python3 -m json.tool
-```
-
-## Expected Output
-
-```json
-{
-    "status": "healthy",
-    "uptime": 1234.56
-}
-```
-
-## Check Nginx Access Logs
-
-```bash
+docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload
+curl -sI https://gateway.example.com/health
+curl -s https://gateway.example.com/health | python3 -m json.tool
 docker exec reverse-proxy-nginx tail -10 /var/log/nginx/gateway-access.log
 ```
 
-## Expected Output
+**Expected:**
 
-```json
-{"time":"2026-06-11T10:30:00+00:00","remote_addr":"198.51.100.10","request":"GET /health HTTP/2","status":200,"upstream_addr":"172.19.0.4:8900"}
+```
+HTTP/2 200
+content-type: application/json
+
+{"status": "healthy", "uptime": 1234.56}
+
+{"time":"...","request":"GET /health HTTP/2","status":200,"upstream_addr":"172.19.0.4:8900"}
 ```
 
-## Troubleshooting
+### 4.3 Application Update Procedure
 
-```txt
-Error: "502 Bad Gateway"
-  Problem: Nginx cannot reach ai-gateway-server:8900.
-  Fix:
-    HEALTH_ENDPOINT="/health"
-    docker exec reverse-proxy-nginx getent hosts ai-gateway-server
-    docker exec reverse-proxy-nginx wget -qO- http://ai-gateway-server:8900${HEALTH_ENDPOINT}
-    docker network inspect shared-network
+```bash
+cd ~/ai-gateway
 
-Error: "host not found in upstream ai-gateway-server"
-  Problem: The container name does not match.
-  Fix:
-    docker ps | grep ai-gateway
-    Check the container_name in ~/ai-gateway/docker-compose.yml
-    Must match: container_name: ai-gateway-server
+# Pull new image
+docker compose pull
 
-Error: "nginx: [emerg] invalid port in upstream"
-  Problem: Typo in proxy_pass (missing colon or port).
-  Fix: Check the line:
-    proxy_pass http://ai-gateway-server:8900;
-  Must be exactly this format.
+# Recreate container with new image
+docker compose up -d
 
-Error: "504 Gateway Timeout"
-  Problem: The AI Gateway is not responding in time.
-  Fix: Check if the container is healthy:
-    docker inspect ai-gateway-server --format='{{.State.Health.Status}}'
-  Add timeout settings to proxy_pass:
-    proxy_connect_timeout 60s;
-    proxy_read_timeout 60s;
+# Verify
+docker compose ps
+docker compose logs app --tail 20
+curl -sf https://gateway.example.com/health && echo "OK"
 ```
 
-## Next Step
+### 4.4 Rollback Procedure
 
-Proceed to Phase 14.
+```bash
+cd ~/ai-gateway
+
+# Pin previous tag in docker-compose.yml, then:
+docker compose pull app
+docker compose up -d --no-deps app
+
+# Verify health
+curl -sf https://gateway.example.com/health && echo "Rollback OK"
+```
+
+### Troubleshooting
+
+```
+"unauthorized: authentication required"
+  echo $GITHUB_TOKEN | docker login ghcr.io -u your-github-username --password-stdin
+
+"manifest not found"
+  Check the image tag exists on GHCR Packages page.
+
+"container exits immediately"
+  docker compose logs app
+  Common cause: missing .env variables or app port mismatch.
+
+".env file not found"
+  nano ~/ai-gateway/.env
+
+"host not found" (from nginx)
+  docker network inspect shared-network
+  If ai-gateway-server missing: docker compose down && docker compose up -d
+
+"wget: can't connect: Connection refused"
+  docker compose logs app --tail 20
+
+"502 Bad Gateway"
+  docker exec reverse-proxy-nginx getent hosts ai-gateway-server
+  docker exec reverse-proxy-nginx wget -qO- http://ai-gateway-server:8900/health
+
+"host not found in upstream ai-gateway-server"
+  docker ps | grep ai-gateway
+  Check container_name in ~/ai-gateway/docker-compose.yml matches ai-gateway-server
+
+"nginx: [emerg] invalid port in upstream"
+  Check proxy_pass format: http://ai-gateway-server:8900;
+
+"504 Gateway Timeout"
+  docker inspect ai-gateway-server --format='{{.State.Health.Status}}'
+  Add timeouts: proxy_connect_timeout 60s; proxy_read_timeout 60s;
+```
 
 ---
 
-# Phase 14: Production Validation
+## Phase 5: Production Validation
 
-## Goal
-
-Run the complete production validation checklist.
-
-## 1. HTTPS Works
+Run this complete checklist after any deployment, config change, or SSL renewal.
 
 ```bash
+# 1. HTTPS returns 200
 curl -sI https://gateway.example.com | head -1
-```
 
-Expected: `HTTP/2 200`
-
-## 2. HTTP Redirects To HTTPS
-
-```bash
+# 2. HTTP redirects to HTTPS (301)
 curl -sI http://gateway.example.com | head -1
-```
 
-Expected: `HTTP/1.1 301 Moved Permanently`
-
-## 3. SSL Certificate Valid
-
-```bash
+# 3. SSL certificate is valid
 echo | openssl s_client -servername gateway.example.com \
   -connect gateway.example.com:443 2>/dev/null \
   | openssl x509 -noout -dates
-```
 
-Expected: Not Before and Not After dates are current.
-
-## 4. HSTS Header Present
-
-```bash
+# 4. HSTS header present
 curl -sI https://gateway.example.com | grep -i strict-transport
-```
 
-Expected: `strict-transport-security: max-age=31536000; includeSubDomains`
-
-## 5. Container Healthy
-
-```bash
+# 5. Container is healthy
 docker inspect ai-gateway-server --format='{{.State.Health.Status}}'
-```
 
-Expected: `healthy`
+# 6. Health endpoint returns 200
+curl -sf https://gateway.example.com/health && echo "OK"
 
-## 6. Health Endpoint Returns 200
-
-```bash
-HEALTH_ENDPOINT="/health"
-curl -sf https://gateway.example.com${HEALTH_ENDPOINT} && echo "OK"
-```
-
-Expected: `OK`
-
-## 7. Logs Clean
-
-```bash
+# 7. Application logs are clean
 docker compose -f ~/ai-gateway/docker-compose.yml logs app --tail 20
-```
 
-Expected: No error stack traces. No connection refused messages. No crash loops.
-
-## 8. No Exposed App Ports
-
-```bash
+# 8. No app ports exposed on host
 sudo ss -tulpn | grep ":8900"
-```
 
-Expected: No output. Port 8900 must not be listening on the host.
-
-## 9. Only Expected Ports Open
-
-```bash
+# 9. Only expected ports open (80, 443, SSH)
 sudo ss -tulpn | grep LISTEN
-```
 
-Expected:
-
-```txt
-tcp  LISTEN 0  ... :80     ...
-tcp  LISTEN 0  ... :443    ...
-tcp  LISTEN 0  ... :22     ...
-```
-
-## 10. Direct IP Access Blocked
-
-```bash
+# 10. Direct IP access returns 444 (blocked)
 curl -sI http://$(curl -s ifconfig.me) | head -1
-```
 
-Expected: Empty response or `curl: (52) Empty reply from server` (444).
-
-## 11. Cloudflare Proxying
-
-```bash
+# 11. Cloudflare proxying active (should show Cloudflare IPs)
 dig gateway.example.com +short
-```
 
-Expected: Cloudflare IPs (104.x.x.x, 172.x.x.x). If your VPS IP appears, the record is set to DNS Only.
-
-## 12. Certificate Renewal Dry-Run Works
-
-```bash
+# 12. Certificate renewal dry-run passes
 docker exec reverse-proxy-certbot certbot renew --dry-run
 ```
 
-Expected:
+**Validation Checklist:**
 
 ```txt
-Cert not due for renewal at least 30 days before expiry, but dry run executed.
-** DRY RUN: simulating 'certbot renew' close to cert expiry
-**          (The test certificates below have not been saved.)
-...
-** DRY RUN: finishing
+HTTPS works (200 OK)
+HTTP redirects to HTTPS (301)
+SSL certificate valid (dates current)
+HSTS header present
+Container healthy
+Health endpoint returns 200
+Logs clean (no errors)
+No exposed app ports
+Only 80, 443, SSH listening
+Direct IP returns 444 (blocked)
+Cloudflare proxying (orange cloud)
+Certbot dry-run passes
 ```
-
-## Production Validation Checklist
-
-```txt
-✓ HTTPS works (200 OK)
-✓ HTTP redirects to HTTPS (301)
-✓ SSL certificate valid (dates current)
-✓ HSTS header present
-✓ Container healthy
-✓ Health endpoint returns 200
-✓ Logs clean (no errors)
-✓ No exposed app ports (8900)
-✓ Only 80, 443, SSH listening externally
-✓ Direct IP access returns 444
-✓ Cloudflare proxying (orange cloud)
-✓ Certbot dry-run passes
-```
-
-## Next Step
-
-Proceed to Phase 15.
 
 ---
 
-# Phase 15: SSL Renewal Setup
+## Phase 6: Operations
 
-## Goal
-
-Set up automated SSL certificate renewal and verify it works.
-
-> **Important:** SSL renewal depends on the host cron jobs configured in this phase. The certbot container does not automatically renew certificates by itself.
-
-## Step 15.1 — Manual Renewal Test
+### 6.1 Daily Health Check
 
 ```bash
-docker exec reverse-proxy-certbot certbot renew --dry-run
-```
-
-## Expected Output
-
-```txt
-Cert not due for renewal, but dry run executed.
-** DRY RUN: simulating 'certbot renew' close to cert expiry
-...
-Congratulations, all simulated renewals succeeded:
-  /etc/letsencrypt/live/gateway.example.com/fullchain.pem (success)
-```
-
-## Step 15.2 — Set Up Cron For Automatic Renewal
-
-```bash
-crontab -e
-```
-
-If prompted, select `nano` as the editor. Add the following line at the end of the file:
-
-```cron
-0 3 * * * /usr/bin/docker exec reverse-proxy-certbot certbot renew --quiet && /usr/bin/docker exec reverse-proxy-nginx nginx -s reload
-```
-
-Save and exit (Ctrl+O, Enter, Ctrl+X).
-
-## Step 15.3 — Verify Cron Job
-
-```bash
-crontab -l
-```
-
-## Expected Output
-
-```txt
-0 3 * * * /usr/bin/docker exec reverse-proxy-certbot certbot renew --quiet && /usr/bin/docker exec reverse-proxy-nginx nginx -s reload
-```
-
-## Step 15.4 — Add Monthly Dry-Run
-
-Add a second cron line to verify the renewal pipeline monthly:
-
-```bash
-crontab -e
-```
-
-Add:
-
-```cron
-0 5 1 * * /usr/bin/docker exec reverse-proxy-certbot certbot renew --dry-run --quiet
-```
-
-Final crontab should look like:
-
-```txt
-0 3 * * * /usr/bin/docker exec reverse-proxy-certbot certbot renew --quiet && /usr/bin/docker exec reverse-proxy-nginx nginx -s reload
-0 5 1 * * /usr/bin/docker exec reverse-proxy-certbot certbot renew --dry-run --quiet
-```
-
-## Step 15.5 — Verify Cron Syntax
-
-```bash
-crontab -l | grep -v "^#" | wc -l
-```
-
-Expected: `2` (two active cron jobs).
-
-## Step 15.6 — Verify Crontab Will Work
-
-```bash
-which docker
-```
-
-Expected: `/usr/bin/docker`
-
-If `which docker` returns a different path, update the crontab entries with the correct path.
-
-## Step 15.7 — View Certbot Logs
-
-```bash
-docker exec reverse-proxy-certbot ls -la /var/log/letsencrypt/
-```
-
-Expected:
-
-```txt
--rw-r--r--  ... letsencrypt.log
--rw-r--r--  ... letsencrypt.log.1
-```
-
-## Troubleshooting
-
-```txt
-Error: "crontab: command not found"
-  Fix: Install cron:
-    sudo apt install cron -y
-    sudo systemctl enable cron
-    sudo systemctl start cron
-
-Error: "docker: command not found in cron"
-  Fix: Use absolute path to docker:
-    /usr/bin/docker exec ...
-  Verify the docker path: which docker
-
-Error: "Renewal failed: The server could not connect"
-  Fix: Check that port 80 is open:
-    sudo ufw status | grep 80
-  Certbot needs port 80 for the ACME challenge during renewal.
-```
-
-## Next Step
-
-Proceed to Phase 16.
-
----
-
-# Phase 16: Routine Maintenance
-
-## Goal
-
-Define daily, weekly, and monthly maintenance tasks.
-
-## Daily Checks
-
-Run these every morning:
-
-```bash
-# 1. Check all containers are running
-docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
-```
-
-Expected: All containers show `Up` or `Up (healthy)`.
-
-```bash
-HEALTH_ENDPOINT="/health"
-curl -sf https://gateway.example.com${HEALTH_ENDPOINT} && echo "gateway OK"
-```
-
-Expected: Returns `OK`.
-
-```bash
-# 3. Check disk space
+docker ps --format "table {{.Names}}\t{{.Status}}"
+curl -sf https://gateway.example.com/health && echo "gateway OK"
 df -h /
-```
-
-Alert if usage > 85%.
-
-```bash
-# 4. Check memory
 free -h
-```
-
-Alert if available memory < 500 MB.
-
-```bash
-# 5. Check Nginx errors
 docker exec reverse-proxy-nginx tail -5 /var/log/nginx/error.log
 ```
 
-Expected: No recent error messages.
+Alert thresholds: disk > 85%, available memory < 500 MB.
 
-## Weekly Checks
-
-Run these once per week:
+### 6.2 Weekly Checks
 
 ```bash
-# 1. Full certificate status
 docker exec reverse-proxy-certbot certbot certificates
-```
-
-Expected: All domains show VALID with > 30 days remaining.
-
-```bash
-# 2. Docker system disk usage
 docker system df
-```
-
-Check that image and container sizes are not growing unexpectedly.
-
-```bash
-# 3. Prune unused Docker images
 docker image prune -f
+sudo fail2ban-client status sshd   # if fail2ban installed
 ```
 
-```bash
-# 4. Check failed SSH login attempts
-sudo fail2ban-client status sshd
-```
-
-Expected: Status shows jail is active (if fail2ban is installed).
-
-## Monthly Checks
-
-Run these once per month:
+### 6.3 Monthly Checks
 
 ```bash
-# 1. Full SSL renewal dry run
 docker exec reverse-proxy-certbot certbot renew --dry-run
-```
-
-Expected: All simulated renewals succeed.
-
-```bash
-# 2. Clean up old images
 docker image prune -a -f
-```
-
-```bash
-# 3. Review Nginx access logs for anomalies
 docker exec reverse-proxy-nginx sh -c \
   "tail -10000 /var/log/nginx/access.log | grep -o '\"status\":[0-9]*' | sort | uniq -c | sort -rn"
 ```
 
-Expected: Mostly 200 and 301 status codes. No unusual spike in 4xx or 5xx.
+### 6.4 Automated Daily Script
 
-```bash
-# 4. Update AI Gateway image
-docker compose -f ~/ai-gateway/docker-compose.yml pull
-docker compose -f ~/ai-gateway/docker-compose.yml up -d
-```
-
-## Quick Daily Script
-
-Create `~/reverse-proxy/scripts/daily-check.sh`:
+`~/reverse-proxy/scripts/daily-check.sh`:
 
 ```bash
 #!/bin/bash
@@ -1869,8 +905,7 @@ docker ps --format "table {{.Names}}\t{{.Status}}"
 
 echo ""
 echo "=== Health Endpoints ==="
-HEALTH_ENDPOINT="/health"
-for url in https://gateway.example.com${HEALTH_ENDPOINT}; do
+for url in https://gateway.example.com/health; do
   status=$(curl -so /dev/null -w "%{http_code}" "$url")
   echo "$url -> $status"
 done
@@ -1892,202 +927,147 @@ echo "=== Certificates ==="
 docker exec reverse-proxy-certbot certbot certificates 2>&1 | grep -E "Certificate Name|Expiry"
 ```
 
-Make it executable:
-
 ```bash
 chmod +x ~/reverse-proxy/scripts/daily-check.sh
-```
-
-Run it:
-
-```bash
 bash ~/reverse-proxy/scripts/daily-check.sh
 ```
 
-## Next Step
+### 6.5 Backup Procedure
 
-Proceed to Phase 17.
+**What to back up:**
+
+| Asset | Path | Frequency |
+|---|---|---|
+| Nginx configs | `~/reverse-proxy/nginx/` | On every change |
+| SSL certificates | `~/reverse-proxy/certbot/conf/` | Monthly |
+| Environment files | `~/ai-gateway/.env` | On every change |
+| Docker Compose files | `~/reverse-proxy/docker-compose.yml`, `~/ai-gateway/docker-compose.yml` | On every change |
+
+**Backup command (manual):**
+
+```bash
+BACKUP_DIR=~/backups/$(date +%Y%m%d-%H%M%S)
+mkdir -p $BACKUP_DIR
+
+cp -r ~/reverse-proxy/nginx $BACKUP_DIR/nginx
+cp -r ~/reverse-proxy/certbot/conf $BACKUP_DIR/certbot-conf
+cp ~/reverse-proxy/docker-compose.yml $BACKUP_DIR/reverse-proxy-compose.yml
+cp ~/ai-gateway/.env $BACKUP_DIR/ai-gateway.env
+cp ~/ai-gateway/docker-compose.yml $BACKUP_DIR/ai-gateway-compose.yml
+
+tar -czf ${BACKUP_DIR}.tar.gz -C ~/backups $(basename $BACKUP_DIR)
+rm -rf $BACKUP_DIR
+echo "Backup created: ${BACKUP_DIR}.tar.gz"
+```
+
+**Restore procedure:**
+
+```bash
+# List available backups
+ls -la ~/backups/*.tar.gz
+
+# Restore from backup
+RESTORE_FILE=~/backups/20260626-120000.tar.gz
+tar -xzf $RESTORE_FILE -C /tmp/restore
+
+# Restore files individually:
+cp -r /tmp/restore/nginx/* ~/reverse-proxy/nginx/
+cp -r /tmp/restore/certbot-conf/* ~/reverse-proxy/certbot/conf/
+cp /tmp/restore/ai-gateway.env ~/ai-gateway/.env
+chmod 600 ~/ai-gateway/.env
+cp /tmp/restore/ai-gateway-compose.yml ~/ai-gateway/docker-compose.yml
+
+# Reload nginx if configs changed
+docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload
+
+# Restart application if configs changed
+docker compose -f ~/ai-gateway/docker-compose.yml up -d
+```
+
+**Recommendation:** Integrate with [15-backup-snapshots.md](../15-backup-snapshots.md) for automated offsite backups.
+
+### 6.6 Maintenance — Update Reverse Proxy Images
+
+```bash
+cd ~/reverse-proxy
+docker compose pull
+docker compose up -d
+```
 
 ---
 
-# Phase 17: Disaster Recovery
+## Phase 7: Disaster Recovery
 
-## Goal
+### Scope
 
-Restore the entire production environment on a new VPS after a catastrophic failure.
+Complete restoration of the production environment on a new VPS after catastrophic failure.
 
-## Assumptions
+### Assumptions
 
-```txt
-- Old VPS is completely unrecoverable
-- You have a new VPS with Ubuntu and Docker installed
-- You have SSH access to the new VPS
-- You have access to Cloudflare account
-- The AI Gateway image is in GHCR at ghcr.io/your-github-username/ai-gateway:latest
-- All configuration files are backed up or can be recreated from this runbook
-```
+- Old VPS is unrecoverable.
+- New VPS with Ubuntu and Docker installed.
+- SSH access to new VPS.
+- Cloudflare account access.
+- Application image available in GHCR.
+- Configuration files are backed up or can be recreated from this runbook.
 
-## Step 17.1 — Provision New VPS
+### Recovery Procedure
+
+Recovery follows the same phases as fresh deployment. Below are the steps with references to the authoritative Phase section. Only recovery-specific deviations are documented inline.
+
+#### 7.1 Provision New VPS
 
 ```bash
-# Run on your local machine
 ssh root@NEW_VPS_IP
-
-# Basic setup
 apt update && apt upgrade -y
-
-# Install Docker if not present
 curl -fsSL https://get.docker.com | sh
-
-# Configure firewall
-ufw allow 80/tcp
-ufw allow 443/tcp
-ufw allow 22/tcp
+ufw allow 80/tcp && ufw allow 443/tcp && ufw allow 22/tcp
 ufw --force enable
 ```
 
-## Step 17.2 — Create Shared Network
+#### 7.2 Deploy Shared Network
+
+→ [Phase 1.2](#12-shared-network)
 
 ```bash
 docker network create --driver bridge --attachable shared-network
 ```
 
-## Step 17.3 — Create Reverse Proxy Folder Structure
+#### 7.3 Deploy Reverse Proxy Stack
+
+→ Follow [Phase 2](#phase-2-reverse-proxy-stack) end-to-end:
+- Create directory structure (2.1)
+- Create `nginx.conf` (2.2)
+- Create `docker-compose.yml` (2.3)
+- Create default catch-all and HTTP placeholder configs (2.4)
+- Generate fallback certificate and start stack (2.5)
+
+**If restoring from backup:**
 
 ```bash
-mkdir -p ~/reverse-proxy/{nginx/{sites,includes,ssl/default},certbot/{conf,www},scripts}
+# Restore nginx configs and certbot data before starting
+cp -r /tmp/restore/nginx/* ~/reverse-proxy/nginx/
+cp -r /tmp/restore/certbot-conf/* ~/reverse-proxy/certbot/conf/
 ```
 
-## Step 17.4 — Create nginx.conf
+#### 7.4 Issue SSL Certificate
 
-```bash
-nano ~/reverse-proxy/nginx/nginx.conf
-```
+→ Follow [Phase 3](#phase-3-ssl--https) sections 3.1–3.3:
+- Set Cloudflare to DNS Only (3.1)
+- Issue certificate (3.2)
+- Enable HTTPS (3.3)
 
-Paste the content from Phase 4. Save and exit.
+#### 7.5 Deploy Application
 
-## Step 17.5 — Create docker-compose.yml For Reverse Proxy
+→ Follow [Phase 4](#phase-4-application-deployment) sections 4.1–4.2:
+- Create project directory and files (4.1)
+- Restore `.env` files from backup
+- Authenticate with GHCR and start (4.1)
+- Integrate with reverse proxy (4.2)
 
-```bash
-nano ~/reverse-proxy/docker-compose.yml
-```
+#### 7.6 Restore Automation
 
-Paste the content from Phase 5. Save and exit.
-
-## Step 17.6 — Generate Self-Signed Fallback Certificate
-
-```bash
-docker run --rm \
-  -v ~/reverse-proxy/nginx/ssl/default:/certs alpine sh -c \
-  "apk add openssl && openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
-  -keyout /certs/privkey.pem -out /certs/fullchain.pem \
-  -subj '/CN=localhost'"
-```
-
-## Step 17.7 — Create HTTP-Only Nginx Config
-
-```bash
-nano ~/reverse-proxy/nginx/sites/gateway.example.com.conf
-```
-
-Paste the HTTP-only config from Phase 6. Save and exit.
-
-## Step 17.8 — Create default.conf
-
-```bash
-nano ~/reverse-proxy/nginx/sites/default.conf
-```
-
-Paste the default catch-all block from Phase 6. Save and exit.
-
-## Step 17.9 — Start Reverse Proxy
-
-```bash
-cd ~/reverse-proxy
-docker compose up -d
-```
-
-## Step 17.10 — Validate nginx config and reload
-
-```bash
-docker exec reverse-proxy-nginx nginx -t
-docker exec reverse-proxy-nginx nginx -s reload
-```
-
-## Step 17.11 — Set Cloudflare DNS To DNS Only
-
-Log in to Cloudflare dashboard, set the A record for gateway.example.com to DNS Only (gray cloud).
-
-## Step 17.12 — Re-Issue SSL Certificate
-
-```bash
-docker exec reverse-proxy-certbot certbot certonly \
-  --webroot --webroot-path /var/www/certbot \
-  -d gateway.example.com \
-  --email your-email@example.com \
-  --agree-tos --non-interactive
-```
-
-Expected: `Successfully received certificate.`
-
-## Step 17.13 — Create HTTPS Nginx Config
-
-```bash
-nano ~/reverse-proxy/nginx/sites/gateway.example.com.conf
-```
-
-Paste the full SSL config from Phase 10. Save and exit.
-
-## Step 17.14 — Reload Nginx
-
-```bash
-docker exec reverse-proxy-nginx nginx -t
-docker exec reverse-proxy-nginx nginx -s reload
-```
-
-## Step 17.15 — Set Cloudflare Back To Proxied
-
-Log in to Cloudflare dashboard:
-1. Change A record to **Proxied** (orange cloud)
-2. Set **SSL/TLS** → **Full (strict)**
-3. Enable **Always Use HTTPS**
-
-## Step 17.16 — Deploy AI Gateway
-
-```bash
-mkdir -p ~/ai-gateway
-cd ~/ai-gateway
-```
-
-Create `~/ai-gateway/docker-compose.yml` with the content from Phase 12 (with shared-network).
-
-Create `~/ai-gateway/.env` with your environment variables.
-
-```bash
-chmod 600 ~/ai-gateway/.env
-
-# Log in to GHCR
-echo $GITHUB_TOKEN | docker login ghcr.io -u your-github-username --password-stdin
-
-# Pull and start
-docker compose pull
-docker compose up -d
-```
-
-## Step 17.17 — Add proxy_pass
-
-```bash
-nano ~/reverse-proxy/nginx/sites/gateway.example.com.conf
-```
-
-Replace with the full config from Phase 13 (with proxy_pass). Save and exit.
-
-```bash
-docker exec reverse-proxy-nginx nginx -t
-docker exec reverse-proxy-nginx nginx -s reload
-```
-
-## Step 17.18 — Restore Cron Jobs
+→ Follow [Phase 3.5](#35-automated-ssl-renewal):
 
 ```bash
 crontab -e
@@ -2100,16 +1080,19 @@ Add:
 0 5 1 * * /usr/bin/docker exec reverse-proxy-certbot certbot renew --dry-run --quiet
 ```
 
-## Step 17.19 — Update DNS If IP Changed
+#### 7.7 Update DNS If IP Changed
 
-If the new VPS has a different IP, update the A record in Cloudflare:
-- gateway.example.com A → NEW_VPS_IP (Proxied)
+If the new VPS has a different IP, update the Cloudflare A record:
 
-## Step 17.20 — Run Production Validation
+```
+gateway.example.com A → NEW_VPS_IP (Proxied, orange cloud)
+```
 
-Execute the full checklist from Phase 14.
+#### 7.8 Run Production Validation
 
-## Recovery Checklist
+→ Execute [Phase 5](#phase-5-production-validation) checklist end-to-end.
+
+### Recovery Checklist
 
 ```txt
 Phase 1: Infrastructure
@@ -2119,83 +1102,81 @@ Phase 1: Infrastructure
   ✓ shared-network created
 
 Phase 2: Reverse Proxy
-  ✓ Reverse proxy folder structure created
+  ✓ Directory structure created
   ✓ nginx.conf created
   ✓ docker-compose.yml created
-  ✓ Self-signed fallback cert generated
-  ✓ Nginx and Certbot containers running
-  ✓ Nginx config validated
+  ✓ Fallback certificate generated
+  ✓ Containers running
+  ✓ Config validated
 
 Phase 3: SSL
   ✓ Cloudflare set to DNS Only
-  ✓ Certificate re-issued for gateway.example.com
-  ✓ Site config updated with SSL block
-  ✓ Cloudflare set back to Proxied + Full (strict)
+  ✓ Certificate re-issued
+  ✓ HTTPS enabled
+  ✓ Cloudflare set to Proxied + Full (strict)
+  ✓ Cron jobs restored
 
-Phase 4: AI Gateway
-  ✓ AI Gateway container running
+Phase 4: Application
+  ✓ Container running and healthy
   ✓ Container on shared-network
-  ✓ proxy_pass configured in Nginx
+  ✓ proxy_pass configured
   ✓ Health checks passing
 
-Phase 5: Automation
-  ✓ Cron jobs restored (SSL renewal + dry-run)
-  ✓ Daily health check script deployed
-
-Phase 6: DNS
-  ✓ A record points to new VPS IP
-  ✓ DNS propagation confirmed
-  ✓ gateway.example.com accessible via HTTPS
+Phase 5: Validation
+  ✓ All 12 validation checks pass
 ```
-
-## Next Step
-
-No further steps. Deployment is complete.
 
 ---
 
-# Appendix: Emergency Commands
+## Appendix: Emergency & Operational Commands
 
-## Container Management
+### Container Management
 
 ```bash
-# Reload Nginx (no downtime)
+# Reload Nginx (zero-downtime config reload)
 docker exec reverse-proxy-nginx nginx -s reload
 
 # Restart Nginx container (brief downtime)
 docker compose -f ~/reverse-proxy/docker-compose.yml restart nginx
 
-# Restart AI Gateway
+# Restart application
 docker compose -f ~/ai-gateway/docker-compose.yml restart app
 
-# View Nginx logs (live)
+# Follow Nginx logs
 docker compose -f ~/reverse-proxy/docker-compose.yml logs -f nginx
 
-# View AI Gateway logs (live)
+# Follow application logs
 docker compose -f ~/ai-gateway/docker-compose.yml logs -f app
 
-# View Certbot logs
+# View certbot logs
 docker exec reverse-proxy-certbot tail -30 /var/log/letsencrypt/letsencrypt.log
+
+# Complete shutdown (preserves volumes)
+docker compose -f ~/reverse-proxy/docker-compose.yml down
+docker compose -f ~/ai-gateway/docker-compose.yml down
+
+# Complete startup
+docker compose -f ~/reverse-proxy/docker-compose.yml up -d
+docker compose -f ~/ai-gateway/docker-compose.yml up -d
 ```
 
-## Network Debugging
+### Network Debugging
 
 ```bash
-# Check shared-network membership
+# List containers on shared network
 docker network inspect shared-network --format '{{range .Containers}}{{.Name}} {{end}}'
 
-# Resolve AI Gateway hostname from Nginx
+# Resolve container hostname from nginx
 docker exec reverse-proxy-nginx getent hosts ai-gateway-server
 
-# Curl AI Gateway from Nginx
-HEALTH_ENDPOINT="/health"
-docker exec reverse-proxy-nginx wget -qO- http://ai-gateway-server:8900${HEALTH_ENDPOINT}
+# Curl application from nginx container
+docker exec reverse-proxy-nginx wget -qO- http://ai-gateway-server:8900/health
 
-# Check what containers are on the network
+# Full network membership with IPs
 docker network inspect shared-network | grep -E '"Name"|"IPv4Address"'
 ```
 
-## SSL Emergency
+### SSL Emergency
 
 ```bash
 # Force immediate renewal
@@ -2205,7 +1186,7 @@ docker exec reverse-proxy-nginx nginx -s reload
 # Check all certificates
 docker exec reverse-proxy-certbot certbot certificates
 
-# Delete a certificate and re-issue
+# Delete and re-issue certificate
 docker exec reverse-proxy-certbot certbot delete --cert-name gateway.example.com
 docker exec reverse-proxy-certbot certbot certonly \
   --webroot --webroot-path /var/www/certbot \
@@ -2218,45 +1199,59 @@ docker exec reverse-proxy-nginx nginx -s reload
 docker exec reverse-proxy-certbot certbot renew --dry-run
 ```
 
-## Rollback AI Gateway
+### Nginx Config Rollback
 
 ```bash
-# Rollback to previous image version
-cd ~/ai-gateway
-# Edit docker-compose.yml to pin a specific tag, then:
-docker compose pull app
-docker compose up -d --no-deps app
-```
-
-## Rollback Nginx Config
-
-```bash
-# If you have a backup copy
 cp ~/reverse-proxy/nginx/sites/gateway.example.com.conf.bak \
    ~/reverse-proxy/nginx/sites/gateway.example.com.conf
-docker exec reverse-proxy-nginx nginx -s reload
+docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload
 ```
 
-## Complete Shutdown
+### Quick Health Status
 
 ```bash
-# Stop everything (preserves volumes)
-docker compose -f ~/reverse-proxy/docker-compose.yml down
-docker compose -f ~/ai-gateway/docker-compose.yml down
+echo "=== Containers ===" \
+  && docker ps --format "table {{.Names}}\t{{.Status}}" \
+  && echo "" \
+  && echo "=== Health Endpoint ===" \
+  && curl -sf https://gateway.example.com/health && echo "" \
+  && echo "" \
+  && echo "=== SSL Expiry ===" \
+  && echo | openssl s_client -servername gateway.example.com \
+       -connect gateway.example.com:443 2>/dev/null \
+     | openssl x509 -noout -enddate
 ```
 
-## Complete Startup
+---
 
-```bash
-# Start everything
-docker compose -f ~/reverse-proxy/docker-compose.yml up -d
-docker compose -f ~/ai-gateway/docker-compose.yml up -d
+## Final Architecture
+
+```
+~/reverse-proxy
+├── docker-compose.yml
+├── nginx
+│   ├── nginx.conf
+│   ├── sites/
+│   │   ├── default.conf
+│   │   └── gateway.example.com.conf
+│   ├── includes/
+│   └── ssl/default/
+│       ├── fullchain.pem
+│       └── privkey.pem
+├── certbot
+│   ├── conf/
+│   └── www/
+└── scripts/
+    └── daily-check.sh
+
+~/ai-gateway
+├── docker-compose.yml
+└── .env
 ```
 
-## Quick Health Status
-
-> **Note:** Replace `gateway.example.com` with your actual domain. Change `HEALTH_ENDPOINT` below if your application uses a different health endpoint.
-
-```bash
-echo "=== Containers ===" && docker ps --format "table {{.Names}}\t{{.Status}}" && echo "" && echo "=== Health Endpoint ===" && HEALTH_ENDPOINT="/health" && curl -sf https://gateway.example.com${HEALTH_ENDPOINT} && echo "" && echo "" && echo "=== SSL Expiry ===" && echo | openssl s_client -servername gateway.example.com -connect gateway.example.com:443 2>/dev/null | openssl x509 -noout -enddate
-```
+**Architecture Rules:**
+- `reverse-proxy` owns all nginx, SSL, and certbot resources.
+- Each application has its own isolated directory.
+- All containers connect through `shared-network` Docker bridge.
+- Only `reverse-proxy` exposes ports 80 and 443 to the internet.
+- Applications expose ports internally only (`expose` in compose, not `ports`).
