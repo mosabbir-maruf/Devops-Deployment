@@ -277,6 +277,12 @@ Includes:
 
 ---
 
+### [Infra-Bot](https://github.com/mosabbir-maruf/Infra-Bot)
+
+AI-powered infrastructure automation bot for VPS management, deployment, and operations.
+
+---
+
 ## Git & CI/CD
 
 ### [13-git-github-ci-cd.md](./13-git-github-ci-cd.md)
@@ -380,6 +386,7 @@ Follow this order for a complete production setup:
 | 16 | [troubleshooting](./16-troubleshooting.md) | Debug production |
 | 17 | [useful-commands](./17-useful-commands.md) | Quick reference |
 | 18 | [production-reverse-proxy-shared-network](./18-production-reverse-proxy-shared-network.md) | Multi-project reverse proxy |
+| 19 | [Infra-Bot](https://github.com/mosabbir-maruf/Infra-Bot) | AI infrastructure automation bot |
 
 ---
 
