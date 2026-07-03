@@ -631,21 +631,29 @@ nano ~/ai-gateway/docker-compose.yml
 ```yaml
 services:
   app:
-    image: ghcr.io/your-github-username/ai-gateway:latest
+    image: ghcr.io/mosabbir-maruf/ai-gateway:latest
     container_name: ai-gateway-server
     restart: unless-stopped
+
     env_file:
       - .env
+
+    volumes:
+      - ./gateway-data:/home/node/.ai-gateway
+
     expose:
       - "8900"
+
     networks:
       - shared-network
+
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8900/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8900/ > /dev/null || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+
     logging:
       driver: json-file
       options:
