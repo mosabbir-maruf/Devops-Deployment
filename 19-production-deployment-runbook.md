@@ -639,7 +639,7 @@ services:
       - .env
 
     volumes:
-      - ./gateway-data:/home/node/.ai-gateway
+      - ./gateway-data:/var/lib/ai-gateway
 
     expose:
       - "8900"
