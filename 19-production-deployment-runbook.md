@@ -874,40 +874,42 @@ curl -sf https://gateway.example.com/health && echo "Rollback OK"
 
 ## Phase 4.5: Adding Another Site (Repeatable Process)
 
-After your first site is live (Phases 1-4 complete), each new site follows these steps. Only the values change — the process is the same.
+After your first site is live (Phases 1-4 complete), each new site follows the same pattern. The reverse proxy, nginx.conf, and shared network are already set up — you only do the per-app steps.
 
-### Step 1 — Create app directory and files
+### Example: Deploy a second app at api.example.com
+
+**1 — Create app directory**
 
 ```bash
-mkdir -p ~/<new-app-name> && cd ~/<new-app-name>
+mkdir -p ~/my-api && cd ~/my-api
 ```
 
-Copy compose from your first app and edit image/container/port:
+**2 — Create docker-compose.yml** (copy and edit from first app)
 
 ```bash
 cp ~/ai-gateway/docker-compose.yml .
 nano docker-compose.yml
 ```
 
-Create `.env`:
+Change: `image`, `container_name`, `expose` port, health check path to match the new app.
+
+**3 — Create .env**
 
 ```bash
 nano .env
 chmod 600 .env
 ```
 
-### Step 2 — Create nginx config (HTTP only, no SSL yet)
+**4 — Create HTTP-only nginx config** (no SSL block yet — cert doesn't exist)
 
 ```bash
-nano ~/reverse-proxy/nginx/sites/<your-domain>.conf
+nano ~/reverse-proxy/nginx/sites/api.example.com.conf
 ```
-
-Paste and replace the values:
 
 ```nginx
 server {
     listen 80;
-    server_name YOUR_DOMAIN;
+    server_name api.example.com;
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
@@ -919,46 +921,46 @@ server {
 }
 ```
 
-### Step 3 — Reload nginx
+**5 — Reload nginx**
 
 ```bash
 docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload
 ```
 
-### Step 4 — Create Cloudflare A record (DNS Only)
+**6 — Create Cloudflare A record** (DNS Only, gray cloud)
 
 ```
-Type: A, Name: <subdomain>, IPv4: <YOUR_VPS_IP>, Proxy: DNS Only (gray)
+Type: A, Name: api, IPv4: <YOUR_VPS_IP>, Proxy: DNS Only
 ```
 
 Verify:
 
 ```bash
-dig <your-domain> +short
+dig api.example.com +short
 ```
 
-### Step 5 — Issue SSL certificate
+**7 — Issue SSL certificate**
 
 ```bash
 docker exec reverse-proxy-certbot certbot certonly \
   --webroot --webroot-path /var/www/certbot \
-  -d YOUR_DOMAIN \
+  -d api.example.com \
   --email your-email@example.com \
   --agree-tos --non-interactive
 ```
 
-### Step 6 — Add SSL block to nginx config
-
-Open the config and paste the full version (HTTP + HTTPS):
+**8 — Add SSL block to nginx config**
 
 ```bash
-nano ~/reverse-proxy/nginx/sites/<your-domain>.conf
+nano ~/reverse-proxy/nginx/sites/api.example.com.conf
 ```
+
+Replace the entire file with:
 
 ```nginx
 server {
     listen 80;
-    server_name YOUR_DOMAIN;
+    server_name api.example.com;
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
@@ -972,18 +974,18 @@ server {
 server {
     listen 443 ssl;
     http2 on;
-    server_name YOUR_DOMAIN;
+    server_name api.example.com;
 
-    ssl_certificate     /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/api.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.example.com/privkey.pem;
 
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
-    access_log /var/log/nginx/YOUR_LOG_PREFIX-access.log json;
-    error_log  /var/log/nginx/YOUR_LOG_PREFIX-error.log warn;
+    access_log /var/log/nginx/api-example-com-access.log json;
+    error_log  /var/log/nginx/api-example-com-error.log warn;
 
     location / {
-        proxy_pass http://YOUR_CONTAINER_NAME:YOUR_PORT;
+        proxy_pass http://my-api-server:4000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -995,39 +997,39 @@ server {
 }
 ```
 
-### Step 7 — Reload nginx
+**9 — Reload nginx**
 
 ```bash
 docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload
 ```
 
-### Step 8 — Deploy app
+**10 — Deploy the app**
 
 ```bash
-cd ~/<new-app-name>
+cd ~/my-api
 docker compose pull
 docker compose up -d
 ```
 
-### Step 9 — Switch Cloudflare to Proxied
+**11 — Switch Cloudflare to Proxied**
 
-Set the A record to **Proxied** (orange cloud), **Full (strict)**, **Always Use HTTPS**.
+Set A record to **Proxied** (orange cloud), **SSL/TLS → Full (strict)**, **Always Use HTTPS**.
 
-### Step 10 — Quick reference
+### Quick Reference Table
 
-| Step | Command |
+| Step | What to do |
 |---|---|
-| Create dir | `mkdir -p ~/<name>` |
-| Compose | `cp ~/ai-gateway/docker-compose.yml .` then edit |
+| Directory | `mkdir -p ~/your-app && cd ~/your-app` |
+| Compose | Copy from `~/ai-gateway/docker-compose.yml`, edit image/container/port |
 | Env | `nano .env && chmod 600 .env` |
-| Nginx HTTP | Write config with only `listen 80` block |
-| Reload | `docker exec reverse-proxy-nginx nginx -t && ... nginx -s reload` |
-| DNS | Add A record in Cloudflare (DNS Only) |
-| SSL | `docker exec reverse-proxy-certbot certbot certonly --webroot ...` |
-| Nginx HTTPS | Edit config to add `listen 443 ssl` block |
+| Nginx (HTTP) | Write config with only `listen 80` and `/.well-known/acme-challenge/` |
+| Reload | `docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload` |
+| DNS | Cloudflare A record → your VPS IP (DNS Only) |
+| SSL | `docker exec reverse-proxy-certbot certbot certonly --webroot -d your.domain --email your-email@example.com --agree-tos --non-interactive` |
+| Nginx (HTTPS) | Edit same config to add `listen 443 ssl` block with cert paths + `proxy_pass` |
 | Reload | Same reload command |
 | Deploy | `docker compose pull && docker compose up -d` |
-| Cloudflare | Switch to Proxied, Full (strict) |
+| Cloudflare | Change to Proxied, Full (strict), Always Use HTTPS |
 
 ---
 
