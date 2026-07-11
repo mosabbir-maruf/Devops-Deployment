@@ -997,18 +997,18 @@ server {
 }
 ```
 
-**9 — Reload nginx**
-
-```bash
-docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload
-```
-
-**10 — Deploy the app**
+**9 — Deploy the app**
 
 ```bash
 cd ~/my-api
 docker compose pull
 docker compose up -d
+```
+
+**10 — Reload nginx**
+
+```bash
+docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload
 ```
 
 **11 — Switch Cloudflare to Proxied**
