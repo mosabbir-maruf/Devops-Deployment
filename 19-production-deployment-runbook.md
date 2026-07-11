@@ -1015,22 +1015,6 @@ docker compose up -d
 
 Set A record to **Proxied** (orange cloud), **SSL/TLS → Full (strict)**, **Always Use HTTPS**.
 
-### Quick Reference Table
-
-| Step | What to do |
-|---|---|
-| Directory | `mkdir -p ~/your-app && cd ~/your-app` |
-| Compose | Copy from `~/ai-gateway/docker-compose.yml`, edit image/container/port |
-| Env | `nano .env && chmod 600 .env` |
-| Nginx (HTTP) | Write config with only `listen 80` and `/.well-known/acme-challenge/` |
-| Reload | `docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload` |
-| DNS | Cloudflare A record → your VPS IP (DNS Only) |
-| SSL | `docker exec reverse-proxy-certbot certbot certonly --webroot -d your.domain --email your-email@example.com --agree-tos --non-interactive` |
-| Nginx (HTTPS) | Edit same config to add `listen 443 ssl` block with cert paths + `proxy_pass` |
-| Reload | Same reload command |
-| Deploy | `docker compose pull && docker compose up -d` |
-| Cloudflare | Change to Proxied, Full (strict), Always Use HTTPS |
-
 ---
 
 ## Phase 5: Production Validation
