@@ -9,6 +9,7 @@
 - [Phase 2: Reverse Proxy Stack](#phase-2-reverse-proxy-stack)
 - [Phase 3: SSL & HTTPS](#phase-3-ssl--https)
 - [Phase 4: Application Deployment](#phase-4-application-deployment)
+- [Phase 4.5: Adding Another Site](#phase-45-adding-another-site-repeatable-process)
 - [Phase 5: Production Validation](#phase-5-production-validation)
 - [Phase 6: Operations](#phase-6-operations)
 - [Phase 7: Disaster Recovery](#phase-7-disaster-recovery)
@@ -868,6 +869,165 @@ curl -sf https://gateway.example.com/health && echo "Rollback OK"
   docker inspect ai-gateway-server --format='{{.State.Health.Status}}'
   Add timeouts: proxy_connect_timeout 60s; proxy_read_timeout 60s;
 ```
+
+---
+
+## Phase 4.5: Adding Another Site (Repeatable Process)
+
+After your first site is live (Phases 1-4 complete), each new site follows these steps. Only the values change — the process is the same.
+
+### Step 1 — Create app directory and files
+
+```bash
+mkdir -p ~/<new-app-name> && cd ~/<new-app-name>
+```
+
+Copy compose from your first app and edit image/container/port:
+
+```bash
+cp ~/ai-gateway/docker-compose.yml .
+nano docker-compose.yml
+```
+
+Create `.env`:
+
+```bash
+nano .env
+chmod 600 .env
+```
+
+### Step 2 — Create nginx config (HTTP only, no SSL yet)
+
+```bash
+nano ~/reverse-proxy/nginx/sites/<your-domain>.conf
+```
+
+Paste and replace the values:
+
+```nginx
+server {
+    listen 80;
+    server_name YOUR_DOMAIN;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+```
+
+### Step 3 — Reload nginx
+
+```bash
+docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload
+```
+
+### Step 4 — Create Cloudflare A record (DNS Only)
+
+```
+Type: A, Name: <subdomain>, IPv4: <YOUR_VPS_IP>, Proxy: DNS Only (gray)
+```
+
+Verify:
+
+```bash
+dig <your-domain> +short
+```
+
+### Step 5 — Issue SSL certificate
+
+```bash
+docker exec reverse-proxy-certbot certbot certonly \
+  --webroot --webroot-path /var/www/certbot \
+  -d YOUR_DOMAIN \
+  --email your-email@example.com \
+  --agree-tos --non-interactive
+```
+
+### Step 6 — Add SSL block to nginx config
+
+Open the config and paste the full version (HTTP + HTTPS):
+
+```bash
+nano ~/reverse-proxy/nginx/sites/<your-domain>.conf
+```
+
+```nginx
+server {
+    listen 80;
+    server_name YOUR_DOMAIN;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name YOUR_DOMAIN;
+
+    ssl_certificate     /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    access_log /var/log/nginx/YOUR_LOG_PREFIX-access.log json;
+    error_log  /var/log/nginx/YOUR_LOG_PREFIX-error.log warn;
+
+    location / {
+        proxy_pass http://YOUR_CONTAINER_NAME:YOUR_PORT;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+}
+```
+
+### Step 7 — Reload nginx
+
+```bash
+docker exec reverse-proxy-nginx nginx -t && docker exec reverse-proxy-nginx nginx -s reload
+```
+
+### Step 8 — Deploy app
+
+```bash
+cd ~/<new-app-name>
+docker compose pull
+docker compose up -d
+```
+
+### Step 9 — Switch Cloudflare to Proxied
+
+Set the A record to **Proxied** (orange cloud), **Full (strict)**, **Always Use HTTPS**.
+
+### Step 10 — Quick reference
+
+| Step | Command |
+|---|---|
+| Create dir | `mkdir -p ~/<name>` |
+| Compose | `cp ~/ai-gateway/docker-compose.yml .` then edit |
+| Env | `nano .env && chmod 600 .env` |
+| Nginx HTTP | Write config with only `listen 80` block |
+| Reload | `docker exec reverse-proxy-nginx nginx -t && ... nginx -s reload` |
+| DNS | Add A record in Cloudflare (DNS Only) |
+| SSL | `docker exec reverse-proxy-certbot certbot certonly --webroot ...` |
+| Nginx HTTPS | Edit config to add `listen 443 ssl` block |
+| Reload | Same reload command |
+| Deploy | `docker compose pull && docker compose up -d` |
+| Cloudflare | Switch to Proxied, Full (strict) |
 
 ---
 
