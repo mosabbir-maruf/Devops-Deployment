@@ -685,6 +685,8 @@ PORT=8900
 # Add your secrets here
 ```
 
+**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
+
 ```bash
 chmod 600 ~/ai-gateway/.env
 ```
@@ -699,16 +701,6 @@ sudo chown -R 1000:1000 ~/ai-gateway/gateway-data
 ```
 
 Without this step, the container will fail to write to the mounted volume, causing blank pages or startup errors.
-
-**Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
-
-**Authenticate with GHCR:**
-
-```bash
-echo $GITHUB_TOKEN | docker login ghcr.io -u your-github-username --password-stdin
-```
-
-If no token: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens (read:packages).
 
 **Pull and start:**
 
