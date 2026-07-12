@@ -689,6 +689,17 @@ PORT=8900
 chmod 600 ~/ai-gateway/.env
 ```
 
+**Create data directory with correct permissions:**
+
+The container runs as UID 1000 (node user). The mounted volume must be writable by that user:
+
+```bash
+mkdir -p ~/ai-gateway/gateway-data
+sudo chown -R 1000:1000 ~/ai-gateway/gateway-data
+```
+
+Without this step, the container will fail to write to the mounted volume, causing blank pages or startup errors.
+
 **Save:** `Ctrl+O` → `Enter` → `Ctrl+X`
 
 **Authenticate with GHCR:**
